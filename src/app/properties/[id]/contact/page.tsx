@@ -4,8 +4,7 @@ import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-// Import PageProps from the correct location
-import { AppProps } from 'next/app';
+
 
 // Define the correct type for the page props
 type ContactPageProps = {

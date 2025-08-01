@@ -3,14 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 
-type PropertyPageProps = {
-  params: {
-    id: string;
-  };
-};
 
-export default async function PropertyPage({ params }: PropertyPageProps) {
-  const { id } = params;
+export default async function PropertyPage({ params }: { params: Promise<{ id: string }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const { id } = await params;
 
   let property;
 

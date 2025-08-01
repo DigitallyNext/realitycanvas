@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import AutoPlay from 'embla-carousel-autoplay';
 import Image from 'next/image';
-import { cn } from '../lib/utils';
+
 
 type ImageCarouselProps = {
   images: string[];
@@ -15,7 +15,6 @@ type ImageCarouselProps = {
 
 export default function ImageCarousel({ images, title, autoplay = true, loop = true }: ImageCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const carouselRef = useRef(null);
   
   // Initialize carousel with autoplay plugin if enabled
   const [emblaRef, emblaApi] = useEmblaCarousel(

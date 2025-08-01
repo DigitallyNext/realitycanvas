@@ -48,7 +48,7 @@ export default function Home() {
         console.log('API response:', data);
         
         // Convert createdAt strings to Date objects
-        const formattedData = (data || []).map((property: any) => ({
+        const formattedData = (data || []).map((property: Property) => ({
           ...property,
           createdAt: new Date(property.createdAt)
         }));

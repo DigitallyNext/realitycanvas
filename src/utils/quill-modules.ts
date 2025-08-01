@@ -26,10 +26,10 @@ export const registerQuillModules = async (): Promise<void> => {
       ]).then(([{ tableModule }, { tableUI }]) => {
         // Function to register modules when Quill is available
         const registerModules = () => {
-          if (window.Quill) {
+          if ((window as any).Quill) {
             try {
               // Register modules
-              window.Quill.register({
+              (window as any).Quill.register({
                 'modules/table': tableModule,
                 'modules/tableUI': tableUI
               }, true);

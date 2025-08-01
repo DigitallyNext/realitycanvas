@@ -25,7 +25,6 @@ type Property = {
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchProperties() {
@@ -39,7 +38,7 @@ export default function PropertiesPage() {
         const data = await response.json();
         
         // Convert createdAt strings to Date objects
-        const formattedData = (data || []).map((property: any) => ({
+        const formattedData = (data || []).map((property: Property) => ({
           ...property,
           createdAt: new Date(property.createdAt)
         }));
