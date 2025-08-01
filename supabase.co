@@ -1,0 +1,7 @@
+module.exports = {
+  images: {
+    domains: [
+      /^.*\.supabase\.co$/,  // Regular expression for all Supabase URLs
+    ],
+  },
+}
