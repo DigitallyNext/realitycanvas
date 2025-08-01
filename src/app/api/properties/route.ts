@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sampleProperties } from '@/lib/data';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
     // Validate required fields
-    const { title, description, price, address, imageUrls } = body;
+    const { title, description, price, address, location, currency, featuredImage, galleryImages, beds, baths, area } = body;
     
-    if (!title || !description || !price || !address) {
+    if (!title || !description || !price || !address || !location || !featuredImage) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -17,9 +16,9 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Ensure imageUrls is an array and doesn't contain null values
-      const validImageUrls = Array.isArray(imageUrls) 
-        ? imageUrls.filter(url => url !== null && url !== undefined) 
+      // Ensure galleryImages is an array and doesn't contain null values
+      const validGalleryImages = Array.isArray(galleryImages) 
+        ? galleryImages.filter(url => url !== null && url !== undefined) 
         : [];
       
       // Create the property in the database
@@ -29,7 +28,13 @@ export async function POST(request: NextRequest) {
           description,
           price,
           address,
-          imageUrls: validImageUrls,
+          location,
+          currency: currency || 'USD',
+          featuredImage,
+          galleryImages: validGalleryImages,
+          beds: beds || 0,
+          baths: baths || 0,
+          area: area || 0,
         },
       });
 
@@ -37,9 +42,9 @@ export async function POST(request: NextRequest) {
     } catch (dbError) {
       console.error('Database error creating property:', dbError);
       console.log('API: Database connection error when creating property');
-      // Ensure imageUrls is an array and doesn't contain null values
-      const validImageUrls = Array.isArray(imageUrls) 
-        ? imageUrls.filter(url => url !== null && url !== undefined) 
+      // Ensure galleryImages is an array and doesn't contain null values
+      const validGalleryImages = Array.isArray(galleryImages) 
+        ? galleryImages.filter(url => url !== null && url !== undefined) 
         : [];
       
       // Create a mock property with a generated ID
@@ -49,7 +54,13 @@ export async function POST(request: NextRequest) {
         description,
         price,
         address,
-        imageUrls: validImageUrls,
+        location,
+        currency: currency || 'USD',
+        featuredImage,
+        galleryImages: validGalleryImages,
+        beds: beds || 0,
+        baths: baths || 0,
+        area: area || 0,
         createdAt: new Date()
       };
       
@@ -72,7 +83,7 @@ export async function GET() {
     let properties = [];
     
     try {
-      // Try to fetch from database first
+      // Try to fetch from database
       properties = await prisma.property.findMany({
         orderBy: {
           createdAt: 'desc',
@@ -82,10 +93,8 @@ export async function GET() {
       return NextResponse.json(properties);
     } catch (dbError) {
       console.error('Database error fetching properties:', dbError);
-      // Use sample data if database connection fails
-      console.log('API: Using sample data instead for properties list');
       return NextResponse.json(
-        { properties: sampleProperties },
+        { properties: [] },
         { status: 200 }
       );
     }

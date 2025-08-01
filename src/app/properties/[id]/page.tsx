@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { sampleProperties } from '@/lib/data';
 
 type PropertyPageProps = {
   params: {
@@ -22,9 +21,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     });
   } catch (error) {
     console.error('Error fetching property:', error);
-    // Use sample data if database connection fails
-    console.log('Using sample data instead for property:', id);
-    property = sampleProperties.find(p => p.id === id);
   }
 
   // If property not found, show 404
@@ -49,9 +45,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
         {/* Property Images */}
         <div className="relative h-96 w-full bg-gray-200 dark:bg-gray-700">
-          {property.imageUrls.length > 0 ? (
+          {property.featuredImage ? (
             <Image
-              src={property.imageUrls[0]}
+              src={property.featuredImage}
               alt={property.title}
               fill
               className="object-cover"
@@ -87,15 +83,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
 
           {/* Additional Images */}
-          {property.imageUrls.length > 1 && (
+          {property.galleryImages && property.galleryImages.length > 0 && (
             <div className="mt-8">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">More Photos</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {property.imageUrls.slice(1).map((imageUrl, index) => (
+                {property.galleryImages.map((imageUrl, index) => (
                   <div key={index} className="relative aspect-w-16 aspect-h-9 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
                     <Image
                       src={imageUrl}
-                      alt={`${property.title} - Image ${index + 2}`}
+                      alt={`${property.title} - Image ${index + 1}`}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"

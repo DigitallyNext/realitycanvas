@@ -1,16 +1,16 @@
 import Link from 'next/link';
 import PropertyCard from '../components/PropertyCard';
 import { prisma } from '../lib/prisma';
-import { sampleProperties } from '../lib/data';
+import { Property } from '../generated/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // Fetch properties from the database or use sample data
-  let properties = [];
+  // Fetch properties from the database
+  let properties: Property[] = [];
   
   try {
-    // Try to fetch from database first
+    // Try to fetch from database
     properties = await prisma.property.findMany({
       orderBy: {
         createdAt: 'desc',
@@ -18,9 +18,6 @@ export default async function Home() {
     });
   } catch (error) {
     console.error('Error fetching properties:', error);
-    // Use sample data if database connection fails
-    console.log('Using sample data instead');
-    properties = sampleProperties;
   }
 
   return (

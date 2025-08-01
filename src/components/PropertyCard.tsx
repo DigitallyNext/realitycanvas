@@ -7,8 +7,8 @@ type PropertyCardProps = {
 };
 
 export default function PropertyCard({ property }: PropertyCardProps) {
-  // Use the first image as the main display image
-  const mainImage = property.imageUrls[0] || '/placeholder-property.jpg';
+  // Use the featured image as the main display image
+  const mainImage = property.featuredImage || '/placeholder-property.svg';
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden dark:bg-gray-800">

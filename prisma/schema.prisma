@@ -16,11 +16,17 @@ datasource db {
 }
 
 model Property {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  price       Int
-  address     String
-  imageUrls   String[] // Store multiple image URLs
-  createdAt   DateTime @default(now())
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  price         Int
+  address       String
+  location      String
+  currency      String   @default("USD")
+  featuredImage String
+  galleryImages String[] // Store additional images
+  beds          Int      @default(0)
+  baths         Int      @default(0)
+  area          Int      @default(0)
+  createdAt     DateTime @default(now())
 }

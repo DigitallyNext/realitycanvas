@@ -13,6 +13,11 @@ export default function NewPropertyPage() {
     description: '',
     price: '',
     address: '',
+    location: '',
+    currency: 'USD',
+    beds: '',
+    baths: '',
+    area: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -77,7 +82,11 @@ export default function NewPropertyPage() {
         body: JSON.stringify({
           ...formData,
           price: parseInt(formData.price),
-          imageUrls: validImageUrls,
+          beds: formData.beds ? parseInt(formData.beds) : 0,
+          baths: formData.baths ? parseInt(formData.baths) : 0,
+          area: formData.area ? parseInt(formData.area) : 0,
+          featuredImage: validImageUrls.length > 0 ? validImageUrls[0] : '',
+          galleryImages: validImageUrls.length > 1 ? validImageUrls.slice(1) : [],
         }),
       });
 
@@ -164,6 +173,84 @@ export default function NewPropertyPage() {
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           />
+        </div>
+
+        <div>
+          <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Location (City, State)
+          </label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Currency
+          </label>
+          <select
+            id="currency"
+            name="currency"
+            value={formData.currency}
+            onChange={handleChange as any}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          >
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="INR">INR (₹)</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label htmlFor="beds" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Bedrooms
+            </label>
+            <input
+              type="number"
+              id="beds"
+              name="beds"
+              value={formData.beds}
+              onChange={handleChange}
+              min="0"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="baths" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Bathrooms
+            </label>
+            <input
+              type="number"
+              id="baths"
+              name="baths"
+              value={formData.baths}
+              onChange={handleChange}
+              min="0"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          </div>
+          <div>
+            <label htmlFor="area" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Area (sq ft)
+            </label>
+            <input
+              type="number"
+              id="area"
+              name="area"
+              value={formData.area}
+              onChange={handleChange}
+              min="0"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            />
+          </div>
         </div>
 
         <div>
