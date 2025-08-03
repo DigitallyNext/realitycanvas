@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import PropertyCard from '@/components/PropertyCard';
 // import { supabase } from '@/lib/supabase';
-
 // Define the Property type based on the Prisma schema
 type Property = {
   id: string;
