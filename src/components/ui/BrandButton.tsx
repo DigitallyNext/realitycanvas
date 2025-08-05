@@ -22,8 +22,8 @@ export const BrandButton = React.forwardRef<HTMLButtonElement, BrandButtonProps>
         case 'secondary':
           return {
             background: 'linear-gradient(135deg, #14314b, #14314b)',
-            shimmerColor: '#feb711',
-            className: 'text-white font-medium shadow-lg hover:shadow-xl'
+            shimmerColor: 'white',
+            className: 'text-white  font-medium shadow-lg hover:shadow-xl'
           };
         case 'outline':
           return {
