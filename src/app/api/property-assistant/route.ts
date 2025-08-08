@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { setTimeout } from 'timers/promises';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -116,7 +117,45 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid request type' }, { status: 400 });
     }
 
-    const result = await model.generateContent(prompt);
+    // Implement retry logic with exponential backoff
+    let result;
+    let retries = 0;
+    const maxRetries = 3;
+    const baseDelay = 2000; // Start with 2 seconds
+    
+    while (retries <= maxRetries) {
+      try {
+        result = await model.generateContent(prompt);
+        break; // Success, exit the loop
+      } catch (error: any) {
+        // Check if it's a rate limit error (429)
+        if (error.status === 429) {
+          retries++;
+          if (retries > maxRetries) {
+            throw error; // Max retries reached, rethrow the error
+          }
+          
+          // Get retry delay from error if available, or use exponential backoff
+          let delay = baseDelay * Math.pow(2, retries - 1); // Exponential backoff
+          
+          // Try to extract retry delay from error if available
+          const retryDelayMatch = error.message?.match(/retryDelay:"(\d+)s"/i);
+          if (retryDelayMatch && retryDelayMatch[1]) {
+            delay = parseInt(retryDelayMatch[1]) * 1000; // Convert seconds to milliseconds
+          }
+          
+          console.log(`Rate limit hit. Retrying in ${delay/1000} seconds... (Attempt ${retries}/${maxRetries})`);
+          await setTimeout(delay);
+        } else {
+          throw error; // Not a rate limit error, rethrow
+        }
+      }
+    }
+    
+    if (!result) {
+      throw new Error('Failed to generate content after multiple retries');
+    }
+    
     const response = await result.response;
     const text = response.text();
 
@@ -154,11 +193,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Property Assistant API error:', error);
+    
+    // Handle rate limit errors specifically
+    if (error.status === 429) {
+      return NextResponse.json(
+        { 
+          error: 'Rate limit exceeded. Please try again in a few moments.',
+          retryAfter: error.message?.match(/retryDelay:"(\d+)s"/i)?.[1] || '10'
+        },
+        { status: 429 }
+      );
+    }
+    
+    // Handle other API errors
     return NextResponse.json(
-      { error: 'Sorry, I encountered an error. Please try again.' },
-      { status: 500 }
+      { 
+        error: 'Sorry, I encountered an error. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
+      { status: error.status || 500 }
     );
   }
-} 
+}

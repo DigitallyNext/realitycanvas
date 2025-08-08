@@ -231,13 +231,7 @@ export default function PropertiesPage() {
         </div>
       )}
         </div>
-      </section>
-
-      {/* Property Grid */}
-      <PropertyGrid 
-        title="Explore Properties by City"
-        subtitle="Discover the best properties in major cities across India"
-      />
+      </section>      
     </div>
   );
 }

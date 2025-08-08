@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PlusIcon, XMarkIcon, CodeBracketIcon, EyeIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { findIconForTitle } from '@/utils/iconMappings';
+import * as ReactIcons from 'react-icons/md';
+import * as FaIcons from 'react-icons/fa';
 
 interface Highlight {
   icon: string;
@@ -17,20 +20,21 @@ interface PropertyHighlightsEditorProps {
   propertyData?: any; // For AI assistance
 }
 
-const iconOptions = [
-  { value: '🏠', label: 'Home' },
-  { value: '📍', label: 'Location' },
-  { value: '🌟', label: 'Premium' },
-  { value: '🏢', label: 'Modern' },
-  { value: '🔒', label: 'Secure' },
-  { value: '🚗', label: 'Parking' },
-  { value: '🏊', label: 'Pool' },
-  { value: '🏋️', label: 'Gym' },
-  { value: '🌳', label: 'Garden' },
-  { value: '💰', label: 'Investment' },
-  { value: '🔗', label: 'Connectivity' },
-  { value: '🏆', label: 'Premium' },
-];
+// Import custom icon components
+import IconDisplay from './ui/IconDisplay';
+import IconRenderer from './ui/IconRenderer';
+import { getAllIcons } from '@/utils/iconMappings';
+
+// Get all available icons from our mapping utility
+const iconOptions = getAllIcons().map(icon => {
+  // Parse the icon string (format: 'md:house' or 'fa:home')
+  const [library, name] = icon.split(':');
+  return {
+    value: icon,
+    label: name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1').trim(),
+    library
+  };
+});
 
 export default function PropertyHighlightsEditor({ value, onChange, label = "Property Highlights", placeholder = "Add key features and highlights of your property", propertyData }: PropertyHighlightsEditorProps) {
   const [isJsonMode, setIsJsonMode] = useState(false);
@@ -52,7 +56,9 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
   };
 
   const addHighlight = () => {
-    const newHighlights = [...highlights, { icon: '🏠', title: '', description: '' }];
+    // Use a default icon from our icon mapping system
+    const defaultIcon = 'md:home';
+    const newHighlights = [...highlights, { icon: defaultIcon, title: '', description: '' }];
     updateHighlights(newHighlights);
   };
 
@@ -68,41 +74,53 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
     updateHighlights(newHighlights);
   };
 
-  // AI function to suggest icon based on title
-  const suggestIcon = async (index: number, title: string) => {
+  // State for error messages
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Local function to suggest icon based on title using our icon mapping utility
+  const suggestIcon = (index: number, title: string) => {
     if (!title.trim() || !isAIAssisted) return;
     
     setIsGeneratingIcon(index);
+    
     try {
-      const response = await fetch('/api/property-assistant', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'suggest_icon',
-          highlightTitle: title
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.icon) {
-          updateHighlight(index, 'icon', data.icon);
+      // Use a small timeout to simulate processing and show the loading indicator
+      setTimeout(() => {
+        // Get the icon name based on the title
+        const IconComponent = findIconForTitle(title);
+        
+        // Convert the React Icon component to a string representation for storage
+        // We'll store the name of the icon in the format 'md:house' or 'fa:home'
+        const iconName = IconComponent.displayName || '';
+        let iconString = '';
+        
+        if (iconName.startsWith('Md')) {
+          iconString = `md:${iconName.slice(2).toLowerCase()}`;
+        } else if (iconName.startsWith('Fa')) {
+          iconString = `fa:${iconName.slice(2).toLowerCase()}`;
+        } else {
+          // Fallback to a default icon
+          iconString = 'md:house';
         }
-      }
+        
+        updateHighlight(index, 'icon', iconString);
+        setIsGeneratingIcon(null);
+      }, 300); // Small delay to show loading state
     } catch (error) {
       console.error('Error suggesting icon:', error);
-    } finally {
+      setErrorMessage('Error generating icon. Please try again.');
       setIsGeneratingIcon(null);
     }
   };
 
-  // AI function to generate title
-  const generateTitle = async (index: number) => {
+  // AI function to generate title with retry logic
+  const generateTitle = async (index: number, retryCount = 0) => {
     if (!isAIAssisted || !propertyData) return;
     
+    const maxRetries = 2;
     setIsGeneratingTitle(index);
+    setErrorMessage(null);
+    
     try {
       const response = await fetch('/api/property-assistant', {
         method: 'POST',
@@ -123,19 +141,51 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
           // Auto-suggest icon after generating title
           setTimeout(() => suggestIcon(index, data.title), 500);
         }
+      } else if (response.status === 429 && retryCount < maxRetries) {
+        // Rate limit hit, retry after delay
+        const data = await response.json();
+        const retryAfter = parseInt(data.retryAfter || '5');
+        
+        // Show temporary message
+        setErrorMessage(`Rate limit reached. Retrying in ${retryAfter} seconds...`);
+        
+        // Wait and retry
+        setTimeout(() => {
+          generateTitle(index, retryCount + 1);
+        }, retryAfter * 1000);
+        return; // Don't reset isGeneratingTitle yet
+      } else {
+        // Handle other errors
+        const data = await response.json();
+        setErrorMessage(data.error || 'Failed to generate title. Please try again.');
       }
     } catch (error) {
       console.error('Error generating title:', error);
+      setErrorMessage('Network error. Please check your connection and try again.');
     } finally {
-      setIsGeneratingTitle(null);
+      if (retryCount >= maxRetries) {
+        setIsGeneratingTitle(null);
+      }
     }
   };
+  
+  // AI function to generate icon only
+  const generateIconOnly = async (index: number) => {
+    if (!isAIAssisted || !highlights[index]?.title.trim()) return;
+    
+    // We don't need to set loading state or handle errors here
+    // as suggestIcon already handles all of that including retries
+    await suggestIcon(index, highlights[index].title);
+  };
 
-  // AI function to generate description
-  const generateDescription = async (index: number) => {
+  // AI function to generate description with retry logic
+  const generateDescription = async (index: number, retryCount = 0) => {
     if (!isAIAssisted || !propertyData) return;
     
+    const maxRetries = 2;
     setIsGeneratingDescription(index);
+    setErrorMessage(null);
+    
     try {
       const response = await fetch('/api/property-assistant', {
         method: 'POST',
@@ -155,17 +205,44 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
         if (data.description) {
           updateHighlight(index, 'description', data.description);
         }
+      } else if (response.status === 429 && retryCount < maxRetries) {
+        // Rate limit hit, retry after delay
+        const data = await response.json();
+        const retryAfter = parseInt(data.retryAfter || '5');
+        
+        // Show temporary message
+        setErrorMessage(`Rate limit reached. Retrying in ${retryAfter} seconds...`);
+        
+        // Wait and retry
+        setTimeout(() => {
+          generateDescription(index, retryCount + 1);
+        }, retryAfter * 1000);
+        return; // Don't reset isGeneratingDescription yet
+      } else {
+        // Handle other errors
+        const data = await response.json();
+        setErrorMessage(data.error || 'Failed to generate description. Please try again.');
       }
     } catch (error) {
       console.error('Error generating description:', error);
+      setErrorMessage('Network error. Please check your connection and try again.');
     } finally {
-      setIsGeneratingDescription(null);
+      if (retryCount >= maxRetries) {
+        setIsGeneratingDescription(null);
+      }
     }
   };
 
-  // AI function to generate highlights
-  const generateHighlights = async () => {
+  // State for generating highlights
+  const [isGeneratingHighlights, setIsGeneratingHighlights] = useState(false);
+
+  // AI function to generate highlights with retry logic
+  const generateHighlights = async (retryCount = 0) => {
     if (!propertyData || !isAIAssisted) return;
+    
+    const maxRetries = 2;
+    setIsGeneratingHighlights(true);
+    setErrorMessage(null);
     
     try {
       const response = await fetch('/api/property-assistant', {
@@ -184,9 +261,31 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
         if (data.highlights && Array.isArray(data.highlights)) {
           updateHighlights(data.highlights);
         }
+      } else if (response.status === 429 && retryCount < maxRetries) {
+        // Rate limit hit, retry after delay
+        const data = await response.json();
+        const retryAfter = parseInt(data.retryAfter || '5');
+        
+        // Show temporary message
+        setErrorMessage(`Rate limit reached. Retrying in ${retryAfter} seconds...`);
+        
+        // Wait and retry
+        setTimeout(() => {
+          generateHighlights(retryCount + 1);
+        }, retryAfter * 1000);
+        return; // Don't reset isGeneratingHighlights yet
+      } else {
+        // Handle other errors
+        const data = await response.json();
+        setErrorMessage(data.error || 'Failed to generate highlights. Please try again.');
       }
     } catch (error) {
       console.error('Error generating highlights:', error);
+      setErrorMessage('Network error. Please check your connection and try again.');
+    } finally {
+      if (retryCount >= maxRetries) {
+        setIsGeneratingHighlights(false);
+      }
     }
   };
 
@@ -240,6 +339,34 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
         </div>
       </div>
 
+      {/* Error Message Display */}
+      {errorMessage && (
+        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-200 dark:border-red-800 mb-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <div className="-mx-1.5 -my-1.5">
+                <button
+                  type="button"
+                  onClick={() => setErrorMessage(null)}
+                  className="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-800 focus:outline-none"
+                >
+                  <span className="sr-only">Dismiss</span>
+                  <XMarkIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* AI Generate Highlights Button */}
       {isAIAssisted && propertyData && (
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
@@ -254,11 +381,24 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
             </div>
             <button
               type="button"
-              onClick={generateHighlights}
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl"
+              onClick={() => generateHighlights()}
+              disabled={isGeneratingHighlights}
+              className={`flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium transition-all shadow-lg ${isGeneratingHighlights ? 'opacity-70 cursor-not-allowed' : 'hover:from-purple-600 hover:to-pink-600 hover:shadow-xl'}`}
             >
-              <SparklesIcon className="w-4 h-4 mr-2" />
-              Generate Highlights
+              {isGeneratingHighlights ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <SparklesIcon className="w-4 h-4 mr-2" />
+                  Generate Highlights
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -273,12 +413,12 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white font-mono text-sm"
             placeholder={`[
   {
-    "icon": "🏠",
+    "icon": "md:location",
     "title": "Prime Location",
     "description": "Strategically located in the heart of the city"
   },
   {
-    "icon": "🌟",
+    "icon": "md:star",
     "title": "Modern Design",
     "description": "Contemporary architecture with premium finishes"
   }
@@ -308,55 +448,74 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Icon Selection */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Icon
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={highlight.icon}
-                      onChange={(e) => updateHighlight(index, 'icon', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white"
-                    >
-                      {iconOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.value} {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {isGeneratingIcon === index && (
-                      <div className="absolute right-2 top-2">
-                        <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                      </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                      Icon
+                    </label>
+                    {isAIAssisted && highlight.title.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => generateIconOnly(index)}
+                        disabled={isGeneratingIcon === index}
+                        className="flex items-center text-xs text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
+                      >
+                        <SparklesIcon className="w-3 h-3 mr-1" />
+                        Generate
+                      </button>
                     )}
                   </div>
-                  {/* Generate Icon Button - Only show after title is added */}
-                  {isAIAssisted && highlight.title.trim() && (
-                    <button
-                      type="button"
-                      onClick={() => suggestIcon(index, highlight.title)}
-                      disabled={isGeneratingIcon === index}
-                      className="mt-2 w-full flex items-center justify-center px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-md text-xs font-medium hover:from-purple-600 hover:to-pink-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50"
-                    >
-                      {isGeneratingIcon === index ? (
-                        <>
-                          <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin mr-1"></div>
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <SparklesIcon className="w-3 h-3 mr-1" />
-                          Generate Icon
-                        </>
+                  <div className="flex space-x-2">
+                    {/* Icon Preview */}
+                    <div className="flex-shrink-0 w-10 h-10 bg-gray-100 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                      <IconRenderer iconString={highlight.icon} size={24} className="text-gray-700 dark:text-gray-200" />
+                    </div>
+                    {/* Icon Selector */}
+                    <div className="relative flex-grow">
+                      <select
+                        value={highlight.icon}
+                        onChange={(e) => updateHighlight(index, 'icon', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white"
+                      >
+                        {iconOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {isGeneratingIcon === index && (
+                        <div className="absolute right-2 top-2">
+                          <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
                       )}
-                    </button>
+                    </div>
+                  </div>
+                  {/* Auto-suggestion status message */}
+                  {isAIAssisted && highlight.title.trim() && isGeneratingIcon === index && (
+                    <div className="mt-2 text-xs text-purple-600 dark:text-purple-400 flex items-center">
+                      <div className="w-3 h-3 border border-purple-500 border-t-transparent rounded-full animate-spin mr-1"></div>
+                      Auto-suggesting icon...
+                    </div>
                   )}
                 </div>
 
                 {/* Title */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Title
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                      Title
+                    </label>
+                    {isAIAssisted && (
+                      <button
+                        type="button"
+                        onClick={() => generateTitle(index)}
+                        disabled={isGeneratingTitle === index}
+                        className="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                      >
+                        <SparklesIcon className="w-3 h-3 mr-1" />
+                        Generate
+                      </button>
+                    )}
+                  </div>
                   <div className="relative">
                     <input
                       type="text"
@@ -365,7 +524,8 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
                         updateHighlight(index, 'title', e.target.value);
                         // Auto-suggest icon when title changes (with debounce)
                         if (isAIAssisted && e.target.value.trim()) {
-                          setTimeout(() => suggestIcon(index, e.target.value), 1000);
+                          // Reduced timeout for more responsive icon suggestion
+                          setTimeout(() => suggestIcon(index, e.target.value), 500);
                         }
                       }}
                       placeholder="e.g., Prime Location"
@@ -377,34 +537,26 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
                       </div>
                     )}
                   </div>
-                  {/* Generate Title Button */}
-                  {isAIAssisted && (
-                    <button
-                      type="button"
-                      onClick={() => generateTitle(index)}
-                      disabled={isGeneratingTitle === index}
-                      className="mt-2 w-full flex items-center justify-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-md text-xs font-medium hover:from-blue-600 hover:to-indigo-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50"
-                    >
-                      {isGeneratingTitle === index ? (
-                        <>
-                          <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin mr-1"></div>
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <SparklesIcon className="w-3 h-3 mr-1" />
-                          Generate Title
-                        </>
-                      )}
-                    </button>
-                  )}
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                      Description
+                    </label>
+                    {isAIAssisted && (
+                      <button
+                        type="button"
+                        onClick={() => generateDescription(index)}
+                        disabled={isGeneratingDescription === index}
+                        className="flex items-center text-xs text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300"
+                      >
+                        <SparklesIcon className="w-3 h-3 mr-1" />
+                        Generate
+                      </button>
+                    )}
+                  </div>
                   <div className="relative">
                     <textarea
                       value={highlight.description}
@@ -419,27 +571,6 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
                       </div>
                     )}
                   </div>
-                  {/* Generate Description Button */}
-                  {isAIAssisted && (
-                    <button
-                      type="button"
-                      onClick={() => generateDescription(index)}
-                      disabled={isGeneratingDescription === index}
-                      className="mt-2 w-full flex items-center justify-center px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-md text-xs font-medium hover:from-green-600 hover:to-emerald-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50"
-                    >
-                      {isGeneratingDescription === index ? (
-                        <>
-                          <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin mr-1"></div>
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <SparklesIcon className="w-3 h-3 mr-1" />
-                          Generate Description
-                        </>
-                      )}
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
