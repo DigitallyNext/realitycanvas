@@ -64,7 +64,7 @@ export default function PropertySearchBar({ onSearch, className = '' }: Property
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 border border-gray-100 dark:border-gray-700 ${className}`}>
       {/* Search Type Tabs */}
-      <div className="flex mb-6">
+      {/* <div className="flex mb-6">
         <div className="flex bg-gray-100 dark:bg-gray-700 rounded-2xl p-1">
           {(['buy', 'rent'] as const).map((type) => (
             <button
@@ -80,7 +80,7 @@ export default function PropertySearchBar({ onSearch, className = '' }: Property
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Search Inputs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">

@@ -12,6 +12,7 @@ import { BrandButton } from './ui/BrandButton';
 
 const navigation = [
   { name: 'Properties', href: '/properties' },
+  { name: 'Projects', href: '/projects' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
@@ -55,13 +56,13 @@ export default function Navbar() {
           {/* Right side items */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             <ThemeToggle />
-                              <Link href="/properties/new">
+                              <Link href="/projects/new">
                     <BrandButton
                       variant="primary"
                       size="sm"
                       className="rounded-full"
                     >
-                      List your property
+                      Add Project
                     </BrandButton>
                   </Link>
             
@@ -177,13 +178,13 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                                      <Link href="/properties/new" onClick={() => setMobileMenuOpen(false)}>
+                                      <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
                         <BrandButton
                           variant="primary"
                           size="sm"
                           className="w-full rounded-full"
                         >
-                          List your property
+                          Add Project
                         </BrandButton>
                       </Link>
               </div>

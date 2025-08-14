@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { 
-  CheckCircleIcon, 
-  ArrowLeftIcon, 
-  ArrowRightIcon,
   CloudArrowUpIcon,
   PhotoIcon,
   BuildingOfficeIcon,
@@ -19,7 +16,7 @@ import {
   EyeIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
-import { CheckIcon } from '@heroicons/react/24/solid';
+import MultiStepProcess from '@/components/ui/MultiStepProcess';
 import Image from 'next/image';
 import PropertyBasicInfoEditor from '@/components/PropertyBasicInfoEditor';
 import PropertyHighlightsEditor from '@/components/PropertyHighlightsEditor';
@@ -76,50 +73,43 @@ const steps = [
     id: 'basic', 
     name: 'Basic Info', 
     description: 'Property details and location',
-    icon: HomeIcon,
-    color: 'text-blue-600'
+    icon: HomeIcon
   },
   { 
     id: 'images', 
     name: 'Photos', 
     description: 'Upload stunning property images',
-    icon: PhotoIcon,
-    color: 'text-green-600'
+    icon: PhotoIcon
   },
   { 
     id: 'features', 
     name: 'Features', 
     description: 'Highlights and amenities',
-    icon: BuildingOfficeIcon,
-    color: 'text-purple-600'
+    icon: BuildingOfficeIcon
   },
   { 
     id: 'floorplans', 
     name: 'Floor Plans', 
     description: 'Layout and pricing details',
-    icon: DocumentTextIcon,
-    color: 'text-orange-600'
+    icon: DocumentTextIcon
   },
   { 
     id: 'builder', 
     name: 'Builder', 
     description: 'Developer information',
-    icon: MapPinIcon,
-    color: 'text-red-600'
+    icon: MapPinIcon
   },
   { 
     id: 'faqs', 
     name: 'FAQs', 
     description: 'Common questions',
-    icon: QuestionMarkCircleIcon,
-    color: 'text-indigo-600'
+    icon: QuestionMarkCircleIcon
   },
   { 
     id: 'review', 
     name: 'Review', 
     description: 'Final review and publish',
-    icon: EyeIcon,
-    color: 'text-emerald-600'
+    icon: EyeIcon
   },
 ];
 
@@ -205,10 +195,10 @@ export default function ModernPropertyListingPage() {
     }
   }, [featuredImage, galleryImages, sitePlanImage]);
 
-  const isStepComplete = (stepIndex: number) => {
+  const isStepComplete = (stepIndex: number): boolean => {
     switch (stepIndex) {
       case 0: // Basic Info
-        return formData.title && formData.address && formData.price > 0;
+        return !!(formData.title && formData.address && formData.price > 0);
       case 1: // Images
         return featuredImage !== null;
       case 2: // Features
@@ -329,61 +319,111 @@ export default function ModernPropertyListingPage() {
     }
   };
 
-  const renderStepIndicator = () => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 ">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Step {currentStep + 1} of {steps.length}
-        </h2>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          {Math.round(((currentStep + 1) / steps.length) * 100)}% Complete
-        </div>
-      </div>
-      
-      {/* Progress Bar */}
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-6">
-        <div 
-          className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-        ></div>
-      </div>
-
-      {/* Step Icons */}
-      <div className="flex justify-between items-center">
-        {steps.map((step, index) => {
-          const Icon = step.icon;
-          const isActive = index === currentStep;
-          const isCompleted = index < currentStep || isStepComplete(index);
-          
-          return (
-            <div key={step.id} className="flex flex-col items-center">
-              <button
-                onClick={() => setCurrentStep(index)}
-                className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
-                  isCompleted
-                    ? 'bg-green-500 text-white shadow-lg scale-110'
-                    : isActive
-                    ? 'bg-blue-500 text-white shadow-lg scale-110'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'
-                }`}
-              >
-                {isCompleted && index !== currentStep ? (
-                  <CheckIcon className="w-5 h-5" />
-                ) : (
-                  <Icon className="w-5 h-5" />
-                )}
-              </button>
-              <span className={`text-xs text-center font-medium ${
-                isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
-              }`}>
-                {step.name}
-              </span>
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return renderBasicInfo();
+      case 1:
+        return renderImageUpload();
+      case 2:
+        return (
+          <PropertyHighlightsEditor
+            value={formData.highlights}
+            onChange={(highlights) => setFormData({ ...formData, highlights })}
+            propertyData={{
+              title: formData.title,
+              price: formData.price,
+              address: formData.address,
+              location: formData.location,
+              beds: formData.beds,
+              baths: formData.baths,
+              area: formData.area
+            }}
+          />
+        );
+      case 3:
+        return (
+          <PropertyFloorPlansEditor
+            value={formData.floorPlans}
+            onChange={(floorPlans) => setFormData({ ...formData, floorPlans })}
+          />
+        );
+      case 4:
+        return (
+          <div className="space-y-8">
+            <PropertyBuilderEditor
+              builderName={formData.builderName}
+              builderLogo={formData.builderLogo}
+              builderDescription={formData.builderDescription}
+              onBuilderNameChange={(builderName) => setFormData({ ...formData, builderName })}
+              onBuilderLogoChange={(builderLogo) => setFormData({ ...formData, builderLogo })}
+              onBuilderDescriptionChange={(builderDescription) => setFormData({ ...formData, builderDescription })}
+            />
+            <PropertySitePlanEditor
+              sitePlanTitle={formData.sitePlanTitle}
+              sitePlanDescription={formData.sitePlanDescription}
+              sitePlanImage={formData.sitePlanImage}
+              onTitleChange={(sitePlanTitle) => setFormData({ ...formData, sitePlanTitle })}
+              onDescriptionChange={(sitePlanDescription) => setFormData({ ...formData, sitePlanDescription })}
+              onImageChange={(sitePlanImage) => setFormData({ ...formData, sitePlanImage })}
+            />
+          </div>
+        );
+      case 5:
+        return (
+          <PropertyFAQEditor
+            value={formData.faqs}
+            onChange={(faqs) => setFormData({ ...formData, faqs })}
+          />
+        );
+      case 6:
+        return (
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Review Your Listing</h3>
+              <p className="text-gray-600 dark:text-gray-300">Please review all information before publishing your property.</p>
             </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Property Title</h4>
+                <p className="text-gray-600 dark:text-gray-300">{formData.title || 'Not provided'}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Price</h4>
+                <p className="text-2xl font-bold text-blue-600">₹{formData.price.toLocaleString('en-IN')}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Location</h4>
+                <p className="text-gray-600 dark:text-gray-300">{formData.address || 'Not provided'}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Property Details</h4>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {formData.beds} beds • {formData.baths} baths • {formData.area} sq ft
+                </p>
+              </div>
+            </div>
+            
+            {featuredImagePreview && (
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Featured Image</h4>
+                <Image
+                  src={featuredImagePreview}
+                  alt="Featured preview"
+                  width={300}
+                  height={200}
+                  className="rounded-lg shadow-md"
+                />
+              </div>
+            )}
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+
 
   const renderImageUpload = () => (
     <div className="space-y-8">
@@ -569,216 +609,22 @@ export default function ModernPropertyListingPage() {
     </div>
   );
 
-  const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 0:
-        return renderBasicInfo();
-      case 1:
-        return renderImageUpload();
-      case 2:
-        return (
-          <PropertyHighlightsEditor
-            value={formData.highlights}
-            onChange={(highlights) => setFormData({ ...formData, highlights })}
-            propertyData={{
-              title: formData.title,
-              price: formData.price,
-              address: formData.address,
-              location: formData.location,
-              beds: formData.beds,
-              baths: formData.baths,
-              area: formData.area
-            }}
-          />
-        );
-      case 3:
-        return (
-          <PropertyFloorPlansEditor
-            value={formData.floorPlans}
-            onChange={(floorPlans) => setFormData({ ...formData, floorPlans })}
-          />
-        );
-      case 4:
-        return (
-          <div className="space-y-8">
-            <PropertyBuilderEditor
-              builderName={formData.builderName}
-              builderLogo={formData.builderLogo}
-              builderDescription={formData.builderDescription}
-              onBuilderNameChange={(builderName) => setFormData({ ...formData, builderName })}
-              onBuilderLogoChange={(builderLogo) => setFormData({ ...formData, builderLogo })}
-              onBuilderDescriptionChange={(builderDescription) => setFormData({ ...formData, builderDescription })}
-            />
-            <PropertySitePlanEditor
-              sitePlanTitle={formData.sitePlanTitle}
-              sitePlanDescription={formData.sitePlanDescription}
-              sitePlanImage={formData.sitePlanImage}
-              onTitleChange={(sitePlanTitle) => setFormData({ ...formData, sitePlanTitle })}
-              onDescriptionChange={(sitePlanDescription) => setFormData({ ...formData, sitePlanDescription })}
-              onImageChange={(sitePlanImage) => setFormData({ ...formData, sitePlanImage })}
-            />
-          </div>
-        );
-      case 5:
-        return (
-          <PropertyFAQEditor
-            value={formData.faqs}
-            onChange={(faqs) => setFormData({ ...formData, faqs })}
-          />
-        );
-      case 6:
-        return (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Review Your Listing</h3>
-            <div className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Property Title</h4>
-                  <p className="text-gray-600 dark:text-gray-300">{formData.title || 'Not provided'}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Price</h4>
-                  <p className="text-2xl font-bold text-blue-600">₹{formData.price.toLocaleString('en-IN')}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Location</h4>
-                  <p className="text-gray-600 dark:text-gray-300">{formData.address || 'Not provided'}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Property Details</h4>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    {formData.beds} beds • {formData.baths} baths • {formData.area} sq ft
-                  </p>
-                </div>
-              </div>
-              
-              {featuredImagePreview && (
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Featured Image</h4>
-                  <Image
-                    src={featuredImagePreview}
-                    alt="Featured preview"
-                    width={300}
-                    height={200}
-                    className="rounded-lg shadow-md"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-24">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              List Your Property
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-2">
-              Create a stunning listing that attracts the right buyers
-            </p>
-          </div>
-          <Link
-            href="/properties"
-            className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-          >
-            <ArrowLeftIcon className="w-5 h-5 mr-2" />
-            Back to Properties
-          </Link>
-        </div>
-      </div>
-
-      <div className="max-w-7xl flex items-center justify-center flex-col mx-auto px-4 sm:px-6 lg:px-8  gap-8">
-        <div className="">
-          {/* Sidebar */}
-          <div className="lg:col-span-1 mb-6">
-            {renderStepIndicator()}
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              {/* Step Header */}
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
-                <div className="flex items-center">
-                  {(() => {
-                    const Icon = steps[currentStep].icon;
-                    return <Icon className="w-8 h-8 mr-4" />;
-                  })()}
-                  <div>
-                    <h2 className="text-2xl font-bold">{steps[currentStep].name}</h2>
-                    <p className="opacity-90">{steps[currentStep].description}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Step Content */}
-              <div className="p-8">
-                {renderCurrentStep()}
-              </div>
-
-              {/* Navigation */}
-              <div className="bg-gray-50 dark:bg-gray-700 px-8 py-6 flex justify-between items-center border-t border-gray-200 dark:border-gray-600">
-                <button
-                  onClick={prevStep}
-                  disabled={currentStep === 0}
-                  className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all ${
-                    currentStep === 0
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-400 dark:hover:bg-gray-500'
-                  }`}
-                >
-                  <ArrowLeftIcon className="w-5 h-5 mr-2" />
-                  Previous
-                </button>
-
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Step {currentStep + 1} of {steps.length}
-                </div>
-
-                {currentStep === steps.length - 1 ? (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className={`flex items-center px-8 py-3 rounded-xl font-medium transition-all ${
-                      isSubmitting
-                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transform hover:scale-105'
-                    }`}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                        Publishing...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircleIcon className="w-5 h-5 mr-2" />
-                        Publish Property
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button
-                    onClick={nextStep}
-                    className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-                  >
-                    Next
-                    <ArrowRightIcon className="w-5 h-5 ml-2" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <MultiStepProcess
+      steps={steps}
+      currentStep={currentStep}
+      onStepChange={setCurrentStep}
+      onNext={nextStep}
+      onPrevious={prevStep}
+      onSubmit={handleSubmit}
+      isStepComplete={isStepComplete}
+      isSubmitting={isSubmitting}
+      finalButtonText="Publish Property"
+      className="pt-16"
+    >
+      {renderStepContent()}
+    </MultiStepProcess>
   );
 }

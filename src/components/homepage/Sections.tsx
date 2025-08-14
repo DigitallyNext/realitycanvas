@@ -57,9 +57,9 @@ const Sections = ({ properties, loading }: { properties: any[], loading: boolean
       </section>
 
       {/* Upcoming Projects Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+      {/* <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900"> */}
+        {/* <div className="container mx-auto px-4 sm:px-6 lg:px-8"> */}
+          {/* <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               Upcoming
               <span className="bg-gradient-to-r from-brand-primary to-brand-primary bg-clip-text text-transparent"> Projects</span>
@@ -67,11 +67,11 @@ const Sections = ({ properties, loading }: { properties: any[], loading: boolean
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Be the first to know about exciting new projects launching soon
             </p>
-          </div>
+          </div> */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> */}
             {/* Project 1 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
+            {/* <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
               <div className="relative h-48">
                 <Image 
                   src="https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg" 
@@ -108,10 +108,10 @@ const Sections = ({ properties, loading }: { properties: any[], loading: boolean
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Project 2 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
+            {/* <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
               <div className="relative h-48">
                 <Image 
                   src="https://images.pexels.com/photos/2387869/pexels-photo-2387869.jpeg" 
@@ -148,10 +148,10 @@ const Sections = ({ properties, loading }: { properties: any[], loading: boolean
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Project 3 */}
-            <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
+            {/* <div className="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300">
               <div className="relative h-48">
                 <Image 
                   src="https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg" 
@@ -188,10 +188,10 @@ const Sections = ({ properties, loading }: { properties: any[], loading: boolean
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            </div> */}
+          {/* </div> */}
+        {/* </div> */}
+      {/* </section> */}
 
       {/* Luxury For You Section */}
       <section className="py-20 bg-white dark:bg-gray-900">
