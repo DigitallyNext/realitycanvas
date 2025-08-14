@@ -24,6 +24,7 @@ import PropertyBuilder from '@/components/property/PropertyBuilder';
 import PropertyFAQ from '@/components/property/PropertyFAQ';
 import PropertySitePlan from '@/components/property/PropertySitePlan';
 import RelatedProperties from '@/components/RelatedProperties';
+import PropertyFloorPlans from '@/components/PropertyFloorPlans';
 import PropertyFloorPlansDisplay from './PropertyFloorPlansDisplay';
 import PropertyPricingDisplay from './PropertyPricingDisplay';
 import PropertyLocationDisplay from './PropertyLocationDisplay';
