@@ -91,16 +91,18 @@ export default function PropertyHighlightsEditor({ value, onChange, label = "Pro
         
         // Convert the React Icon component to a string representation for storage
         // We'll store the name of the icon in the format 'md:house' or 'fa:home'
-        const iconName = IconComponent.displayName || '';
-        let iconString = '';
+        let iconString = 'md:house'; // Default icon
         
-        if (iconName.startsWith('Md')) {
-          iconString = `md:${iconName.slice(2).toLowerCase()}`;
-        } else if (iconName.startsWith('Fa')) {
-          iconString = `fa:${iconName.slice(2).toLowerCase()}`;
-        } else {
-          // Fallback to a default icon
-          iconString = 'md:house';
+        // Check if IconComponent is a valid icon
+        if (IconComponent) {
+          // Get the name from the function name or toString() representation
+          const iconName = IconComponent.name || IconComponent.toString();
+          
+          if (iconName.includes('Md')) {
+            iconString = `md:${iconName.replace(/^Md/, '').toLowerCase()}`;
+          } else if (iconName.includes('Fa')) {
+            iconString = `fa:${iconName.replace(/^Fa/, '').toLowerCase()}`;
+          }
         }
         
         updateHighlight(index, 'icon', iconString);

@@ -27,13 +27,13 @@ export default function PropertySitePlanDisplay({ sitePlanData, className = '' }
     return null;
   }
 
-  const amenitiesByCategory = (sitePlanData.amenities || []).reduce((acc, amenity) => {
+  const amenitiesByCategory = (sitePlanData.amenities || []).reduce<Record<string, Array<{name: string; category: string; details?: string}>>>((acc, amenity) => {
     if (!acc[amenity.category]) {
       acc[amenity.category] = [];
     }
     acc[amenity.category].push(amenity);
     return acc;
-  }, {} as Record<string, typeof sitePlanData.amenities>);
+  }, {});
 
   return (
     <div className={`${className}`}>

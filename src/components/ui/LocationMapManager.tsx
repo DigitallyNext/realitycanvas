@@ -90,11 +90,12 @@ export default function LocationMapManager({ value, onChange, className = '' }: 
   };
 
   const updateCoordinates = (field: 'latitude' | 'longitude', value: string) => {
+    const parsedValue = parseFloat(value) || 0;
     const updated = {
       ...locationData,
       coordinates: {
-        ...locationData.coordinates,
-        [field]: parseFloat(value) || 0
+        latitude: field === 'latitude' ? parsedValue : (locationData.coordinates?.latitude || 0),
+        longitude: field === 'longitude' ? parsedValue : (locationData.coordinates?.longitude || 0)
       }
     };
     setLocationData(updated);
