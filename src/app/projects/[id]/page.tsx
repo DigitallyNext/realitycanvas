@@ -433,7 +433,7 @@ export default function ProjectDetailPage() {
                       : project.category.replace("_", " ")}
                   </div>
                 </div>
-                <div className="text-center">
+                {/* <div className="text-center">
                   <HomeIcon className="w-8 h-8 text-green-500 mx-auto mb-2" />
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     Area
@@ -444,7 +444,7 @@ export default function ProjectDetailPage() {
                       .toLocaleString()}{" "}
                     sq ft
                   </div>
-                </div>
+                </div> */}
                 <div className="text-center">
                   <CalendarIcon className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                   <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -454,7 +454,7 @@ export default function ProjectDetailPage() {
                     4/8/2025
                   </div>
                 </div>
-                <div className="text-center">
+                {/* <div className="text-center">
                   <EyeIcon className="w-8 h-8 text-orange-500 mx-auto mb-2" />
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     Views
@@ -462,7 +462,7 @@ export default function ProjectDetailPage() {
                   <div className="font-semibold text-green-600">
                     116 this week
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -644,9 +644,12 @@ export default function ProjectDetailPage() {
                       key={amenity.id}
                       className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl"
                     >
+                       {/* <EyeIcon className="text-gray-500 dark:text-gray-400 text-[1vw]" /> */}
                       {amenity.icon && (
                         <span className="text-2xl">{amenity.icon}</span>
                       )}
+                     
+
                       <div>
                         <div className="font-semibold text-gray-900 dark:text-white">
                           {amenity.name}
@@ -667,7 +670,7 @@ export default function ProjectDetailPage() {
             )}
 
             {/* Anchor Tenants Section */}
-            {project.anchors && project.anchors.length > 0 ? (
+            {/* {project.anchors && project.anchors.length > 0 ? (
               <div
                 ref={anchorsRef}
                 className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
@@ -745,7 +748,7 @@ export default function ProjectDetailPage() {
                   </p>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Location & Nearby Points Section */}
             <div
@@ -1124,12 +1127,12 @@ export default function ProjectDetailPage() {
                       </div>
                       <div className="text-sm text-gray-500">Available</div>
                     </div>
-                    <div>
+                    {/* <div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
                         {project.units.reduce((total, unit) => total + unit.areaSqFt, 0).toLocaleString()}
                       </div>
                       <div className="text-sm text-gray-500">Total Area (sq ft)</div>
-                    </div>
+                    </div> */}
                     <div>
                       <div className="text-2xl font-bold text-purple-600">
                         {project.amenities.length}
@@ -1330,12 +1333,23 @@ export default function ProjectDetailPage() {
                 rows={4}
                 className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
               />
-              <button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg"
-              >
-                Send Message
-              </button>
+              <div className="flex flex-col space-y-3">
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg"
+                >
+                  Send Message
+                </button>
+                <a
+                  href="tel:9910007801"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center flex items-center justify-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
+                  Call Now: 9910007801
+                </a>
+              </div>
             </form>
           </div>
         </div>

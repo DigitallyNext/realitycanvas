@@ -145,7 +145,7 @@ function UnifiedProjectFormContent() {
 
   // Units to be added
   const [units, setUnits] = useState([
-    { unitNumber: '', type: 'RETAIL', floor: 'GF', areaSqFt: '', ratePsf: '', priceTotal: '' }
+    { unitNumber: '', type: 'RETAIL', floor: 'GF', areaSqFt: '' }
   ]);
 
   // Highlights, amenities, anchors, FAQs
@@ -243,9 +243,7 @@ function UnifiedProjectFormContent() {
           unitNumber: u.unitNumber || '',
           type: u.type || 'RETAIL',
           floor: u.floor || 'GF',
-          areaSqFt: u.areaSqFt?.toString() || '',
-          ratePsf: u.ratePsf?.toString() || '',
-          priceTotal: u.priceTotal?.toString() || ''
+          areaSqFt: u.areaSqFt?.toString() || ''
         })));
       }
 
@@ -315,7 +313,7 @@ function UnifiedProjectFormContent() {
       case 3: // Features
         return highlights.some(h => h.label) || amenities.some(a => a.name);
       case 4: // Units
-        return units.some(u => u.unitNumber?.trim() && u.areaSqFt?.trim());
+        return units.some(u => u.unitNumber?.trim());
       case 5: // Floor Plans
         return true; // Optional step
       case 6: // Pricing
@@ -359,7 +357,7 @@ function UnifiedProjectFormContent() {
   };
 
   const addUnit = () => {
-    setUnits([...units, { unitNumber: '', type: 'RETAIL', floor: 'GF', areaSqFt: '', ratePsf: '', priceTotal: '' }]);
+    setUnits([...units, { unitNumber: '', type: 'RETAIL', floor: 'GF', areaSqFt: '' }]);
   };
 
   const updateUnit = (index: number, field: string, value: string) => {
@@ -547,9 +545,7 @@ function UnifiedProjectFormContent() {
           unitNumber: u.unitNumber || '',
           type: u.type || 'RETAIL',
           floor: u.floor || 'GF',
-          areaSqFt: u.areaSqFt?.toString() || '',
-          ratePsf: u.ratePsf?.toString() || '',
-          priceTotal: u.priceTotal?.toString() || ''
+          areaSqFt: u.areaSqFt?.toString() || ''
         }));
         setUnits(mappedUnits);
         console.log('Imported units:', mappedUnits);
@@ -743,13 +739,11 @@ function UnifiedProjectFormContent() {
           })),
           documents: [],
           configurations: [],
-          units: units.filter(u => u.unitNumber?.trim() && u.areaSqFt?.trim()).map(u => ({
+          units: units.filter(u => u.unitNumber?.trim()).map(u => ({
             unitNumber: u.unitNumber,
             type: u.type,
-            floor: u.floor,
-            areaSqFt: parseInt(u.areaSqFt) || 0,
-            ratePsf: u.ratePsf && u.ratePsf.trim() ? parseFloat(u.ratePsf) : null,
-            priceTotal: u.priceTotal && u.priceTotal.trim() ? parseInt(u.priceTotal) : null,
+            floor: u.floor || 'N/A',
+            areaSqFt: u.areaSqFt && u.areaSqFt.trim() && u.areaSqFt.toLowerCase() !== 'n/a' ? u.areaSqFt.trim() : '0',
             availability: 'AVAILABLE'
           })),
           anchors: getProjectCategory() !== 'RESIDENTIAL' ? anchors.filter(a => a.name).map(a => ({
@@ -757,7 +751,7 @@ function UnifiedProjectFormContent() {
             category: a.category,
             status: 'PLANNED',
             floor: a.floor,
-            areaSqFt: a.areaSqFt ? parseInt(a.areaSqFt) : null
+            areaSqFt: a.areaSqFt && a.areaSqFt.trim() ? a.areaSqFt.trim() : null
           })) : [],
           pricingTable: pricingTable,
           construction: [],
@@ -903,14 +897,12 @@ function UnifiedProjectFormContent() {
         projectResult = await projectRes.json();
 
       // Add units
-      for (const unit of units.filter(u => u.unitNumber?.trim() && u.areaSqFt?.trim())) {
+      for (const unit of units.filter(u => u.unitNumber?.trim())) {
         const unitPayload = {
           unitNumber: unit.unitNumber,
           type: unit.type,
-          floor: unit.floor,
-          areaSqFt: parseInt(unit.areaSqFt) || 0,
-          ratePsf: unit.ratePsf && unit.ratePsf.trim() ? parseFloat(unit.ratePsf) : undefined,
-          priceTotal: unit.priceTotal && unit.priceTotal.trim() ? parseInt(unit.priceTotal) : undefined,
+          floor: unit.floor || 'N/A',
+          areaSqFt: unit.areaSqFt && unit.areaSqFt.trim() && unit.areaSqFt.toLowerCase() !== 'n/a' ? unit.areaSqFt.trim() : '0',
         };
 
           await fetch(`/api/projects/${projectResult.id}/units`, {
@@ -958,7 +950,7 @@ function UnifiedProjectFormContent() {
               name: anchor.name,
               category: anchor.category,
               floor: anchor.floor,
-              areaSqFt: anchor.areaSqFt ? parseInt(anchor.areaSqFt) : null,
+              areaSqFt: anchor.areaSqFt && anchor.areaSqFt.trim() ? anchor.areaSqFt.trim() : null,
             }),
           });
           }
@@ -1534,17 +1526,27 @@ function UnifiedProjectFormContent() {
       case 4: // Units
         return (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-10 flex-col">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Units/Inventory</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Unit types and pricing information</p>
+                {/* <p className="text-sm text-gray-600 dark:text-gray-400">Unit types and pricing information</p> */}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-10">
                 <SectionJsonManager
                   sectionName="Units"
                   data={units}
                   onImport={(data) => {
-                    setUnits(Array.isArray(data) ? data : [data]);
+                    // Ensure proper data format with string values
+                    const formattedUnits = Array.isArray(data) ? data : [data];
+                    const processedUnits = formattedUnits.map(unit => ({
+                      unitNumber: unit.unitNumber || '',
+                      type: unit.type || 'RETAIL',
+                      floor: unit.floor || 'GF',
+                      areaSqFt: unit.areaSqFt?.toString() || '',
+                      ratePsf: unit.ratePsf?.toString() || '',
+                      priceTotal: unit.priceTotal?.toString() || ''
+                    }));
+                    setUnits(processedUnits);
                   }}
                   sampleData={getSampleDataBySection('units')}
                 />
@@ -1556,9 +1558,24 @@ function UnifiedProjectFormContent() {
               Add Unit
             </button>
           </div>
+            
+            {/* Helpful info box */}
+            {/* <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                💡 Units Input Tips
+              </h4>
+              <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                <li>• <strong>Unit Number is required</strong> - All other fields are optional</li>
+                <li>• Area can be a single value (e.g., "1200") or range (e.g., "1200-2700")</li>
+                <li>• For unknown values, use "N/A" or "0"</li>
+                <li>• Floor examples: "Ground Floor", "1st Floor", "3rd & 4th Floor"</li>
+                <li>• Sample data shows real project structure for reference</li>
+              </ul>
+            </div> */}
+            
             <div className="space-y-4">
           {units.map((unit, index) => (
-                <div key={index} className="grid grid-cols-2 md:grid-cols-7 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                <div key={index} className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               <input
                 placeholder="Unit #"
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
@@ -1586,31 +1603,16 @@ function UnifiedProjectFormContent() {
                 </optgroup>
               </select>
               <input
-                placeholder="Floor"
+                placeholder="Floor (e.g., Ground Floor, 1st Floor)"
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                 value={unit.floor}
                 onChange={e => updateUnit(index, 'floor', e.target.value)}
               />
               <input
-                placeholder="Area (sq ft)"
-                type="number"
+                placeholder="Area (e.g., 1200 or 1200-2700)"
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                 value={unit.areaSqFt}
                 onChange={e => updateUnit(index, 'areaSqFt', e.target.value)}
-              />
-              <input
-                placeholder="Rate/sq ft"
-                type="number"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                value={unit.ratePsf}
-                onChange={e => updateUnit(index, 'ratePsf', e.target.value)}
-              />
-              <input
-                placeholder="Total Price"
-                type="number"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                value={unit.priceTotal}
-                onChange={e => updateUnit(index, 'priceTotal', e.target.value)}
               />
               <button
                 type="button"
@@ -1641,7 +1643,16 @@ function UnifiedProjectFormContent() {
                   sectionName="Anchors"
                   data={anchors}
                   onImport={(data) => {
-                    setAnchors(Array.isArray(data) ? data : [data]);
+                    // Ensure proper data format with string values
+                    const formattedAnchors = Array.isArray(data) ? data : [data];
+                    const processedAnchors = formattedAnchors.map(anchor => ({
+                      name: anchor.name || '',
+                      category: anchor.category || 'Fashion',
+                      floor: anchor.floor || 'GF',
+                      areaSqFt: anchor.areaSqFt?.toString() || '',
+                      icon: anchor.icon || ''
+                    }));
+                    setAnchors(processedAnchors);
                   }}
                   sampleData={getSampleDataBySection('anchors')}
                 />
@@ -1681,8 +1692,7 @@ function UnifiedProjectFormContent() {
                     onChange={e => updateAnchor(index, 'floor', e.target.value)}
               />
               <input
-                    placeholder="Area (sq ft)"
-                    type="number"
+                    placeholder="Area (e.g., 1200 or 1200-2700)"
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                     value={anchor.areaSqFt}
                     onChange={e => updateAnchor(index, 'areaSqFt', e.target.value)}

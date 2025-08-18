@@ -300,7 +300,7 @@ model Unit {
   unitNumber       String
   type             UnitType
   floor            String          // "GF","L1","L2","Office","Multiplex"
-  areaSqFt         Int
+  areaSqFt         String          // Can be single value (1200) or range (1200-2700)
   frontageFt       Float?
   ceilingHeightFt  Float?
   fitOutStatus     FitOutStatus?
@@ -328,7 +328,7 @@ model AnchorTenant {
   category  String       // Fashion, Hypermarket, Electronics, Cinema
   status    AnchorStatus @default(PLANNED)
   floor     String?
-  areaSqFt  Int?
+  areaSqFt  String?         // Can be single value (1200) or range (1200-2700)
   project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 

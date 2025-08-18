@@ -31,10 +31,12 @@ export const sampleAmenities = [
 ];
 
 export const sampleUnits = [
-  { unitNumber: "G-001", type: "RETAIL", floor: "Ground Floor", areaSqFt: 800, ratePsf: 15000, priceTotal: 12000000, availability: "AVAILABLE" },
-  { unitNumber: "G-002", type: "RETAIL", floor: "Ground Floor", areaSqFt: 1200, ratePsf: 15000, priceTotal: 18000000, availability: "AVAILABLE" },
-  { unitNumber: "F1-001", type: "OFFICE", floor: "First Floor", areaSqFt: 1500, ratePsf: 12000, priceTotal: 18000000, availability: "HOLD" },
-  { unitNumber: "F2-001", type: "OFFICE", floor: "Second Floor", areaSqFt: 2000, ratePsf: 10000, priceTotal: 20000000, availability: "AVAILABLE" }
+  { unitNumber: "LG-001", type: "ANCHOR", floor: "Lower Ground", areaSqFt: "300-600" },
+  { unitNumber: "G-001", type: "RETAIL", floor: "Ground Floor", areaSqFt: "1200-2700" },
+  { unitNumber: "F1-001", type: "RETAIL", floor: "1st Floor", areaSqFt: "700-1500" },
+  { unitNumber: "F2-001", type: "RETAIL", floor: "2nd Floor", areaSqFt: "700-1500" },
+  { unitNumber: "F3-001", type: "FOOD_COURT", floor: "3rd & 4th Floor", areaSqFt: "700-1500" },
+  { unitNumber: "F3-002", type: "MULTIPLEX", floor: "3rd & 4th Floor", areaSqFt: "9000-12500" }
 ];
 
 export const sampleFloorPlans = [
@@ -50,9 +52,9 @@ export const samplePricingTable = [
 ];
 
 export const sampleAnchors = [
-  { name: "McDonald's", category: "FOOD_BEVERAGE", floor: "Ground Floor", areaSqFt: 1200, status: "CONFIRMED", icon: "🍟" },
-  { name: "Starbucks", category: "FOOD_BEVERAGE", floor: "Ground Floor", areaSqFt: 800, status: "OPERATING", icon: "☕" },
-  { name: "Tech Corp India", category: "CORPORATE", floor: "Second Floor", areaSqFt: 3000, status: "CONFIRMED", icon: "💻" }
+  { name: "McDonald's", category: "F&B", floor: "Ground Floor", areaSqFt: "1200", icon: "" },
+  { name: "Starbucks", category: "F&B", floor: "Ground Floor", areaSqFt: "800", icon: "" },
+  { name: "Tech Corp India", category: "Fashion", floor: "Second Floor", areaSqFt: "3000", icon: "" }
 ];
 
 export const sampleNearbyPoints = [

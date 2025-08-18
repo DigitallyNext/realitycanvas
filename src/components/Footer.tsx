@@ -196,8 +196,8 @@ const Footer = () => {
                    </svg>
                  </div>
                  <div>
-                   <p className="text-gray-300">123 Connaught Place</p>
-                   <p className="text-gray-300">New Delhi, 110001</p>
+                   <p className="text-gray-300">Realty Canvas 1st Floor, Landmark Cyber Park, Sector 67, Gurugram (122102)</p>
+                 
                  </div>
                </div>
  
@@ -218,8 +218,8 @@ const Footer = () => {
                    </svg>
                  </div>
                  <div>
-                   <p className="text-gray-300">+91 98765 43210</p>
-                   <p className="text-gray-300">+91 11 2345 6789</p>
+                   <p className="text-gray-300">+91 9910007801</p>
+                   {/* <p className="text-gray-300">+91 11 2345 6789</p> */}
                  </div>
                </div>
  
@@ -240,8 +240,8 @@ const Footer = () => {
                    </svg>
                  </div>
                  <div>
-                   <p className="text-gray-300">info@realitycanvas.com</p>
-                   <p className="text-gray-300">support@realitycanvas.com</p>
+             
+                   <p className="text-gray-300">sales@realtycanvas.in</p>
                  </div>
                </div>
              </div>

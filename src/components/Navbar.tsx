@@ -56,15 +56,24 @@ export default function Navbar() {
           {/* Right side items */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             <ThemeToggle />
-                              <Link href="/projects/new">
-                    <BrandButton
-                      variant="primary"
-                      size="sm"
-                      className="rounded-full"
-                    >
-                      Add Project
-                    </BrandButton>
-                  </Link>
+            <a
+              href="tel:9910007801"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              Call Now
+            </a>
+            <Link href="/projects/new">
+              <BrandButton
+                variant="primary"
+                size="sm"
+                className="rounded-full"
+              >
+                Add Project
+              </BrandButton>
+            </Link>
             
             {/* Profile Menu */}
             <Menu as="div" className="relative">
@@ -178,16 +187,26 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                                      <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
-                        <BrandButton
-                          variant="primary"
-                          size="sm"
-                          className="w-full rounded-full"
-                        >
-                          Add Project
-                        </BrandButton>
-                      </Link>
-              </div>
+                  <a
+                    href="tel:9910007801"
+                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                    </svg>
+                    Call Now: 9910007801
+                  </a>
+                  <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
+                    <BrandButton
+                      variant="primary"
+                      size="sm"
+                      className="w-full rounded-full"
+                    >
+                      Add Project
+                    </BrandButton>
+                  </Link>
+                </div>
               <div className="px-3 py-2 border-t border-gray-200 dark:border-secondary-700">
                 <Link
                   href="/profile"

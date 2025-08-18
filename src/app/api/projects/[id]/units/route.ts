@@ -42,7 +42,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       configurationId,
     } = body || {};
 
-    if (!unitNumber || !type || !floor || typeof areaSqFt !== 'number') {
+    if (!unitNumber || !type || !floor || !areaSqFt) {
       return NextResponse.json({ error: 'Missing required fields (unitNumber, type, floor, areaSqFt)' }, { status: 400 });
     }
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         unitNumber,
         type,
         floor,
-        areaSqFt,
+        areaSqFt: areaSqFt.toString(),
         frontageFt: typeof frontageFt === 'number' ? frontageFt : null,
         ceilingHeightFt: typeof ceilingHeightFt === 'number' ? ceilingHeightFt : null,
         fitOutStatus: fitOutStatus || null,
