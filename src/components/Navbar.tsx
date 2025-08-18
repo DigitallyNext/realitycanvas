@@ -22,76 +22,85 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { actualTheme } = useTheme();
   
-  const callNowButtonRef = useRef(null);
-  const hotlineButtonRef = useRef(null);
-  const mobileCallNowButtonRef = useRef(null);
-  const mobileHotlineButtonRef = useRef(null);
+  const callNowButtonRef = useRef<HTMLAnchorElement | null>(null);
+  const hotlineButtonRef = useRef<HTMLAnchorElement | null>(null);
+  const mobileCallNowButtonRef = useRef<HTMLAnchorElement | null>(null);
+  const mobileHotlineButtonRef = useRef<HTMLAnchorElement | null>(null);
 
   // GSAP animation for button bounce effect
   useEffect(() => {
+    // Define event handlers
+    const handleCallNowButtonHover = () => {
+      gsap.to(callNowButtonRef.current, {
+        y: -5,
+        duration: 0.3,
+        repeat: 1,
+        yoyo: true,
+        ease: "power1.inOut"
+      });
+    };
+
+    const handleHotlineButtonHover = () => {
+      gsap.to(hotlineButtonRef.current, {
+        y: -5,
+        duration: 0.3,
+        repeat: 1,
+        yoyo: true,
+        ease: "power1.inOut"
+      });
+    };
+
+    const handleMobileCallNowButtonHover = () => {
+      gsap.to(mobileCallNowButtonRef.current, {
+        y: -5,
+        duration: 0.3,
+        repeat: 1,
+        yoyo: true,
+        ease: "power1.inOut"
+      });
+    };
+
+    const handleMobileHotlineButtonHover = () => {
+      gsap.to(mobileHotlineButtonRef.current, {
+        y: -5,
+        duration: 0.3,
+        repeat: 1,
+        yoyo: true,
+        ease: "power1.inOut"
+      });
+    };
+    
     // Setup hover animations for desktop buttons
     if (callNowButtonRef.current) {
-      callNowButtonRef.current.addEventListener('mouseenter', () => {
-        gsap.to(callNowButtonRef.current, {
-          y: -5,
-          duration: 0.3,
-          repeat: 1,
-          yoyo: true,
-          ease: "power1.inOut"
-        });
-      });
+      callNowButtonRef.current.addEventListener('mouseenter', handleCallNowButtonHover);
     }
     
     if (hotlineButtonRef.current) {
-      hotlineButtonRef.current.addEventListener('mouseenter', () => {
-        gsap.to(hotlineButtonRef.current, {
-          y: -5,
-          duration: 0.3,
-          repeat: 1,
-          yoyo: true,
-          ease: "power1.inOut"
-        });
-      });
+      hotlineButtonRef.current.addEventListener('mouseenter', handleHotlineButtonHover);
     }
     
     // Setup hover animations for mobile buttons
     if (mobileCallNowButtonRef.current) {
-      mobileCallNowButtonRef.current.addEventListener('mouseenter', () => {
-        gsap.to(mobileCallNowButtonRef.current, {
-          y: -5,
-          duration: 0.3,
-          repeat: 1,
-          yoyo: true,
-          ease: "power1.inOut"
-        });
-      });
+      mobileCallNowButtonRef.current.addEventListener('mouseenter', handleMobileCallNowButtonHover);
     }
     
     if (mobileHotlineButtonRef.current) {
-      mobileHotlineButtonRef.current.addEventListener('mouseenter', () => {
-        gsap.to(mobileHotlineButtonRef.current, {
-          y: -5,
-          duration: 0.3,
-          repeat: 1,
-          yoyo: true,
-          ease: "power1.inOut"
-        });
-      });
+      mobileHotlineButtonRef.current.addEventListener('mouseenter', handleMobileHotlineButtonHover);
     }
     
     // Cleanup event listeners on component unmount
     return () => {
       if (callNowButtonRef.current) {
-        callNowButtonRef.current.removeEventListener('mouseenter', () => {});
+        callNowButtonRef.current.removeEventListener('mouseenter', handleCallNowButtonHover);
       }
       if (hotlineButtonRef.current) {
-        hotlineButtonRef.current.removeEventListener('mouseenter', () => {});
+        hotlineButtonRef.current.removeEventListener('mouseenter', handleHotlineButtonHover);
       }
       if (mobileCallNowButtonRef.current) {
-        mobileCallNowButtonRef.current.removeEventListener('mouseenter', () => {});
+        mobileCallNowButtonRef.current.removeEventListener('mouseenter', handleMobileCallNowButtonHover);
       }
       if (mobileHotlineButtonRef.current) {
-        mobileHotlineButtonRef.current.removeEventListener('mouseenter', () => {});
+        mobileHotlineButtonRef.current.removeEventListener('mouseenter', handleMobileHotlineButtonHover);
       }
     };
   }, []);
@@ -131,26 +140,26 @@ export default function Navbar() {
           {/* Right side items */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             <ThemeToggle />
-            <a
-              ref={callNowButtonRef}
+            <Link 
               href="tel:9910007801"
+              ref={callNowButtonRef}
               className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
               Call Now
-            </a>
-            <a
-              ref={hotlineButtonRef}
+            </Link>
+            <Link 
               href="tel:9910007801"
+              ref={hotlineButtonRef}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
               </svg>
               9910007801
-            </a>
+            </Link>
             <Link href="/projects/new">
               <BrandButton
                 variant="primary"
@@ -273,9 +282,9 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                  <a
-                    ref={mobileCallNowButtonRef}
+                  <Link
                     href="tel:9910007801"
+                    ref={mobileCallNowButtonRef}
                     className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -283,10 +292,10 @@ export default function Navbar() {
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                     </svg>
                     Call Now: 9910007801
-                  </a>
-                  <a
-                    ref={mobileHotlineButtonRef}
+                  </Link>
+                  <Link 
                     href="tel:9910007801"
+                    ref={mobileHotlineButtonRef}
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -294,7 +303,7 @@ export default function Navbar() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                     </svg>
                     9910007801
-                  </a>
+                  </Link>
                   <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
                     <BrandButton
                       variant="primary"
