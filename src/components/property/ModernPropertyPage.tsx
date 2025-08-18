@@ -364,13 +364,13 @@ export default function ModernPropertyPage({ property }: ModernPropertyPageProps
                               faq && faq.question && faq.answer && 
                               faq.question.trim() !== '' && faq.answer.trim() !== ''
                             );
-                            return validFaqs.length > 0 ? validFaqs : null;
+                            return validFaqs.length > 0 ? validFaqs : [];
                           }
                           
-                          return null;
+                          return [];
                         } catch (error) {
                           console.error('Error parsing faqs:', error);
-                          return null;
+                          return [];
                         }
                       })()}
                       title="Frequently Asked Questions"
