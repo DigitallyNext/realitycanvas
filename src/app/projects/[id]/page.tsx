@@ -779,7 +779,7 @@ export default function ProjectDetailPage() {
                         {project.city}, {project.state}
                       </p>
                     )}
-                    {project.latitude && project.longitude && (
+                    {/* {project.latitude && project.longitude && (
                       <div className="mt-3">
                         <a
                           href={`https://maps.google.com/?q=${project.latitude},${project.longitude}`}
@@ -790,7 +790,7 @@ export default function ProjectDetailPage() {
                           View on Map
                         </a>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
@@ -813,7 +813,7 @@ export default function ProjectDetailPage() {
               )}
 
               {/* Nearby Points */}
-              {project.nearbyPoints && project.nearbyPoints.length > 0 ? (
+              {/* {project.nearbyPoints && project.nearbyPoints.length > 0 ? (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                     Nearby Landmarks
@@ -860,7 +860,7 @@ export default function ProjectDetailPage() {
                     </p>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
 
             {/* Floor Plans Section */}
@@ -1015,26 +1015,14 @@ export default function ProjectDetailPage() {
             {/* About the Builder */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                About the Builder
+                 RERA ID
               </h2>
               <div className="flex items-start space-x-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">
-                    {project.developerName
-                      ? project.developerName.charAt(0)
-                      : "D"}
-                  </span>
-                </div>
+             
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    {project.developerName || "Premium Development Group"}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Award-winning luxury real estate developer with 25+ years of
-                    experience in creating premium residential properties.
-                  </p>
+                
                   {project.reraId && (
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-blue-500 font-bold dark:text-gray-400">
                       RERA ID: {project.reraId}
                     </div>
                   )}
@@ -1084,7 +1072,7 @@ export default function ProjectDetailPage() {
 
           {/* Right Column - Contact & Details */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-14 space-y-6">
               {/* Property Summary */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
                 <h3 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4">
@@ -1118,7 +1106,7 @@ export default function ProjectDetailPage() {
                   </div>
 
                   {/* Key Stats */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
                         {project.units.length}
@@ -1161,7 +1149,7 @@ export default function ProjectDetailPage() {
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Key Features</h4>
                       <ul className="space-y-1">
-                        {project.highlights.slice(0, 3).map(highlight => (
+                        {project.highlights.slice(0, 2).map(highlight => (
                           <li key={highlight.id} className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                             <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                             {highlight.label}
@@ -1169,7 +1157,7 @@ export default function ProjectDetailPage() {
                         ))}
                         {project.highlights.length > 3 && (
                           <li className="text-sm text-blue-600 font-medium">
-                            +{project.highlights.length - 3} more features
+                            +{project.highlights.length - 2} more features
                           </li>
                         )}
                       </ul>
@@ -1195,20 +1183,20 @@ export default function ProjectDetailPage() {
                     <span className="mr-2">📞</span>
                     Contact Us
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setInfoOpen(true)}
                     className="w-full border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
                   >
                     <span className="mr-2">📧</span>
                     Request Info
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={() => setTourOpen(true)}
                     className="w-full border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
                   >
                     <span className="mr-2">📅</span>
                     Schedule Tour
-                  </button>
+                  </button> */}
                   <button
                     onClick={handleShare}
                     className="w-full text-gray-600 dark:text-gray-400 py-2 flex items-center justify-center"
@@ -1360,7 +1348,7 @@ export default function ProjectDetailPage() {
       )}
 
       {/* Request Info Modal */}
-      {infoOpen && (
+      {/* {infoOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -1400,10 +1388,10 @@ export default function ProjectDetailPage() {
             </form>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Schedule Tour Modal */}
-      {tourOpen && (
+      {/* {tourOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -1455,7 +1443,7 @@ export default function ProjectDetailPage() {
             </form>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Toast */}
       {toast && (

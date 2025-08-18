@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '@/contexts/ThemeContext';
 import { BrandButton } from './ui/BrandButton';
+import gsap from 'gsap';
 
 const navigation = [
   { name: 'Properties', href: '/properties' },
@@ -20,7 +21,81 @@ const navigation = [
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { actualTheme } = useTheme();
+  
+  const callNowButtonRef = useRef(null);
+  const hotlineButtonRef = useRef(null);
+  const mobileCallNowButtonRef = useRef(null);
+  const mobileHotlineButtonRef = useRef(null);
 
+  // GSAP animation for button bounce effect
+  useEffect(() => {
+    // Setup hover animations for desktop buttons
+    if (callNowButtonRef.current) {
+      callNowButtonRef.current.addEventListener('mouseenter', () => {
+        gsap.to(callNowButtonRef.current, {
+          y: -5,
+          duration: 0.3,
+          repeat: 1,
+          yoyo: true,
+          ease: "power1.inOut"
+        });
+      });
+    }
+    
+    if (hotlineButtonRef.current) {
+      hotlineButtonRef.current.addEventListener('mouseenter', () => {
+        gsap.to(hotlineButtonRef.current, {
+          y: -5,
+          duration: 0.3,
+          repeat: 1,
+          yoyo: true,
+          ease: "power1.inOut"
+        });
+      });
+    }
+    
+    // Setup hover animations for mobile buttons
+    if (mobileCallNowButtonRef.current) {
+      mobileCallNowButtonRef.current.addEventListener('mouseenter', () => {
+        gsap.to(mobileCallNowButtonRef.current, {
+          y: -5,
+          duration: 0.3,
+          repeat: 1,
+          yoyo: true,
+          ease: "power1.inOut"
+        });
+      });
+    }
+    
+    if (mobileHotlineButtonRef.current) {
+      mobileHotlineButtonRef.current.addEventListener('mouseenter', () => {
+        gsap.to(mobileHotlineButtonRef.current, {
+          y: -5,
+          duration: 0.3,
+          repeat: 1,
+          yoyo: true,
+          ease: "power1.inOut"
+        });
+      });
+    }
+    
+    // Cleanup event listeners on component unmount
+    return () => {
+      if (callNowButtonRef.current) {
+        callNowButtonRef.current.removeEventListener('mouseenter', () => {});
+      }
+      if (hotlineButtonRef.current) {
+        hotlineButtonRef.current.removeEventListener('mouseenter', () => {});
+      }
+      if (mobileCallNowButtonRef.current) {
+        mobileCallNowButtonRef.current.removeEventListener('mouseenter', () => {});
+      }
+      if (mobileHotlineButtonRef.current) {
+        mobileHotlineButtonRef.current.removeEventListener('mouseenter', () => {});
+      }
+    };
+  }, []);
+  
   return (
     <nav className="bg-white/95 backdrop-blur-sm shadow-lg dark:bg-gray-900/95 fixed w-full z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,13 +132,24 @@ export default function Navbar() {
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             <ThemeToggle />
             <a
+              ref={callNowButtonRef}
               href="tel:9910007801"
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full transition-colors duration-200"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
               Call Now
+            </a>
+            <a
+              ref={hotlineButtonRef}
+              href="tel:9910007801"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+              9910007801
             </a>
             <Link href="/projects/new">
               <BrandButton
@@ -188,14 +274,26 @@ export default function Navbar() {
               ))}
               <div className="px-3 py-2">
                   <a
+                    ref={mobileCallNowButtonRef}
                     href="tel:9910007801"
-                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2"
+                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                     </svg>
                     Call Now: 9910007801
+                  </a>
+                  <a
+                    ref={mobileHotlineButtonRef}
+                    href="tel:9910007801"
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    9910007801
                   </a>
                   <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
                     <BrandButton
