@@ -15,6 +15,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   PlayIcon,
+  ClipboardDocumentIcon,
   VideoCameraIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
@@ -345,7 +346,7 @@ export default function ProjectDetailPage() {
                   onClick={handleShare}
                   className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors"
                 >
-                  <ShareIcon className="w-6 h-6 text-gray-700" />
+                  <ClipboardDocumentIcon className="w-6 h-6 text-gray-700" />
                 </button>
               </div>
 
@@ -401,7 +402,7 @@ export default function ProjectDetailPage() {
               
               {project.subtitle && (
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-                  {project.subtitle}
+                  {/* {project.subtitle} */}
                 </p>
               )}
             </div>
