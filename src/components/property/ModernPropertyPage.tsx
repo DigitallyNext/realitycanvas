@@ -353,24 +353,24 @@ export default function ModernPropertyPage({ property }: ModernPropertyPageProps
                     <PropertyFAQ 
                       faqs={(() => {
                         try {
-                          return typeof property.faqs === 'string' ? 
+                          const parsedFaqs = typeof property.faqs === 'string' ? 
                             JSON.parse(property.faqs) : 
-                            property.faqs || [
-                              { question: "What are the payment options available?", answer: "We offer flexible payment plans including down payment with installments, full payment, and bank financing options." },
-                              { question: "Is there a maintenance fee?", answer: "Yes, there is a quarterly maintenance fee that covers common area upkeep, security, and basic amenities." },
-                              { question: "When is the expected completion date?", answer: "The project is scheduled for completion by the end of next year, with phased handovers beginning six months prior." },
-                              { question: "Are there any nearby schools or hospitals?", answer: "Yes, there are several reputed schools and a multi-specialty hospital within a 3 km radius." },
-                              { question: "What security features are included?", answer: "The property includes 24/7 security personnel, CCTV surveillance, access control systems, and intercom facilities." }
-                            ];
+                            property.faqs;
+                          
+                          // Only return FAQs if they exist and have content
+                          if (Array.isArray(parsedFaqs) && parsedFaqs.length > 0) {
+                            // Filter out empty FAQs
+                            const validFaqs = parsedFaqs.filter(faq => 
+                              faq && faq.question && faq.answer && 
+                              faq.question.trim() !== '' && faq.answer.trim() !== ''
+                            );
+                            return validFaqs.length > 0 ? validFaqs : null;
+                          }
+                          
+                          return null;
                         } catch (error) {
                           console.error('Error parsing faqs:', error);
-                          return [
-                            { question: "What are the payment options available?", answer: "We offer flexible payment plans including down payment with installments, full payment, and bank financing options." },
-                            { question: "Is there a maintenance fee?", answer: "Yes, there is a quarterly maintenance fee that covers common area upkeep, security, and basic amenities." },
-                            { question: "When is the expected completion date?", answer: "The project is scheduled for completion by the end of next year, with phased handovers beginning six months prior." },
-                            { question: "Are there any nearby schools or hospitals?", answer: "Yes, there are several reputed schools and a multi-specialty hospital within a 3 km radius." },
-                            { question: "What security features are included?", answer: "The property includes 24/7 security personnel, CCTV surveillance, access control systems, and intercom facilities." }
-                          ];
+                          return null;
                         }
                       })()}
                       title="Frequently Asked Questions"

@@ -1,40 +1,64 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    // Prefer remotePatterns for flexibility (protocol + host + path)
     remotePatterns: [
       // Unsplash (all paths)
-      new URL('https://images.unsplash.com/**'),
-
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
       // Supabase storage buckets (your project)
-      new URL('https://xsgljyuvykzfzvqwgtev.supabase.co/**'),
-      // Generic supabase domain (if you truly pull from other supabase projects)
-      new URL('https://*.supabase.co/**'),
-
+      {
+        protocol: 'https',
+        hostname: 'xsgljyuvykzfzvqwgtev.supabase.co',
+        pathname: '/**',
+      },
+      // Generic supabase domain
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        pathname: '/**',
+      },
       // Pexels
-      new URL('https://images.pexels.com/**'),
-
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        pathname: '/**',
+      },
       // Wikimedia
-      new URL('https://upload.wikimedia.org/**'),
-
-      // Your specific site throwing the error earlier
-      new URL('https://m3mjewel.commercial-gurgaon.in/**'),
-
-      // Example placeholder
-      new URL('https://example.com/**'),
-
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '/**',
+      },
       // M3M Jewel
-      new URL('https://www.m3mproperties.com/floorplan/**'),
-
+      {
+        protocol: 'https',
+        hostname: 'm3mjewel.commercial-gurgaon.in',
+        pathname: '/**',
+      },
+      // Example placeholder
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+        pathname: '/**',
+      },
+      // M3M Properties
+      {
+        protocol: 'https',
+        hostname: 'www.m3mproperties.com',
+        pathname: '/floorplan/**',
+      },
       // M3M Jewel New
-      new URL('https://m3mjewel.commercial-gurgaon.in/img/**'),
-
-       
+      {
+        protocol: 'https',
+        hostname: 'm3mjewel.commercial-gurgaon.in',
+        pathname: '/img/**',
+      },
     ],
   },
-
   webpack: (config) => {
-    // Keep as-is unless you need custom rules/plugins
     return config;
   },
 };

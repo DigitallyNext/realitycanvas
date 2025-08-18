@@ -24,6 +24,8 @@ import PricingTableManager from '@/components/ui/PricingTableManager';
 import LocationMapManager from '@/components/ui/LocationMapManager';
 import BuyerInfoManager from '@/components/ui/BuyerInfoManager';
 import JsonImportExport from '@/components/ui/JsonImportExport';
+import SectionJsonManager from '@/components/ui/SectionJsonManager';
+import { getSampleDataBySection } from '@/utils/sampleSectionData';
 
 // Define the steps for the project creation process
 const steps = [
@@ -130,6 +132,7 @@ function UnifiedProjectFormContent() {
     aboutTitle: '',
     aboutDescription: '',
     category: 'COMMERCIAL' as 'COMMERCIAL' | 'RESIDENTIAL' | 'MIXED_USE',
+    status: 'PLANNED' as 'PLANNED' | 'UNDER_CONSTRUCTION' | 'READY',
     basePrice: '',
     priceRange: '',
     videoUrl: '',
@@ -203,6 +206,7 @@ function UnifiedProjectFormContent() {
         aboutTitle: projectData.aboutTitle || '',
         aboutDescription: projectData.aboutDescription || '',
         category: projectData.category || 'COMMERCIAL',
+        status: projectData.status || 'PLANNED',
         basePrice: projectData.basePrice?.toString() || '',
         priceRange: projectData.priceRange || '',
         videoUrl: projectData.videoUrl || '',
@@ -311,7 +315,7 @@ function UnifiedProjectFormContent() {
       case 3: // Features
         return highlights.some(h => h.label) || amenities.some(a => a.name);
       case 4: // Units
-        return units.some(u => u.unitNumber && u.areaSqFt);
+        return units.some(u => u.unitNumber?.trim() && u.areaSqFt?.trim());
       case 5: // Floor Plans
         return true; // Optional step
       case 6: // Pricing
@@ -398,6 +402,12 @@ function UnifiedProjectFormContent() {
     const updated = [...anchors];
     updated[index] = { ...updated[index], [field]: value };
     setAnchors(updated);
+  };
+
+  const removeAnchor = (index: number) => {
+    if (anchors.length > 1) {
+      setAnchors(anchors.filter((_, i) => i !== index));
+    }
   };
 
   const addFaq = () => {
@@ -496,6 +506,7 @@ function UnifiedProjectFormContent() {
         aboutTitle: projectData.aboutTitle || '',
         aboutDescription: projectData.aboutDescription || '',
         category: projectData.category || 'COMMERCIAL',
+        status: projectData.status || 'PLANNED',
         basePrice: projectData.basePrice?.toString() || '',
         priceRange: projectData.priceRange || '',
         videoUrl: projectData.videoUrl || '',
@@ -732,13 +743,13 @@ function UnifiedProjectFormContent() {
           })),
           documents: [],
           configurations: [],
-          units: units.filter(u => u.unitNumber && u.areaSqFt).map(u => ({
+          units: units.filter(u => u.unitNumber?.trim() && u.areaSqFt?.trim()).map(u => ({
             unitNumber: u.unitNumber,
             type: u.type,
             floor: u.floor,
-            areaSqFt: parseInt(u.areaSqFt),
-            ratePsf: u.ratePsf ? parseFloat(u.ratePsf) : null,
-            priceTotal: u.priceTotal ? parseInt(u.priceTotal) : null,
+            areaSqFt: parseInt(u.areaSqFt) || 0,
+            ratePsf: u.ratePsf && u.ratePsf.trim() ? parseFloat(u.ratePsf) : null,
+            priceTotal: u.priceTotal && u.priceTotal.trim() ? parseInt(u.priceTotal) : null,
             availability: 'AVAILABLE'
           })),
           anchors: getProjectCategory() !== 'RESIDENTIAL' ? anchors.filter(a => a.name).map(a => ({
@@ -748,7 +759,7 @@ function UnifiedProjectFormContent() {
             floor: a.floor,
             areaSqFt: a.areaSqFt ? parseInt(a.areaSqFt) : null
           })) : [],
-          pricingPlans: pricingTable,
+          pricingTable: pricingTable,
           construction: [],
           nearbyPoints: (locationData.nearbyPoints || []) as Array<{
             type: string;
@@ -862,16 +873,8 @@ function UnifiedProjectFormContent() {
               body: JSON.stringify({ projectId: editingProjectId, ...media }),
             })
           ),
-          // Create pricing plans
-          ...fullProjectData.pricingPlans.map(pricingPlan =>
-            fetch('/api/projects/pricingPlans', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...pricingPlan }),
-            })
-          ),
-          // Create pricing table
-          ...pricingTable.map(pricingRow =>
+          // Create pricing table entries
+          ...fullProjectData.pricingTable.map(pricingRow =>
             fetch('/api/projects/pricingTable', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -900,14 +903,14 @@ function UnifiedProjectFormContent() {
         projectResult = await projectRes.json();
 
       // Add units
-      for (const unit of units.filter(u => u.unitNumber && u.areaSqFt)) {
+      for (const unit of units.filter(u => u.unitNumber?.trim() && u.areaSqFt?.trim())) {
         const unitPayload = {
           unitNumber: unit.unitNumber,
           type: unit.type,
           floor: unit.floor,
-          areaSqFt: parseInt(unit.areaSqFt),
-          ratePsf: unit.ratePsf ? parseFloat(unit.ratePsf) : undefined,
-          priceTotal: unit.priceTotal ? parseInt(unit.priceTotal) : undefined,
+          areaSqFt: parseInt(unit.areaSqFt) || 0,
+          ratePsf: unit.ratePsf && unit.ratePsf.trim() ? parseFloat(unit.ratePsf) : undefined,
+          priceTotal: unit.priceTotal && unit.priceTotal.trim() ? parseInt(unit.priceTotal) : undefined,
         };
 
           await fetch(`/api/projects/${projectResult.id}/units`, {
@@ -976,8 +979,35 @@ function UnifiedProjectFormContent() {
   const renderStepContent = () => {
     switch (currentStep) {
       case 0: // Basic Info
-  return (
+        return (
           <div className="space-y-6">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Project details and location information</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Basic Info"
+                data={{
+                  title: project.title,
+                  subtitle: project.subtitle,
+                  description: project.description,
+                  category: project.category,
+                  status: project.status,
+                  address: project.address,
+                  city: project.city,
+                  state: project.state,
+                  reraId: project.reraId,
+                  developerName: project.developerName,
+                  possessionDate: project.possessionDate
+                }}
+                onImport={(data) => {
+                  setProject(prev => ({ ...prev, ...data }));
+                }}
+                sampleData={getSampleDataBySection('basic')}
+              />
+            </div>
             {/* AI Assistant Toggle */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
               <div className="flex items-center justify-between">
@@ -1156,6 +1186,36 @@ function UnifiedProjectFormContent() {
       case 1: // Photos
         return (
           <div className="space-y-8">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project Images</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Featured image and gallery photos</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Photos"
+                data={{
+                  featuredImage: project.featuredImage,
+                  galleryImages: project.galleryImages ? project.galleryImages.split(',').map(img => img.trim()) : []
+                }}
+                onImport={(data) => {
+                  if (data.featuredImage) {
+                    setProject(prev => ({ ...prev, featuredImage: data.featuredImage }));
+                  }
+                  if (data.galleryImages && Array.isArray(data.galleryImages)) {
+                    setProject(prev => ({ ...prev, galleryImages: data.galleryImages.join(', ') }));
+                  }
+                }}
+                sampleData={{
+                  featuredImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
+                  galleryImages: [
+                    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+                    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800",
+                    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800"
+                  ]
+                }}
+              />
+            </div>
             {/* Featured Image */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Featured Image</h3>
@@ -1229,6 +1289,29 @@ function UnifiedProjectFormContent() {
       case 2: // Videos
         return (
           <div className="space-y-8">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project Videos</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Main video and additional video content</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Videos"
+                data={{
+                  videoUrl: project.videoUrl,
+                  videoUrls: videoUrls
+                }}
+                onImport={(data) => {
+                  if (data.videoUrl) {
+                    setProject(prev => ({ ...prev, videoUrl: data.videoUrl }));
+                  }
+                  if (data.videoUrls && Array.isArray(data.videoUrls)) {
+                    setVideoUrls(data.videoUrls);
+                  }
+                }}
+                sampleData={getSampleDataBySection('videos')}
+              />
+            </div>
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Project Videos</h3>
               <VideoUpload
@@ -1256,6 +1339,25 @@ function UnifiedProjectFormContent() {
       case 3: // Features
         return (
           <div className="space-y-8">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project Features</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Highlights and amenities</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Features"
+                data={{
+                  highlights: highlights,
+                  amenities: amenities
+                }}
+                onImport={(data) => {
+                  if (data.highlights) setHighlights(data.highlights);
+                  if (data.amenities) setAmenities(data.amenities);
+                }}
+                sampleData={getSampleDataBySection('features')}
+              />
+            </div>
             {/* AI Highlights Generator */}
             {isAIAssisted && (
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
@@ -1433,8 +1535,20 @@ function UnifiedProjectFormContent() {
         return (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Units/Inventory</h3>
-              <button 
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Units/Inventory</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Unit types and pricing information</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <SectionJsonManager
+                  sectionName="Units"
+                  data={units}
+                  onImport={(data) => {
+                    setUnits(Array.isArray(data) ? data : [data]);
+                  }}
+                  sampleData={getSampleDataBySection('units')}
+                />
+                <button 
                 type="button" 
                 onClick={addUnit} 
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
@@ -1444,7 +1558,7 @@ function UnifiedProjectFormContent() {
           </div>
             <div className="space-y-4">
           {units.map((unit, index) => (
-                <div key={index} className="grid grid-cols-2 md:grid-cols-6 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                <div key={index} className="grid grid-cols-2 md:grid-cols-7 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               <input
                 placeholder="Unit #"
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
@@ -1491,6 +1605,13 @@ function UnifiedProjectFormContent() {
                 value={unit.ratePsf}
                 onChange={e => updateUnit(index, 'ratePsf', e.target.value)}
               />
+              <input
+                placeholder="Total Price"
+                type="number"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                value={unit.priceTotal}
+                onChange={e => updateUnit(index, 'priceTotal', e.target.value)}
+              />
               <button
                 type="button"
                 onClick={() => removeUnit(index)}
@@ -1503,24 +1624,39 @@ function UnifiedProjectFormContent() {
           ))}
         </div>
           </div>
+          </div>
         );
 
-      case 4: // Anchors
+      case 8: // Anchors (moved to correct position)
         return category !== 'RESIDENTIAL' ? (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Anchor Tenants</h3>
-              <button 
-                type="button" 
-                onClick={addAnchor} 
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
-              >
-                Add Anchor
-            </button>
-          </div>
+          <div className="space-y-6">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Anchor Tenants</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Major tenants and anchor stores</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <SectionJsonManager
+                  sectionName="Anchors"
+                  data={anchors}
+                  onImport={(data) => {
+                    setAnchors(Array.isArray(data) ? data : [data]);
+                  }}
+                  sampleData={getSampleDataBySection('anchors')}
+                />
+                <button 
+                  type="button" 
+                  onClick={addAnchor} 
+                  className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+                >
+                  Add Anchor
+                </button>
+              </div>
+            </div>
             <div className="space-y-4">
               {anchors.map((anchor, index) => (
-                <div key={index} className="grid grid-cols-4 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                <div key={index} className="grid grid-cols-5 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
               <input
                     placeholder="Anchor Name"
                     className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
@@ -1551,6 +1687,13 @@ function UnifiedProjectFormContent() {
                     value={anchor.areaSqFt}
                     onChange={e => updateAnchor(index, 'areaSqFt', e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => removeAnchor(index)}
+                className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+              >
+                Remove
+              </button>
             </div>
           ))}
         </div>
@@ -1564,91 +1707,80 @@ function UnifiedProjectFormContent() {
 
       case 5: // Floor Plans
         return (
-          <FloorPlanManager
-            value={floorPlans}
-            onChange={setFloorPlans}
-          />
+          <div className="space-y-6">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Floor Plans</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Layout and floor information</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Floor Plans"
+                data={floorPlans}
+                onImport={(data) => {
+                  setFloorPlans(Array.isArray(data) ? data : [data]);
+                }}
+                sampleData={getSampleDataBySection('floorplans')}
+              />
+            </div>
+            <FloorPlanManager
+              value={floorPlans}
+              onChange={setFloorPlans}
+            />
+          </div>
         );
 
       case 6: // Pricing
         return (
-          <PricingTableManager
-            value={pricingTable}
-            onChange={setPricingTable}
-          />
+          <div className="space-y-6">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Pricing Table</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Pricing information and rate structures</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Pricing Table"
+                data={pricingTable}
+                onImport={(data) => {
+                  setPricingTable(Array.isArray(data) ? data : [data]);
+                }}
+                sampleData={getSampleDataBySection('pricing')}
+              />
+            </div>
+            <PricingTableManager
+              value={pricingTable}
+              onChange={setPricingTable}
+            />
+          </div>
         );
 
       case 7: // Location
         return (
-          <LocationMapManager
-            value={locationData}
-            onChange={setLocationData}
-          />
+          <div className="space-y-6">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location & Connectivity</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Map, coordinates and nearby points</p>
+              </div>
+              <SectionJsonManager
+                sectionName="Location"
+                data={locationData}
+                onImport={(data) => {
+                  setLocationData(data);
+                }}
+                sampleData={getSampleDataBySection('location')}
+              />
+            </div>
+            <LocationMapManager
+              value={locationData}
+              onChange={setLocationData}
+            />
+          </div>
         );
 
-      case 8: // Anchors
-        return project.category !== 'RESIDENTIAL' ? (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Anchor Tenants</h3>
-              <button 
-                type="button" 
-                onClick={addAnchor} 
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
-              >
-                Add Anchor
-              </button>
-            </div>
-            <div className="space-y-4">
-            {anchors.map((anchor, index) => (
-                <div key={index} className="grid grid-cols-1 lg:grid-cols-5 gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                <input
-                  placeholder="Anchor Name"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  value={anchor.name}
-                  onChange={e => updateAnchor(index, 'name', e.target.value)}
-                />
-                  <IconSelector
-                    selectedIcon={anchor.icon}
-                    onSelect={(icon) => updateAnchor(index, 'icon', icon)}
-                />
-                <select
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  value={anchor.category}
-                  onChange={e => updateAnchor(index, 'category', e.target.value)}
-                >
-                  <option value="Fashion">Fashion</option>
-                  <option value="Hypermarket">Hypermarket</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Cinema">Cinema</option>
-                  <option value="F&B">F&B</option>
-                    <option value="Lifestyle">Lifestyle</option>
-                    <option value="Home & Decor">Home & Decor</option>
-                    <option value="Sports">Sports</option>
-                </select>
-                <input
-                  placeholder="Floor"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  value={anchor.floor}
-                  onChange={e => updateAnchor(index, 'floor', e.target.value)}
-                />
-                <input
-                  placeholder="Area (sq ft)"
-                  type="number"
-                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                  value={anchor.areaSqFt}
-                  onChange={e => updateAnchor(index, 'areaSqFt', e.target.value)}
-                />
-              </div>
-            ))}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <BuildingOfficeIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">Anchor tenants not applicable for residential projects.</p>
-          </div>
-        );
+
 
       case 9: // Buyers
         return (
@@ -1661,6 +1793,21 @@ function UnifiedProjectFormContent() {
       case 10: // FAQs
         return (
           <div className="space-y-8">
+            {/* Section Header with JSON Manager */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Frequently Asked Questions</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Common questions and answers</p>
+              </div>
+              <SectionJsonManager
+                sectionName="FAQs"
+                data={faqs}
+                onImport={(data) => {
+                  setFaqs(Array.isArray(data) ? data : [data]);
+                }}
+                sampleData={getSampleDataBySection('faqs')}
+              />
+            </div>
             {/* AI FAQ Generator */}
             {isAIAssisted && (
               <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -1825,8 +1972,8 @@ function UnifiedProjectFormContent() {
     }
   };
 
-      if (isLoading) {
-      return (
+  if (isLoading) {
+    return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
           <div className="max-w-4xl mx-auto px-4">
             <div className="flex items-center justify-center h-64">
@@ -1838,9 +1985,9 @@ function UnifiedProjectFormContent() {
           </div>
         </div>
       );
-    }
+  }
 
-      return (
+  return (
       <div className="pt-16">
         {/* Header with JSON Import/Export */}
         <div className="max-w-4xl mx-auto px-4 mb-8">

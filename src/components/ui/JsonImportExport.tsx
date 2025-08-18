@@ -63,10 +63,18 @@ const testPropertyJson = {
     { "category": "Lifestyle", "name": "Food Court", "details": "Variety of dining options" }
   ],
   "units": [
-    { "unitNumber": "G-001", "type": "RETAIL", "floor": "GF", "areaSqFt": 500, "ratePsf": 8000, "priceTotal": 4000000 },
-    { "unitNumber": "G-002", "type": "RETAIL", "floor": "GF", "areaSqFt": 750, "ratePsf": 8000, "priceTotal": 6000000 },
-    { "unitNumber": "F1-001", "type": "FOOD_COURT", "floor": "1F", "areaSqFt": 400, "ratePsf": 6000, "priceTotal": 2400000 },
-    { "unitNumber": "F2-001", "type": "OFFICE", "floor": "2F", "areaSqFt": 1000, "ratePsf": 7000, "priceTotal": 7000000 }
+    { "unitNumber": "B-001", "type": "RETAIL", "floor": "Basement", "areaSqFt": 600, "ratePsf": 5208, "priceTotal": 3125000 },
+    { "unitNumber": "B-002", "type": "RETAIL", "floor": "Basement", "areaSqFt": 650, "ratePsf": 5208, "priceTotal": 3385000 },
+    { "unitNumber": "GF-001", "type": "RETAIL", "floor": "Ground Floor", "areaSqFt": 800, "ratePsf": 15000, "priceTotal": 12000000 },
+    { "unitNumber": "GF-002", "type": "RETAIL", "floor": "Ground Floor", "areaSqFt": 900, "ratePsf": 15000, "priceTotal": 13500000 },
+    { "unitNumber": "1F-001", "type": "RETAIL", "floor": "First Floor", "areaSqFt": 700, "ratePsf": 6428, "priceTotal": 4500000 },
+    { "unitNumber": "1F-002", "type": "RETAIL", "floor": "First Floor", "areaSqFt": 800, "ratePsf": 6428, "priceTotal": 5142000 },
+    { "unitNumber": "2F-001", "type": "RETAIL", "floor": "Second Floor", "areaSqFt": 700, "ratePsf": 5000, "priceTotal": 3500000 },
+    { "unitNumber": "2F-002", "type": "RETAIL", "floor": "Second Floor", "areaSqFt": 800, "ratePsf": 5000, "priceTotal": 4000000 },
+    { "unitNumber": "M1-001", "type": "RETAIL", "floor": "Mezzanine Floor", "areaSqFt": 600, "ratePsf": 4000, "priceTotal": 2400000 },
+    { "unitNumber": "M1-002", "type": "RETAIL", "floor": "Mezzanine Floor", "areaSqFt": 650, "ratePsf": 4000, "priceTotal": 2600000 },
+    { "unitNumber": "4F-001", "type": "RETAIL", "floor": "Fourth Floor", "areaSqFt": 500, "ratePsf": 8000, "priceTotal": 4000000 },
+    { "unitNumber": "4F-002", "type": "RETAIL", "floor": "Fourth Floor", "areaSqFt": 550, "ratePsf": 8000, "priceTotal": 4400000 }
   ],
   "floorPlans": [
     {
@@ -95,21 +103,111 @@ const testPropertyJson = {
   "pricingTable": [
     {
       "id": "1",
-      "type": "Ground Floor Retail",
-      "reraArea": "500-1000 Sq.ft",
-      "price": "₹40L - ₹80L",
-      "pricePerSqft": "₹8,000/sq.ft",
-      "availableUnits": 15,
-      "floorNumbers": "GF"
+      "type": "Basement",
+      "reraArea": "700 Sq.ft",
+      "price": "₹3 Crore 50 Lakhs",
+      "pricePerSqft": "₹5,000/sq.ft",
+      "availableUnits": 8,
+      "floorNumbers": "B"
     },
     {
       "id": "2",
-      "type": "First Floor Food Court",
-      "reraArea": "300-600 Sq.ft",
-      "price": "₹24L - ₹48L",
-      "pricePerSqft": "₹6,000/sq.ft",
+      "type": "Second-Floor",
+      "reraArea": "700 Sq.ft",
+      "price": "₹3 Crore 50 Lakhs",
+      "pricePerSqft": "₹5,000/sq.ft",
       "availableUnits": 12,
+      "floorNumbers": "2F"
+    },
+    {
+      "id": "3",
+      "type": "Mezzanine-Floor",
+      "reraArea": "600 Sq.ft",
+      "price": "₹2 Crore 40 Lakhs",
+      "pricePerSqft": "₹4,000/sq.ft",
+      "availableUnits": 10,
+      "floorNumbers": "MF"
+    },
+    {
+      "id": "4",
+      "type": "Forth-Floor",
+      "reraArea": "500 Sq.ft",
+      "price": "₹4 Crore 80 Lakhs",
+      "pricePerSqft": "₹8,000/sq.ft",
+      "availableUnits": 6,
+      "floorNumbers": "4F"
+    },
+    {
+      "id": "5",
+      "type": "First-Floor",
+      "reraArea": "800 Sq.ft",
+      "price": "₹4 Crore 80 Lakhs",
+      "pricePerSqft": "₹6,000/sq.ft",
+      "availableUnits": 15,
       "floorNumbers": "1F"
+    },
+    {
+      "id": "6",
+      "type": "Ground-Floor",
+      "reraArea": "1200 Sq.ft",
+      "price": "₹12.00 Cr+",
+      "pricePerSqft": "₹15,000/sq.ft",
+      "availableUnits": 20,
+      "floorNumbers": "GF"
+    },
+    {
+      "id": "7",
+      "type": "Lower Ground",
+      "reraArea": "300 - 600 Sq.ft",
+      "price": "₹1.25 Cr+",
+      "pricePerSqft": "₹4,200/sq.ft",
+      "availableUnits": 25,
+      "floorNumbers": "LG"
+    },
+    {
+      "id": "8",
+      "type": "Ground Floor",
+      "reraArea": "1200 - 2700 Sq.ft",
+      "price": "₹12.00 Cr+",
+      "pricePerSqft": "₹15,000/sq.ft",
+      "availableUnits": 35,
+      "floorNumbers": "G"
+    },
+    {
+      "id": "9",
+      "type": "1st Floor",
+      "reraArea": "700 - 1500 Sq.ft",
+      "price": "₹4.5 Cr+",
+      "pricePerSqft": "₹6,500/sq.ft",
+      "availableUnits": 28,
+      "floorNumbers": "1"
+    },
+    {
+      "id": "10",
+      "type": "2nd Floor",
+      "reraArea": "700 - 1500 Sq.ft",
+      "price": "₹3.5 Cr+",
+      "pricePerSqft": "₹5,000/sq.ft",
+      "availableUnits": 30,
+      "floorNumbers": "2"
+    },
+    {
+      "id": "11",
+      "type": "3rd & 4th Floor",
+      "reraArea": "700 - 1500 Sq.ft",
+      "price": "₹3.0 Cr+",
+      "pricePerSqft": "₹4,300/sq.ft",
+      "availableUnits": 45,
+      "floorNumbers": "3, 4"
+    },
+    {
+      "id": "12",
+      "type": "3rd & 4th Floor",
+      "reraArea": "9000 - 12500 Sq.ft",
+      "price": "₹28.00 Cr+",
+      "pricePerSqft": "₹3,200/sq.ft",
+      "availableUnits": 2,
+      "floorNumbers": "3, 4"
     }
   ],
   "locationData": {

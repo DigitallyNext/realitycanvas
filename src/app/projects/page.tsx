@@ -15,8 +15,8 @@ type Project = {
   state?: string | null;
   featuredImage: string;
   createdAt: string;
-  minRatePsf?: number | null;
-  maxRatePsf?: number | null;
+  minRatePsf?: string | null;
+  maxRatePsf?: string | null;
 };
 
 export default function ProjectsPage() {
@@ -29,8 +29,22 @@ export default function ProjectsPage() {
     (async () => {
       try {
         const res = await fetch('/api/projects', { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         const data = await res.json();
-        setProjects(data || []);
+        console.log('Projects API response:', data);
+        
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setProjects(data);
+        } else {
+          console.error('API did not return an array:', data);
+          setProjects([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
@@ -181,9 +195,9 @@ export default function ProjectsPage() {
                   {(project.minRatePsf || project.maxRatePsf) && (
                     <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 mb-4">
                       <div className="text-green-700 dark:text-green-400 font-bold text-lg">
-                        ₹{project.minRatePsf || project.maxRatePsf}
+                        {project.minRatePsf || project.maxRatePsf}
                         {project.minRatePsf && project.maxRatePsf && project.minRatePsf !== project.maxRatePsf
-                          ? ` - ₹${project.maxRatePsf}`
+                          ? ` - ${project.maxRatePsf}`
                           : ''}
                       </div>
                       <div className="text-green-600 dark:text-green-500 text-sm font-medium">per sq ft</div>

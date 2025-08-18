@@ -308,46 +308,14 @@ export default function ProjectDetailPage() {
     );
   }
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "COMMERCIAL":
-        return "bg-blue-100 text-blue-800";
-      case "RETAIL_ONLY":
-        return "bg-green-100 text-green-800";
-      case "MIXED_USE":
-        return "bg-purple-100 text-purple-800";
-      case "RESIDENTIAL":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getAvailabilityColor = (availability: string) => {
-    switch (availability) {
-      case "AVAILABLE":
-        return "bg-green-100 text-green-800";
-      case "HOLD":
-        return "bg-yellow-100 text-yellow-800";
-      case "SOLD":
-        return "bg-red-100 text-red-800";
-      case "LEASED":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 ">
-      {/* Hero Section with Main Image */}
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-20">
           {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-8 ">
-            <div className="relative h-[70vh] overflow-hidden max-w-7xl mx-auto rounded-3xl ">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="relative h-[70vh] overflow-hidden max-w-7xl mx-auto rounded-3xl">
               <img
                 src={
                   (project.galleryImages &&
@@ -416,7 +384,8 @@ export default function ProjectDetailPage() {
                 </div>
               )}
             </div>
-      {/* Header */}
+
+            {/* Header */}
             <div>
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 {project.title}
@@ -428,103 +397,13 @@ export default function ProjectDetailPage() {
                   {project.city ? `, ${project.city}` : ""}
                   {project.state ? `, ${project.state}` : ""}
                 </span>
-        </div>
-        
-            {project.subtitle && (
+              </div>
+              
+              {project.subtitle && (
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
                   {project.subtitle}
                 </p>
               )}
-
-              {/* Quick Info Tabs */}
-              {/* <div className="flex space-x-6 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
-                <button
-                  onClick={() => scrollToSection(overviewRef, "overview")}
-                  className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                    activeTab === "overview"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => scrollToSection(unitsRef, "units")}
-                  className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                    activeTab === "units"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Units
-                </button>
-                <button
-                  onClick={() => scrollToSection(pricingRef, "pricing")}
-                  className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                    activeTab === "pricing"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Pricing
-                </button>
-                <button
-                  onClick={() => scrollToSection(floorPlansRef, "floor-plans")}
-                  className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                    activeTab === "floor-plans"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Floor Plans
-                </button>
-                <button
-                  onClick={() => scrollToSection(amenitiesRef, "amenities")}
-                  className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                    activeTab === "amenities"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Amenities
-                </button>
-                <button
-                  onClick={() => scrollToSection(anchorsRef, "anchors")}
-                  className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                    activeTab === "anchors"
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Anchors
-                </button>
-                                 <button
-                   onClick={() => scrollToSection(locationRef, "location")}
-                   className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                     activeTab === "location"
-                       ? "border-blue-500 text-blue-600"
-                       : "border-transparent text-gray-500 hover:text-gray-700"
-                   }`}
-                 >
-                   Location
-                 </button>
-                 <button
-                   onClick={() => scrollToSection(videoRef, "videos")}
-                   className={`py-3 px-1 border-b-2 font-medium whitespace-nowrap ${
-                     activeTab === "videos"
-                       ? "border-blue-500 text-blue-600"
-                       : "border-transparent text-gray-500 hover:text-gray-700"
-                   }`}
-                 >
-                   Videos
-                 </button>
-                 <button
-                   onClick={() => setViewAllPhotos(true)}
-                   className="py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium whitespace-nowrap"
-                 >
-                   Gallery
-                 </button>
-              </div> */}
             </div>
 
             {/* About This Property */}
@@ -658,7 +537,7 @@ export default function ProjectDetailPage() {
                               }`}
                             >
                               {unit.availability}
-              </span>
+                            </span>
                           </td>
                         </tr>
                       ))}
@@ -681,51 +560,9 @@ export default function ProjectDetailPage() {
                 Pricing Table
               </h2>
 
-              {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {project.basePrice && (
-                  <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                      Starting Price
-                    </div>
-                    <div className="text-2xl font-bold text-blue-600">
-                      {typeof project.basePrice === 'number' 
-                        ? `₹${(project.basePrice / 100000).toFixed(1)}L`
-                        : project.basePrice
-                      }
-                    </div>
-                  </div>
-                )}
-                {project.priceRange && (
-                  <div className="text-center p-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                      Price Range
-            </div>
-                    <div className="text-2xl font-bold text-green-600">
-                      {project.priceRange}
-          </div>
-          </div>
-                )}
-                {(project.minRatePsf || project.maxRatePsf) && (
-                  <div className="text-center p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                      Rate per Sq Ft
-        </div>
-                    <div className="text-2xl font-bold text-purple-600">
-                      {project.minRatePsf && project.maxRatePsf 
-                        ? `₹${project.minRatePsf} - ₹${project.maxRatePsf}`
-                        : `₹${project.minRatePsf || project.maxRatePsf}`
-                      }
-                    </div>
-                  </div>
-                )}
-      </div> */}
-
               {/* Pricing Table Section */}
               {project.pricingTable && project.pricingTable.length > 0 && (
                 <div className="mb-8">
-                  {/* <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                    Pricing Table
-                  </h3> */}
                   <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <table className="w-full min-w-full">
                       <thead className="bg-gray-50 dark:bg-gray-700">
@@ -790,92 +627,7 @@ export default function ProjectDetailPage() {
                   </div>
                 </div>
               )}
-
-              {/* {project.pricingPlans && project.pricingPlans.length > 0 ? (
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Payment Plans
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {project.pricingPlans.map((plan) => (
-                      <div
-                        key={plan.id}
-                        className="border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-shadow"
-                      >
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                          {plan.name}
-                        </h3>
-                        <div className="text-sm text-blue-600 mb-3 capitalize">
-                          {plan.planType.replace("_", " ")}
-      </div>
-                        {plan.notes && (
-                          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                            {plan.notes}
-                          </p>
-                        )}
-
-                        {plan.schedule && Array.isArray(plan.schedule) && (
-                          <div className="mb-4">
-                            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                              Payment Schedule:
-                            </h4>
-                            <ul className="space-y-1">
-                              {plan.schedule.map((item: any, index: number) => (
-                                <li
-                key={index}
-                                  className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                  <span>{item.milestone || item.stage}</span>
-                                  <span className="font-medium">
-                                    {item.percent}%
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {plan.taxes && Array.isArray(plan.taxes) && (
-                          <div className="mb-4">
-                            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                              Taxes:
-                            </h4>
-                            <ul className="space-y-1">
-                              {plan.taxes.map((tax: any, index: number) => (
-                                <li
-                                  key={index}
-                                  className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
-                                >
-                                  <span>{tax.name}</span>
-                                  <span className="font-medium">
-                                    {tax.percent}%
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Payment Plans
-                  </h3>
-                  <div className="text-center py-6">
-                    <CalendarIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Payment plan details will be available soon.
-                    </p>
-                  </div>
-                </div>
-              )} */}
             </div>
-
-            {/* Floor Plans Section */}
-          
 
             {/* Amenities Section */}
             {project.amenities.length > 0 && (
@@ -886,7 +638,7 @@ export default function ProjectDetailPage() {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                   Amenities & Features
                 </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {project.amenities.map((amenity) => (
                     <div
                       key={amenity.id}
@@ -908,11 +660,11 @@ export default function ProjectDetailPage() {
                           {amenity.category}
                         </div>
                       </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            )}
 
             {/* Anchor Tenants Section */}
             {project.anchors && project.anchors.length > 0 ? (
@@ -1005,7 +757,7 @@ export default function ProjectDetailPage() {
               </h2>
 
               {/* Project Location */}
-        <div className="mb-8">
+              <div className="mb-8">
                 <div className="flex items-start space-x-4 p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl">
                   <MapPinIcon className="w-8 h-8 text-blue-500 mt-1" />
                   <div>
@@ -1054,12 +806,12 @@ export default function ProjectDetailPage() {
               )}
 
               {/* Nearby Points */}
-              {/* {project.nearbyPoints && project.nearbyPoints.length > 0 ? (
+              {project.nearbyPoints && project.nearbyPoints.length > 0 ? (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                     Nearby Landmarks
                   </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {project.nearbyPoints.map((point) => (
                       <div
                         key={point.id}
@@ -1068,7 +820,7 @@ export default function ProjectDetailPage() {
                         <div>
                           <div className="font-semibold text-gray-900 dark:text-white">
                             {point.name}
-                </div>
+                          </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400 capitalize">
                             {point.type.replace("_", " ")}
                           </div>
@@ -1085,10 +837,10 @@ export default function ProjectDetailPage() {
                             </div>
                           )}
                         </div>
-              </div>
-            ))}
-          </div>
-        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
@@ -1101,135 +853,135 @@ export default function ProjectDetailPage() {
                     </p>
                   </div>
                 </div>
-              )} */}
-                         </div>
+              )}
+            </div>
 
-             {/* Floor Plans Section */}
-             {project.floorPlans && project.floorPlans.length > 0 ? (
-               <div
-                 ref={floorPlansRef}
-                 className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
-               >
-                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                   Floor Plans
-                 </h2>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   {project.floorPlans.map((plan) => (
-                     <div
-                       key={plan.id}
-                       className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
-                     >
-                       {plan.imageUrl && (
-                         <div className="aspect-video relative">
-                           <img
-                             src={plan.imageUrl}
-                             alt={`${plan.level} floor plan`}
-                             className="w-full h-full object-cover"
-                           />
-                         </div>
-                       )}
-                       <div className="p-6">
-                         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                           {plan.level}
-                           {plan.title && (
-                             <span className="text-blue-600 ml-2">
-                               • {plan.title}
-                             </span>
-                           )}
-                         </h3>
-                         {plan.details && (
-                           <p className="text-gray-600 dark:text-gray-400 text-sm">
-                             {plan.details}
-                           </p>
-                         )}
-                       </div>
-                     </div>
-                   ))}
-                 </div>
-               </div>
-             ) : (
-               <div
-                 ref={floorPlansRef}
-                 className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
-               >
-                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                   Floor Plans
-                 </h2>
-                 <div className="text-center py-8">
-                   <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h2M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                   </svg>
-                   <p className="text-gray-500 dark:text-gray-400">
-                     Floor plans will be available soon.
-                   </p>
-                 </div>
-               </div>
-             )}
-
-             {/* Videos Section */}
-             <div
-               ref={videoRef}
-               className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
-             >
-               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                 Property Videos
-               </h2>
-               
-               {(project.videoUrl || (project.videoUrls && project.videoUrls.length > 0)) ? (
-                 <div className="space-y-6">
-                   {/* Main Video */}
-                   {project.videoUrl && (
-                     <div className="aspect-video relative rounded-xl overflow-hidden bg-black">
-                       <video 
-                         controls
-                         className="w-full h-full"
-                         poster={project.featuredImage}
-                       >
-                         <source src={project.videoUrl} type="video/mp4" />
-                         Your browser does not support the video tag.
-                       </video>
+            {/* Floor Plans Section */}
+            {project.floorPlans && project.floorPlans.length > 0 ? (
+              <div
+                ref={floorPlansRef}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
+              >
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                  Floor Plans
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {project.floorPlans.map((plan) => (
+                    <div
+                      key={plan.id}
+                      className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
+                    >
+                      {plan.imageUrl && (
+                        <div className="aspect-video relative">
+                          <img
+                            src={plan.imageUrl}
+                            alt={`${plan.level} floor plan`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-6">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                          {plan.level}
+                          {plan.title && (
+                            <span className="text-blue-600 ml-2">
+                              • {plan.title}
+                            </span>
+                          )}
+                        </h3>
+                        {plan.details && (
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
+                            {plan.details}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                   )}
-                   
-                   {/* Additional Videos */}
-                   {project.videoUrls && project.videoUrls.length > 0 && (
-                     <div>
-                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                         More Videos
-                       </h3>
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                         {project.videoUrls.map((video, index) => (
-                           <div key={index} className="aspect-video relative rounded-lg overflow-hidden bg-black">
-                             <video 
-                               controls
-                               className="w-full h-full"
-                               poster={project.featuredImage}
-                             >
-                               <source src={video} type="video/mp4" />
-                               Your browser does not support the video tag.
-                             </video>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-                 </div>
-               ) : (
-                 <div className="text-center py-8">
-                   <VideoCameraIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                   <p className="text-gray-500 dark:text-gray-400">
-                     Property videos will be available soon.
-                   </p>
-                 </div>
-               )}
-             </div>
+            ) : (
+              <div
+                ref={floorPlansRef}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
+              >
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                  Floor Plans
+                </h2>
+                <div className="text-center py-8">
+                  <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h2M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Floor plans will be available soon.
+                  </p>
+                </div>
+              </div>
+            )}
 
-             {/* Property Highlights */}
+            {/* Videos Section */}
+            <div
+              ref={videoRef}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
+            >
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Property Videos
+              </h2>
+              
+              {(project.videoUrl || (project.videoUrls && project.videoUrls.length > 0)) ? (
+                <div className="space-y-6">
+                  {/* Main Video */}
+                  {project.videoUrl && (
+                    <div className="aspect-video relative rounded-xl overflow-hidden bg-black">
+                      <video 
+                        controls
+                        className="w-full h-full"
+                        poster={project.featuredImage}
+                      >
+                        <source src={project.videoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  )}
+                  
+                  {/* Additional Videos */}
+                  {project.videoUrls && project.videoUrls.length > 0 && (
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        More Videos
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {project.videoUrls.map((video, index) => (
+                          <div key={index} className="aspect-video relative rounded-lg overflow-hidden bg-black">
+                            <video 
+                              controls
+                              className="w-full h-full"
+                              poster={project.featuredImage}
+                            >
+                              <source src={video} type="video/mp4" />
+                              Your browser does not support the video tag.
+                            </video>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <VideoCameraIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Property videos will be available soon.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Property Highlights */}
             {project.highlights.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                   Property Highlights
-          </h2>
+                </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {project.highlights.map((highlight) => (
                     <div
@@ -1264,7 +1016,7 @@ export default function ProjectDetailPage() {
                     {project.developerName
                       ? project.developerName.charAt(0)
                       : "D"}
-                      </span>
+                  </span>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -1284,69 +1036,43 @@ export default function ProjectDetailPage() {
             </div>
 
             {/* FAQ Section */}
-            <div
-              ref={faqRef}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
-            >
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Frequently Asked Questions
-              </h2>
-              <div className="space-y-4">
-                {(project.faqs && project.faqs.length > 0
-                  ? project.faqs
-                  : [
-                      {
-                        question: "What are the monthly maintenance fees?",
-                        id: "faq1",
-                        answer:
-                          "Maintenance fees vary by unit size and amenities used.",
-                      },
-                      {
-                        question: "Is parking included?",
-                        id: "faq2",
-                        answer:
-                          "Yes, one parking space is included with each unit.",
-                      },
-                      {
-                        question: "When is the move-in date?",
-                        id: "faq3",
-                        answer:
-                          "Expected possession is as per the project timeline.",
-                      },
-                      {
-                        question: "Are pets allowed?",
-                        id: "faq4",
-                        answer:
-                          "Pet policy varies by project. Please check with our team.",
-                      },
-                    ]
-                ).map((faq) => (
-                  <div
-                    key={faq.id}
-                    className="border border-gray-200 dark:border-gray-600 rounded-lg"
-                  >
-                    <button
-                      onClick={() =>
-                        setExpandedFaq(expandedFaq === faq.id ? null : faq.id)
-                      }
-                      className="text-left w-full font-medium text-gray-900 dark:text-white hover:text-blue-600 transition-colors p-4 flex items-center justify-between"
+            {project.faqs && project.faqs.length > 0 && (
+              <div
+                ref={faqRef}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
+              >
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                  Frequently Asked Questions
+                </h2>
+                <div className="space-y-4">
+                  {project.faqs.map((faq) => (
+                    <div
+                      key={faq.id}
+                      className="border border-gray-200 dark:border-gray-600 rounded-lg"
                     >
-                      <span>{faq.question}</span>
-                      {expandedFaq === faq.id ? (
-                        <ChevronUpIcon className="w-5 h-5 text-gray-500" />
-                      ) : (
-                        <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+                      <button
+                        onClick={() =>
+                          setExpandedFaq(expandedFaq === faq.id ? null : faq.id)
+                        }
+                        className="text-left w-full font-medium text-gray-900 dark:text-white hover:text-blue-600 transition-colors p-4 flex items-center justify-between"
+                      >
+                        <span>{faq.question}</span>
+                        {expandedFaq === faq.id ? (
+                          <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+                        ) : (
+                          <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+                        )}
+                      </button>
+                      {expandedFaq === faq.id && faq.answer && (
+                        <div className="px-4 pb-4 text-gray-600 dark:text-gray-400 text-sm border-t border-gray-200 dark:border-gray-600 pt-4 mt-2">
+                          {faq.answer}
+                        </div>
                       )}
-                    </button>
-                    {expandedFaq === faq.id && faq.answer && (
-                      <div className="px-4 pb-4 text-gray-600 dark:text-gray-400 text-sm border-t border-gray-200 dark:border-gray-600 pt-4 mt-2">
-                        {faq.answer}
-                      </div>
-                    )}
-                  </div>
-                ))}
-          </div>
-            </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column - Contact & Details */}
@@ -1377,11 +1103,11 @@ export default function ProjectDetailPage() {
                       </div>
                     ) : (
                       <div className="text-center">
-                        {/* <div className="text-xl font-bold text-gray-600 mb-1">
-                        ₹{project.basePrice}
-                        </div> */}
-        </div>
-      )}
+                        <div className="text-xl font-bold text-gray-600 mb-1">
+                          Contact for Pricing
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Key Stats */}
@@ -1483,112 +1209,15 @@ export default function ProjectDetailPage() {
                     <ShareIcon className="w-4 h-4 mr-2" />
                     Share
                   </button>
-      </div>
+                </div>
               </div>
-
-              {/* Property Details */}
-              {/* <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Property ID:
-                    </span>
-                    <span className="font-semibold text-blue-600">
-                      BBE0996F
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Last Updated:
-                    </span>
-                    <span className="font-semibold text-gray-900 dark:text-white">
-                      4/8/2025
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Views:
-                    </span>
-                    <span className="font-semibold text-green-600">
-                      116 this week
-                    </span>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* Quick Facts */}
-              {/* <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                  Quick Facts
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <HomeIcon className="w-5 h-5 text-blue-500" />
-                    <div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Type
-                      </div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {project.category === "COMMERCIAL"
-                          ? "Commercial"
-                          : project.category === "RESIDENTIAL"
-                          ? "Residential"
-                          : project.category.replace("_", " ")}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <BuildingOfficeIcon className="w-5 h-5 text-green-500" />
-                    <div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Area
-                      </div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {project.units
-                          .reduce((total, unit) => total + unit.areaSqFt, 0)
-                          .toLocaleString()}{" "}
-                        sq ft
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <MapPinIcon className="w-5 h-5 text-purple-500" />
-                    <div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Location
-                      </div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {project.city || "Metro City"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {project.possessionDate && (
-                    <div className="flex items-center space-x-3">
-                      <CalendarIcon className="w-5 h-5 text-orange-500" />
-                      <div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          Possession
-                        </div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          {new Date(
-                            project.possessionDate
-                          ).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
       </div>
 
       {/* Gallery Modal */}
-      {viewAllPhotos && project.galleryImages?.length > 0 && (
+      {viewAllPhotos && project.galleryImages && project.galleryImages.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -1613,23 +1242,23 @@ export default function ProjectDetailPage() {
                   className="w-full h-full object-contain"
                 />
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     setActiveImageIndex(
                       (activeImageIndex - 1 + project.galleryImages.length) %
                         project.galleryImages.length
-                    )
-                  }
+                    );
+                  }}
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center"
                   aria-label="Previous image"
                 >
                   ‹
                 </button>
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     setActiveImageIndex(
                       (activeImageIndex + 1) % project.galleryImages.length
-                    )
-                  }
+                    );
+                  }}
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center"
                   aria-label="Next image"
                 >
