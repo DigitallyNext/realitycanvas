@@ -333,8 +333,53 @@ function UnifiedProjectFormContent() {
     }
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (currentStep < steps.length - 1) {
+      // Save current step data to prevent duplication
+      if (editingProjectId) {
+        setSubmitting(true);
+        try {
+          // Only save the current step data without recreating all nested data
+          const projectPayload = {
+            title: project.title,
+            subtitle: project.subtitle,
+            description: project.description,
+            category: project.category || 'COMMERCIAL',
+            status: project.status || 'PLANNED',
+            reraId: project.reraId,
+            developerName: project.developerName,
+            possessionDate: project.possessionDate ? new Date(project.possessionDate) : undefined,
+            address: project.address,
+            locality: project.locality,
+            city: project.city,
+            state: project.state,
+            featuredImage: project.featuredImage,
+            galleryImages: project.galleryImages ? project.galleryImages.split(',').map(url => url.trim()) : [],
+            videoUrl: project.videoUrl,
+            videoUrls: videoUrls,
+            basePrice: project.basePrice ? parseFloat(project.basePrice) : undefined,
+            priceRange: project.priceRange,
+            bannerTitle: project.bannerTitle,
+            bannerSubtitle: project.bannerSubtitle,
+            bannerDescription: project.bannerDescription,
+            aboutTitle: project.aboutTitle,
+            aboutDescription: project.aboutDescription,
+            minRatePsf: project.minRatePsf,
+            maxRatePsf: project.maxRatePsf,
+          };
+
+          // Update project basic info without recreating nested data
+          await fetch(`/api/projects/${editingProjectId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(projectPayload),
+          });
+        } catch (error) {
+          console.error('Error saving current step data:', error);
+        } finally {
+          setSubmitting(false);
+        }
+      }
       setCurrentStep(currentStep + 1);
     }
   };
@@ -776,17 +821,46 @@ function UnifiedProjectFormContent() {
         }
 
         // First, delete existing nested data to avoid duplicates
-        await Promise.all([
-          fetch(`/api/projects/${editingProjectId}/highlights`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/amenities`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/units`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/faqs`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/media`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/floorPlans`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/anchors`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/${editingProjectId}/nearbyPoints`, { method: 'DELETE' }).catch(() => {}),
-          fetch(`/api/projects/pricingTable?projectId=${editingProjectId}`, { method: 'DELETE' }).catch(() => {}),
-        ]);
+        try {
+          console.log('Starting deletion of existing nested data...');
+          
+          // Execute DELETE requests sequentially to ensure completion
+          const endpointsToDelete = [
+            { name: 'highlights', url: `/api/projects/${editingProjectId}/highlights` },
+            { name: 'amenities', url: `/api/projects/${editingProjectId}/amenities` },
+            { name: 'units', url: `/api/projects/${editingProjectId}/units` },
+            { name: 'faqs', url: `/api/projects/${editingProjectId}/faqs` },
+            { name: 'media', url: `/api/projects/${editingProjectId}/media` },
+            { name: 'floorPlans', url: `/api/projects/${editingProjectId}/floorPlans` },
+            { name: 'anchors', url: `/api/projects/${editingProjectId}/anchors` },
+            { name: 'nearbyPoints', url: `/api/projects/${editingProjectId}/nearbyPoints` },
+            { name: 'pricingTable', url: `/api/projects/pricingTable?projectId=${editingProjectId}` }
+          ];
+          
+          // Process each deletion sequentially to ensure completion
+          for (const endpoint of endpointsToDelete) {
+            try {
+              console.log(`Deleting ${endpoint.name}...`);
+              const response = await fetch(endpoint.url, { method: 'DELETE' });
+              
+              if (!response.ok) {
+                console.warn(`Failed to delete ${endpoint.name}: ${response.status} ${response.statusText}`);
+              } else {
+                console.log(`Successfully deleted ${endpoint.name}`);
+                // Add a small delay to ensure database operations complete
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
+            } catch (err) {
+              console.error(`Error deleting ${endpoint.name}:`, err);
+            }
+          }
+          
+          console.log('Deletion process completed');
+        } catch (error) {
+          console.error('Error during delete operations:', error);
+          // Continue with the update process even if deletions fail
+          console.warn('Proceeding with update despite deletion errors');
+        }
 
         // Update project basic info
         const projectRes = await fetch(`/api/projects/${editingProjectId}`, {
@@ -798,92 +872,215 @@ function UnifiedProjectFormContent() {
         if (!projectRes.ok) throw new Error('Failed to update project');
         projectResult = await projectRes.json();
 
-        // Recreate all nested data
-        await Promise.all([
-          // Create highlights
-          ...fullProjectData.highlights.map(highlight =>
-            fetch('/api/projects/highlights', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...highlight }),
-            })
-          ),
-          // Create amenities
-          ...fullProjectData.amenities.map(amenity =>
-            fetch('/api/projects/amenities', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...amenity }),
-            })
-          ),
-          // Create units
-          ...fullProjectData.units.map(unit =>
-            fetch(`/api/projects/${editingProjectId}/units`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(unit),
-            })
-          ),
-          // Create anchors
-          ...fullProjectData.anchors.map(anchor =>
-            fetch('/api/projects/anchors', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...anchor }),
-            })
-          ),
+        // Recreate all nested data - filter out empty items first
+        const validHighlights = fullProjectData.highlights.filter(h => h.label?.trim());
+        const validAmenities = fullProjectData.amenities.filter(a => a.name?.trim());
+        const validUnits = fullProjectData.units.filter(u => u.unitNumber?.trim());
+        const validAnchors = fullProjectData.anchors.filter(a => a.name?.trim());
+        
+        console.log(`Creating: ${validHighlights.length} highlights, ${validAmenities.length} amenities, ${validUnits.length} units, ${validAnchors.length} anchors`);
+        
+        try {
+          console.log('Starting creation of new items...');
+          
+          // Create highlights sequentially
+          console.log(`Creating ${validHighlights.length} highlights...`);
+          for (const highlight of validHighlights) {
+            try {
+              if (!highlight.label?.trim()) continue;
+              
+              const response = await fetch('/api/projects/highlights', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...highlight }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create highlight: ${highlight.label}`);
+              }
+            } catch (err) {
+              console.error('Error creating highlight:', err);
+            }
+          }
+          
+          // Create amenities sequentially
+          console.log(`Creating ${validAmenities.length} amenities...`);
+          for (const amenity of validAmenities) {
+            try {
+              if (!amenity.name?.trim()) continue;
+              
+              const response = await fetch('/api/projects/amenities', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...amenity }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create amenity: ${amenity.name}`);
+              }
+            } catch (err) {
+              console.error('Error creating amenity:', err);
+            }
+          }
+          
+          // Create units sequentially
+          console.log(`Creating ${validUnits.length} units...`);
+          for (const unit of validUnits) {
+            try {
+              if (!unit.unitNumber?.trim()) continue;
+              
+              const response = await fetch(`/api/projects/${editingProjectId}/units`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(unit),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create unit: ${unit.unitNumber}`);
+              }
+            } catch (err) {
+              console.error('Error creating unit:', err);
+            }
+          }
+          
+          // Create anchors sequentially
+          console.log(`Creating ${validAnchors.length} anchors...`);
+          for (const anchor of validAnchors) {
+            try {
+              if (!anchor.name?.trim()) continue;
+              
+              const response = await fetch('/api/projects/anchors', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...anchor }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create anchor: ${anchor.name}`);
+              }
+            } catch (err) {
+              console.error('Error creating anchor:', err);
+            }
+          }
+        } catch (error) {
+          console.error('Error recreating nested data:', error);
+          throw new Error('Failed to recreate nested data');
+        }
+        // Create remaining nested data sequentially
+        try {
           // Create floor plans
-          ...fullProjectData.floorPlans.map(floorPlan => {
-            console.log('Creating floor plan:', { projectId: editingProjectId, ...floorPlan });
-            return fetch('/api/projects/floorPlans', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...floorPlan }),
-            }).then(response => {
+          const validFloorPlans = fullProjectData.floorPlans.filter(fp => fp.level?.trim() && fp.imageUrl?.trim());
+          console.log(`Creating ${validFloorPlans.length} floor plans...`);
+          
+          for (const floorPlan of validFloorPlans) {
+            try {
+              console.log(`Creating floor plan: ${floorPlan.level}`);
+              const response = await fetch('/api/projects/floorPlans', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...floorPlan }),
+              });
+              
               if (!response.ok) {
                 console.error('Floor plan creation failed:', response.status, response.statusText);
-                return response.json().then(error => {
-                  console.error('Floor plan error details:', error);
-                });
+                const error = await response.json().catch(() => ({}));
+                console.error('Floor plan error details:', error);
+              } else {
+                console.log(`Floor plan created successfully: ${floorPlan.level}`);
               }
-              return response.json().then(result => {
-                console.log('Floor plan created successfully:', result);
-              });
-            });
-          }),
+              
+              // Small delay to prevent overwhelming the server
+              await new Promise(resolve => setTimeout(resolve, 50));
+            } catch (err) {
+              console.error('Error creating floor plan:', err);
+            }
+          }
+          
           // Create FAQs
-          ...fullProjectData.faqs.map(faq =>
-            fetch('/api/projects/faqs', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...faq }),
-            })
-          ),
+          const validFaqs = fullProjectData.faqs.filter(f => f.question?.trim() && f.answer?.trim());
+          console.log(`Creating ${validFaqs.length} FAQs...`);
+          
+          for (const faq of validFaqs) {
+            try {
+              const response = await fetch('/api/projects/faqs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...faq }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create FAQ: ${faq.question.substring(0, 30)}...`);
+              }
+            } catch (err) {
+              console.error('Error creating FAQ:', err);
+            }
+          }
+          
           // Create media
-          ...fullProjectData.media.map((media: any) =>
-            fetch('/api/projects/media', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...media }),
-            })
-          ),
+          const validMedia = fullProjectData.media.filter((m: any) => m.url?.trim());
+          console.log(`Creating ${validMedia.length} media items...`);
+          
+          for (const media of validMedia) {
+            try {
+              const response = await fetch('/api/projects/media', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...media }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create media: ${media.caption || 'Unnamed'}`);
+              }
+            } catch (err) {
+              console.error('Error creating media:', err);
+            }
+          }
+          
           // Create pricing table entries
-          ...fullProjectData.pricingTable.map(pricingRow =>
-            fetch('/api/projects/pricingTable', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...pricingRow }),
-            })
-          ),
+          const validPricingRows = fullProjectData.pricingTable.filter(p => p.unitType?.trim());
+          console.log(`Creating ${validPricingRows.length} pricing table rows...`);
+          
+          for (const pricingRow of validPricingRows) {
+            try {
+              const response = await fetch('/api/projects/pricingTable', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...pricingRow }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create pricing row: ${pricingRow.unitType}`);
+              }
+            } catch (err) {
+              console.error('Error creating pricing row:', err);
+            }
+          }
+          
           // Create nearby points
-          ...fullProjectData.nearbyPoints.map((nearbyPoint: any) =>
-            fetch('/api/projects/nearbyPoints', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ projectId: editingProjectId, ...nearbyPoint }),
-            })
-          ),
-        ]);
+          const validNearbyPoints = fullProjectData.nearbyPoints.filter((np: any) => np.name?.trim() && np.type?.trim());
+          console.log(`Creating ${validNearbyPoints.length} nearby points...`);
+          
+          for (const nearbyPoint of validNearbyPoints) {
+            try {
+              const response = await fetch('/api/projects/nearbyPoints', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId: editingProjectId, ...nearbyPoint }),
+              });
+              
+              if (!response.ok) {
+                console.warn(`Failed to create nearby point: ${nearbyPoint.name}`);
+              }
+            } catch (err) {
+              console.error('Error creating nearby point:', err);
+            }
+          }
+          
+          console.log('All nested data creation completed');
+        } catch (error) {
+          console.error('Error creating remaining nested data:', error);
+          // Continue with the process even if some items fail
+        }
 
       } else {
         // Create new project

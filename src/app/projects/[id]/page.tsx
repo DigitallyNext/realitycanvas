@@ -553,16 +553,16 @@ export default function ProjectDetailPage() {
             </div>
 
             {/* Pricing Section */}
-            <div
+            {/* <div
               ref={pricingRef}
               className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
-            >
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            > */}
+              {/* <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Pricing Table
-              </h2>
+              </h2> */}
 
               {/* Pricing Table Section */}
-              {project.pricingTable && project.pricingTable.length > 0 && (
+              {/* {project.pricingTable && project.pricingTable.length > 0 && (
                 <div className="mb-8">
                   <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <table className="w-full min-w-full">
@@ -627,8 +627,8 @@ export default function ProjectDetailPage() {
                     </table>
                   </div>
                 </div>
-              )}
-            </div>
+              )} */}
+            {/* </div> */}
 
             {/* Amenities Section */}
             {project.amenities.length > 0 && (
