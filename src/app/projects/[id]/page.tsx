@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { notFound } from "next/navigation";
+// import { notFound } from "next/navigation";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -201,7 +201,8 @@ export default function ProjectDetailPage() {
           
           // If project not found (404), use Next.js notFound
           if (res.status === 404) {
-            notFound();
+            // notFound();
+            setError("Project not found");
             return;
           }
           
