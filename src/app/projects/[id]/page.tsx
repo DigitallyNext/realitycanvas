@@ -1235,7 +1235,7 @@ export default function ProjectDetailPage() {
       {/* Gallery Modal */}
       {viewAllPhotos && project.galleryImages && project.galleryImages.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Photo Gallery
@@ -1255,7 +1255,7 @@ export default function ProjectDetailPage() {
                 <img
                   src={project.galleryImages[activeImageIndex]}
                   alt={`Photo ${activeImageIndex + 1}`}
-                  className="w-full h-full object-contain"
+                  className="w-full h-[80vh] object-contain"
                 />
                 <button
                   onClick={() => {
