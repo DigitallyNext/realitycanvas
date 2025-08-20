@@ -341,7 +341,7 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <main className="pt-16 px-6 max-w-6xl mx-auto">
+      <main className="py-20 px-6 max-w-6xl mx-auto">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="h-64 bg-gray-200 rounded mb-6"></div>
@@ -357,7 +357,7 @@ export default function ProjectDetailPage() {
 
   if (error || !project) {
     return (
-      <main className="pt-16 px-6 max-w-6xl mx-auto">
+      <main className="py-10 px-6 max-w-6xl mx-auto">
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-red-600 mb-4">
             Project Not Found
@@ -387,11 +387,11 @@ export default function ProjectDetailPage() {
       
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-4 mt-20">
+        <div className="flex justify-between items-center mb-4 mt-10">
           <Link href="/projects" className="flex items-center text-blue-600 hover:text-blue-800">
             <ArrowLeftIcon className="w-4 h-4 mr-1" /> Back to Projects
           </Link>
-          <button 
+          {/* <button 
             onClick={refreshProject}
             className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
             disabled={loading}
@@ -409,7 +409,7 @@ export default function ProjectDetailPage() {
                 <ArrowPathIcon className="w-4 h-4 mr-1" /> Refresh
               </>
             )}
-          </button>
+          </button> */}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Main Content */}
@@ -579,7 +579,7 @@ export default function ProjectDetailPage() {
                 <div className="overflow-x-auto">
                   <div className="grid grid-cols-7 gap-4 min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     {/* Header Row */}
-                    <div className="col-span-7 grid grid-cols-7 bg-gray-50 dark:bg-gray-900">
+                    <div className="col-span-7 grid grid-cols-6 bg-gray-50 dark:bg-gray-900">
                       <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Unit
                       </div>
@@ -614,23 +614,23 @@ export default function ProjectDetailPage() {
                           <div className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {unit.unitNumber}
                           </div>
-                          <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <div className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                             {unit.type}
                           </div>
-                          <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <div className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                             {unit.floor}
                           </div>
-                          <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <div className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                             {unit.areaSqFt.toLocaleString()} sq ft
                           </div>
-                          <div className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-white">
                             {unit.priceTotal
                               ? `₹${(unit.priceTotal / 100000).toFixed(1)}L`
                               : unit.ratePsf
                               ? `₹${unit.ratePsf}/sq ft`
                               : "Price on Request"}
                           </div>
-                          {/* <div className="px-6 py-4 whitespace-nowrap">
+                          <div className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                 unit.availability === "AVAILABLE"
@@ -644,7 +644,7 @@ export default function ProjectDetailPage() {
                             >
                               {unit.availability}
                             </span>
-                          </div> */}
+                          </div>
                           {/* <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <button className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                               View
