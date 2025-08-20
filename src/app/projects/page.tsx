@@ -222,7 +222,7 @@ export default function ProjectsPage() {
               <div
                 key={project.id}
                 className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-gray-700 cursor-pointer"
-                onClick={() => window.location.href = `/projects/${project.id}`}
+                onClick={() => window.location.href = `/projects/${project.slug}`}
               >
                 <div className="relative overflow-hidden">
                   <img
@@ -278,7 +278,7 @@ export default function ProjectsPage() {
                     </div>
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       <Link 
-                        href={`/projects/${project.id}`} 
+                        href={`/projects/${project.slug}`} 
                         className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
                         onClick={(e) => e.stopPropagation()}
                       >

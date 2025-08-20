@@ -111,37 +111,35 @@ export async function GET(request: NextRequest) {
       headers: Object.fromEntries(request.headers.entries())
     });
     
-    // Force Prisma to make a fresh database query
-    const projects = await prisma.$transaction(async (tx) => {
-      return await tx.project.findMany({
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          subtitle: true,
-          category: true,
-          status: true,
-          address: true,
-          city: true,
-          state: true,
-          featuredImage: true,
-          galleryImages: true,
-          createdAt: true,
-          minRatePsf: true,
-          maxRatePsf: true,
-        },
-      });
+    // Query directly without wrapping in a transaction to prevent P2028 timeouts
+    const projects = await prisma.project.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        category: true,
+        status: true,
+        address: true,
+        city: true,
+        state: true,
+        featuredImage: true,
+        galleryImages: true,
+        createdAt: true,
+        minRatePsf: true,
+        maxRatePsf: true,
+      },
     });
-    
+
     console.log(`Found ${projects.length} projects`);
-    
+
     // Set cache control headers to prevent caching
     const response = NextResponse.json(projects);
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
-    
+
     return response;
   } catch (error) {
     console.error('List projects error:', error);
