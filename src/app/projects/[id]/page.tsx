@@ -162,6 +162,10 @@ export default function ProjectDetailPage() {
 
   // FAQ expanded state
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  
+  // Units pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [unitsPerPage] = useState(7);
 
   // Refs for section navigation
   const overviewRef = useRef<HTMLDivElement>(null);
@@ -528,6 +532,8 @@ export default function ProjectDetailPage() {
                       : project.category.replace("_", " ")}
                   </div>
                 </div>
+                
+             
                 {/* <div className="text-center">
                   <HomeIcon className="w-8 h-8 text-green-500 mx-auto mb-2" />
                   <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -571,55 +577,60 @@ export default function ProjectDetailPage() {
               </h2>
               {project.units.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-900">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Unit
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Floor
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Area
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Price
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                      {project.units.map((unit) => (
-                        <tr
+                  <div className="grid grid-cols-7 gap-4 min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    {/* Header Row */}
+                    <div className="col-span-7 grid grid-cols-7 bg-gray-50 dark:bg-gray-900">
+                      <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Unit
+                      </div>
+                      <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Type
+                      </div>
+                      <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Floor
+                      </div>
+                      <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Area
+                      </div>
+                      <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Price
+                      </div>
+                      <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Status
+                      </div>
+                      {/* <div className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Actions
+                      </div> */}
+                    </div>
+                    
+                    {/* Data Rows - Only show current page */}
+                    {project.units
+                      .slice((currentPage - 1) * unitsPerPage, currentPage * unitsPerPage)
+                      .map((unit) => (
+                        <div 
                           key={unit.id}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                          className="col-span-7 grid grid-cols-6 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800"
                         >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {unit.unitNumber}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          </div>
+                          <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {unit.type}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          </div>
+                          <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {unit.floor}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          </div>
+                          <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {unit.areaSqFt.toLocaleString()} sq ft
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          </div>
+                          <div className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {unit.priceTotal
                               ? `₹${(unit.priceTotal / 100000).toFixed(1)}L`
                               : unit.ratePsf
                               ? `₹${unit.ratePsf}/sq ft`
                               : "Price on Request"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          </div>
+                          {/* <div className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                 unit.availability === "AVAILABLE"
@@ -633,17 +644,45 @@ export default function ProjectDetailPage() {
                             >
                               {unit.availability}
                             </span>
-                          </td>
-                        </tr>
+                          </div> */}
+                          {/* <div className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <button className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                              View
+                            </button>
+                          </div> */}
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                  </div>
                 </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center py-8">
                   No units available
                 </p>
               )}
+                 {/* Pagination Controls */}
+                {project.units.length > unitsPerPage && (
+                  <div className="flex justify-between items-center mt-6">
+                    <div className="text-sm text-gray-500">
+                      Showing {Math.min((currentPage - 1) * unitsPerPage + 1, project.units.length)} to {Math.min(currentPage * unitsPerPage, project.units.length)} of {project.units.length} units
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(project.units.length / unitsPerPage)))}
+                        disabled={currentPage >= Math.ceil(project.units.length / unitsPerPage)}
+                        className={`px-3 py-1 rounded ${currentPage >= Math.ceil(project.units.length / unitsPerPage) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
             </div>
 
             {/* Pricing Section */}
