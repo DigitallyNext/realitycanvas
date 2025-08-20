@@ -762,6 +762,34 @@ export default function ProjectDetailPage() {
                 </div>
               )} */}
             {/* </div> */}
+               {/* Property Highlights */}
+            {project.highlights.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                  Property Highlights
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {project.highlights.map((highlight) => (
+                    <div
+                      key={highlight.id}
+                      className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl"
+                    >
+                      {highlight.icon && (
+                        <span className="text-2xl">{highlight.icon}</span>
+                      )}
+                      <div>
+                        <div className="font-semibold text-gray-900 dark:text-white">
+                          {highlight.label}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          High-end amenities and premium finishes throughout
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Amenities Section */}
             {project.amenities.length > 0 && (
@@ -1116,34 +1144,7 @@ export default function ProjectDetailPage() {
               )}
             </div>
 
-            {/* Property Highlights */}
-            {project.highlights.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                  Property Highlights
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {project.highlights.map((highlight) => (
-                    <div
-                      key={highlight.id}
-                      className="flex items-center space-x-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl"
-                    >
-                      {highlight.icon && (
-                        <span className="text-2xl">{highlight.icon}</span>
-                      )}
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          {highlight.label}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          High-end amenities and premium finishes throughout
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+         
 
             {/* About the Builder */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
