@@ -406,7 +406,7 @@ export default function ProjectsPage() {
                 No matching projects found
               </h3>
               <p className="text-muted-foreground mb-8">
-                Try adjusting your search criteria or filters to find what you're looking for.
+                Try adjusting your search criteria or filters to find what you&apos;re looking for.
               </p>
               <Button onClick={handleClearFilters}>
                 Clear Filters
