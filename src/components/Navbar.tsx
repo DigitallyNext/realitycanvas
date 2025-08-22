@@ -14,7 +14,7 @@ import gsap from 'gsap';
 const navigation = [
   // { name: 'Properties', href: '/properties' },
   { name: 'Projects', href: '/projects' },
-  { name: 'About', href: '/about' },
+  // { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
 
@@ -107,7 +107,7 @@ export default function Navbar() {
   
   return (
     <nav className="bg-white/95 backdrop-blur-sm shadow-lg dark:bg-gray-900/95 fixed w-full z-50 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="">
@@ -118,18 +118,18 @@ export default function Navbar() {
                 alt="Reality Canvas" 
                 width={1200} 
                 height={100} 
-                className="w-48 h-12" 
+                className="w-40 h-10" 
               />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-8">
+          <div className="hidden lg:flex lg:items-center lg:space-x-5">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-700 hover:text-brand-primary dark:text-gray-300 dark:hover:text-brand-primary px-3 py-2 text-sm font-medium transition-colors duration-200 relative group no-underline hover:no-underline focus:no-underline"
+                className="text-gray-700 hover:text-brand-primary dark:text-gray-300 dark:hover:text-brand-primary px-4 py-2 text-base font-medium transition-colors duration-200 relative group no-underline hover:no-underline focus:no-underline"
               >
                 {item.name}
                 <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-brand-primary to-brand-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200"></span>
@@ -143,7 +143,7 @@ export default function Navbar() {
             <Link 
               href="tel:9910007801"
               ref={callNowButtonRef}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-3 py-2 rounded-full transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none whitespace-nowrap"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
@@ -153,7 +153,7 @@ export default function Navbar() {
             <Link 
               href="tel:9910007801"
               ref={hotlineButtonRef}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-2 rounded-full transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
@@ -164,7 +164,7 @@ export default function Navbar() {
               <BrandButton
                 variant="primary"
                 size="sm"
-                className="rounded-full"
+                className="rounded-full whitespace-nowrap text-sm px-3 py-1"
               >
                 Add Project
               </BrandButton>
@@ -172,8 +172,8 @@ export default function Navbar() {
             
             {/* Profile Menu */}
             <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary transition-colors duration-200">
-                <div className="w-8 h-8 bg-gradient-to-r from-brand-primary to-brand-primary rounded-full flex items-center justify-center text-brand-secondary text-sm font-medium">
+              <Menu.Button className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary transition-colors duration-200">
+                <div className="w-7 h-7 bg-gradient-to-r from-brand-primary to-brand-primary rounded-full flex items-center justify-center text-brand-secondary text-sm font-medium">
                   U
                 </div>
                 <ChevronDownIcon className="w-4 h-4" />
