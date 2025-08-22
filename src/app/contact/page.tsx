@@ -78,7 +78,7 @@ export default function ContactPage() {
               </div>
               <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                 An online real estate marketplace based in India, specializing in finding you a more 
-                neighbourly place by assisting you in finding a home you'll love. We provide personalized 
+                neighbourly place by assisting you in finding a home you&apos;ll love. We provide personalized 
                 recommendations and insights sourced directly from locals across Delhi NCR.
               </p>
               
