@@ -40,20 +40,29 @@ type Unit = {
   notes?: string | null;
 };
 
-export default function UnitsSection() {
-  const unitsRef = useRef<HTMLDivElement>(null);
+interface UnitsSectionProps {
+  project: Project;
+}
 
-  // Demo state (replace with real fetched data)
-  const [project, setProject] = useState<Project | null>(null);
+export default function UnitsSection({ project }: UnitsSectionProps) {
+  const unitsRef = useRef<HTMLDivElement>(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const unitsPerPage = 10;
 
-  const totalUnits = project?.units?.length ?? 0;
+  const totalUnits = project.units?.length ?? 0;
   const startIndex = (currentPage - 1) * unitsPerPage;
   const endIndex = currentPage * unitsPerPage;
-  const currentUnits = project?.units?.slice(startIndex, endIndex) ?? [];
+  const currentUnits = project.units?.slice(startIndex, endIndex) ?? [];
+
+  // Only show units table for residential projects
+  const isResidential = project.category?.toUpperCase() === 'RESIDENTIAL';
+
+  // Don't render anything for commercial projects
+  if (!isResidential) {
+    return null;
+  }
 
   return (
     <div

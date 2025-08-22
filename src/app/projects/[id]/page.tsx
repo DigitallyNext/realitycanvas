@@ -22,6 +22,7 @@ import {
   ArrowLeftIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
+import UnitsSection from "@/components/Notes/Units";
 
 type Unit = {
   id: string;
@@ -717,6 +718,9 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Units Section - Only for Residential Projects */}
+            <UnitsSection project={project} />
 
             {/* Anchor Tenants Section */}
             {/* {project.anchors && project.anchors.length > 0 ? (

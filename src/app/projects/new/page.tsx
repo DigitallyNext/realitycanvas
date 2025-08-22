@@ -717,7 +717,7 @@ function UnifiedProjectFormContent() {
     try {
       const projectPayload = {
         ...project,
-        category: getProjectCategory(),
+        category: project.category, // Use manually selected category instead of auto-detection
         galleryImages: project.galleryImages ? project.galleryImages.split(',').map(s => s.trim()).filter(Boolean) : [],
         videoUrl: project.videoUrl || undefined,
         videoUrls: videoUrls.filter(Boolean),
@@ -791,7 +791,7 @@ function UnifiedProjectFormContent() {
             areaSqFt: u.areaSqFt && u.areaSqFt.trim() && u.areaSqFt.toLowerCase() !== 'n/a' ? u.areaSqFt.trim() : '0',
             availability: 'AVAILABLE'
           })),
-          anchors: getProjectCategory() !== 'RESIDENTIAL' ? anchors.filter(a => a.name).map(a => ({
+          anchors: project.category !== 'RESIDENTIAL' ? anchors.filter(a => a.name).map(a => ({
             name: a.name,
             category: a.category,
             status: 'PLANNED',
@@ -1137,7 +1137,7 @@ function UnifiedProjectFormContent() {
       }
 
       // Add anchors (for commercial projects)
-      if (getProjectCategory() !== 'RESIDENTIAL') {
+      if (project.category !== 'RESIDENTIAL') {
         for (const anchor of anchors.filter(a => a.name)) {
           await fetch('/api/projects/anchors', {
             method: 'POST',
@@ -1163,7 +1163,7 @@ function UnifiedProjectFormContent() {
     }
   };
 
-  const category = getProjectCategory();
+  const category = project.category; // Use manually selected category
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -1239,6 +1239,27 @@ function UnifiedProjectFormContent() {
                     }`}
                   >
                     {cat.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Project Status Selection */}
+            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Project Status</h4>
+              <div className="grid grid-cols-3 gap-3">
+                {['PLANNED', 'UNDER_CONSTRUCTION', 'READY'].map((stat) => (
+                  <button
+                    key={stat}
+                    type="button"
+                    onClick={() => setProject(prev => ({ ...prev, status: stat as any }))}
+                    className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                      project.status === stat
+                        ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    {stat.replace('_', ' ')}
                   </button>
                 ))}
               </div>
