@@ -548,7 +548,7 @@ export default function ProjectDetailPage() {
                     sq ft
                   </div>
                 </div> */}
-                <div className="text-center">
+                {/* <div className="text-center">
                   <CalendarIcon className="w-8 h-8 text-purple-500 mx-auto mb-2" />
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     Last Updated
@@ -556,7 +556,7 @@ export default function ProjectDetailPage() {
                   <div className="font-semibold text-gray-900 dark:text-white">
                     4/8/2025
                   </div>
-                </div>
+                </div> */}
                 {/* <div className="text-center">
                   <EyeIcon className="w-8 h-8 text-orange-500 mx-auto mb-2" />
                   <div className="text-sm text-gray-500 dark:text-gray-400">

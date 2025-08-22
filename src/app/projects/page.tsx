@@ -485,7 +485,7 @@ export default function ProjectsPage() {
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      Created {new Date(project.createdAt).toLocaleDateString()}
+                      {/* Created {new Date(project.createdAt).toLocaleDateString()} */}
                     </div>
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       <Link 
