@@ -8,74 +8,291 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Keep existing Property model for residential/testing reference
 model Property {
-  id                String   @id @default(uuid())
-  title             String
-  description       String
-  price             Int
-  address           String
-  location          String
-  currency          String   @default("INR")
-  featuredImage     String
-  galleryImages     String[]
-  beds              Int      @default(0)
-  baths             Int      @default(0)
-  area              Int      @default(0)
-  createdAt         DateTime @default(now())
-  
-  // Banner section
-  bannerTitle       String?  
-  bannerSubtitle    String?
-  bannerDescription String?
-  
-  // About section
-  aboutTitle        String?
-  aboutDescription  String?
-  
-  // Highlights section
-  highlights        Json?    // Array of highlight items
-  
-  // Floor Plan section
-  floorPlans        Json?    // Array of floor plan images and details
-  
-  // Project Facilities
-  facilities        Json?    // Array of facility items
-  
-  // Site Plan
-  sitePlanImage     String?
-  sitePlanTitle     String?
+  id                  String          @id @default(uuid())
+  title               String
+  description         String
+  price               Int
+  address             String
+  location            String
+  currency            String          @default("INR")
+  featuredImage       String
+  galleryImages       String[]
+  beds                Int             @default(0)
+  baths               Int             @default(0)
+  area                Int             @default(0)
+  createdAt           DateTime        @default(now())
+  aboutDescription    String?
+  aboutTitle          String?
+  bannerDescription   String?
+  bannerSubtitle      String?
+  bannerTitle         String?
+  builderDescription  String?
+  builderLogo         String?
+  builderName         String?
+  facilities          Json?
+  faqs                Json?
+  floorPlans          Json?
+  highlights          Json?
+  relatedProperties   String[]        @default([])
   sitePlanDescription String?
-  
-  // Builder Information
-  builderName       String?
-  builderLogo       String?
-  builderDescription String?
-  
-  // FAQs
-  faqs              Json?    // Array of FAQ items
-  
-  // Others/Related Properties
-  relatedProperties String[]  @default([])
-  
-  // Click tracking fields
-  totalClicks       Int      @default(0)
-  isTrending        Boolean  @default(false)
-  
-  // Relations
-  propertyClicks    PropertyClick[]
+  sitePlanImage       String?
+  sitePlanTitle       String?
+  isTrending          Boolean         @default(false)
+  totalClicks         Int             @default(0)
+  propertyClicks      PropertyClick[]
 }
 
-// =====================
-// COMMERCIAL PROJECT MODELS
-// =====================
+model Project {
+  id                  String                  @id @default(uuid())
+  slug                String                  @unique
+  title               String
+  subtitle            String?
+  description         String
+  category            ProjectCategory         @default(COMMERCIAL)
+  status              ProjectStatus           @default(PLANNED)
+  reraId              String?
+  developerName       String?
+  developerLogo       String?
+  possessionDate      DateTime?
+  launchDate          DateTime?
+  address             String
+  locality            String?
+  city                String?
+  state               String?
+  latitude            Float?
+  longitude           Float?
+  currency            String                  @default("INR")
+  featuredImage       String
+  galleryImages       String[]
+  videoUrl            String?
+  videoUrls           String[]                @default([])
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  basePrice           String?
+  priceRange          String?
+  bannerTitle         String?
+  bannerSubtitle      String?
+  bannerDescription   String?
+  aboutTitle          String?
+  aboutDescription    String?
+  sitePlanImage       String?
+  sitePlanTitle       String?
+  sitePlanDescription String?
+  minRatePsf          String?
+  maxRatePsf          String?
+  minUnitArea         Int?
+  maxUnitArea         Int?
+  totalUnits          Int?
+  soldUnits           Int?
+  availableUnits      Int?
+  isTrending          Boolean                 @default(false)
+  totalClicks         Int                     @default(0)
+  amenities           Amenity[]
+  anchors             AnchorTenant[]
+  configurations      ConfigurationType[]
+  construction        ConstructionMilestone[]
+  documents           Document[]
+  faqs                Faq[]
+  floorPlans          FloorPlan[]
+  highlights          Highlight[]
+  media               Media[]
+  nearbyPoints        NearbyPoint[]
+  pricingPlans        PricingPlan[]
+  pricingTable        PricingTable[]
+  projectClicks       ProjectClick[]
+  units               Unit[]
+}
 
-// Enums
+model Highlight {
+  id        String  @id @default(uuid())
+  projectId String
+  label     String
+  icon      String?
+  sortOrder Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Amenity {
+  id        String  @id @default(uuid())
+  projectId String
+  category  String
+  name      String
+  details   String?
+  sortOrder Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Faq {
+  id        String  @id @default(uuid())
+  projectId String
+  question  String
+  answer    String
+  sortOrder Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Media {
+  id        String    @id @default(uuid())
+  projectId String
+  type      MediaType
+  url       String
+  caption   String?
+  tags      String[]
+  floor     String?
+  sortOrder Int       @default(0)
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model FloorPlan {
+  id        String  @id @default(uuid())
+  projectId String
+  level     String
+  title     String?
+  imageUrl  String
+  details   Json?
+  sortOrder Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id         String    @id @default(uuid())
+  projectId  String
+  docType    DocType
+  title      String
+  fileUrl    String
+  number     String?
+  issueDate  DateTime?
+  expiryDate DateTime?
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ConfigurationType {
+  id           String   @id @default(uuid())
+  projectId    String
+  type         UnitType
+  level        String?
+  areaRangeMin Int?
+  areaRangeMax Int?
+  notes        String?
+  sortOrder    Int      @default(0)
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  units        Unit[]
+}
+
+model Unit {
+  id               String             @id @default(uuid())
+  projectId        String
+  configurationId  String?
+  unitNumber       String
+  type             UnitType
+  floor            String
+  areaSqFt         String
+  frontageFt       Float?
+  ceilingHeightFt  Float?
+  fitOutStatus     FitOutStatus?
+  nearAnchor       Boolean            @default(false)
+  isCorner         Boolean            @default(false)
+  visibilityScore  Int?
+  ventilationReady Boolean?
+  priceTotal       Int?
+  ratePsf          Float?
+  leaseModel       LeaseModel?
+  lockInMonths     Int?
+  escalationPct    Float?
+  availability     Availability       @default(AVAILABLE)
+  notes            String?
+  configuration    ConfigurationType? @relation(fields: [configurationId], references: [id])
+  project          Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model AnchorTenant {
+  id        String       @id @default(uuid())
+  projectId String
+  name      String
+  category  String
+  status    AnchorStatus @default(PLANNED)
+  floor     String?
+  areaSqFt  String?
+  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model NearbyPoint {
+  id            String     @id @default(uuid())
+  projectId     String
+  type          NearbyType
+  name          String
+  distanceKm    Float?
+  travelTimeMin Int?
+  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model PricingPlan {
+  id        String   @id @default(uuid())
+  projectId String
+  name      String
+  planType  PlanType
+  schedule  Json?
+  taxes     Json?
+  charges   Json?
+  notes     String?
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model PricingTable {
+  id             String  @id @default(uuid())
+  projectId      String
+  type           String
+  reraArea       String
+  price          String
+  pricePerSqft   String?
+  availableUnits Int?
+  floorNumbers   String?
+  features       Json?
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ConstructionMilestone {
+  id        String    @id @default(uuid())
+  projectId String
+  name      String
+  status    String
+  date      DateTime?
+  images    String[]
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model PropertyClick {
+  id          String   @id @default(uuid())
+  propertyId  String
+  clickCount  Int      @default(1)
+  clickDate   DateTime
+  lastClickAt DateTime @default(now())
+  clientIP    String?
+  createdAt   DateTime @default(now())
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, clickDate])
+}
+
+model ProjectClick {
+  id          String   @id @default(uuid())
+  projectId   String
+  clickCount  Int      @default(1)
+  clickDate   DateTime
+  lastClickAt DateTime @default(now())
+  clientIP    String?
+  createdAt   DateTime @default(now())
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, clickDate])
+}
+
 enum ProjectCategory {
   COMMERCIAL
   RETAIL_ONLY
   MIXED_USE
-  RESIDENTIAL // for future residential projects using Project model
+  RESIDENTIAL
 }
 
 enum ProjectStatus {
@@ -151,254 +368,4 @@ enum PlanType {
   DOWN_PAYMENT
   SUBVENTION
   LEASE_BACK
-}
-
-// Main Project model for commercial/mixed-use developments
-model Project {
-  id          String   @id @default(uuid())
-  slug        String   @unique
-  title       String
-  subtitle    String?
-  description String
-  category    ProjectCategory @default(COMMERCIAL)
-  status      ProjectStatus   @default(PLANNED)
-  reraId      String?
-  developerName String?
-  developerLogo String?
-  possessionDate DateTime?
-  launchDate     DateTime?
-  address        String
-  locality       String? // e.g., Sector 25
-  city           String? // e.g., Gurugram
-  state          String? // e.g., Haryana
-  latitude       Float?
-  longitude      Float?
-  currency       String  @default("INR")
-  featuredImage  String
-  galleryImages  String[]
-  videoUrl       String?    // Main project video
-  videoUrls      String[]   @default([]) // Additional project videos
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Pricing fields
-  basePrice      String? // Base price for the project (supports text like "₹50 Lakhs", "₹2 Crores")
-  priceRange     String? // e.g., "₹50L - ₹2Cr"
-  
-  // Marketing sections
-  bannerTitle       String?
-  bannerSubtitle    String?
-  bannerDescription String?
-  
-  aboutTitle        String?
-  aboutDescription  String?
-  
-  sitePlanImage       String?
-  sitePlanTitle       String?
-  sitePlanDescription String?
-
-  // Relations
-  highlights        Highlight[]
-  amenities         Amenity[]
-  faqs              Faq[]
-  floorPlans        FloorPlan[]
-  documents         Document[]
-  media             Media[]
-  configurations    ConfigurationType[]
-  units             Unit[]
-  anchors           AnchorTenant[]
-  pricingPlans      PricingPlan[]
-  pricingTable      PricingTable[]
-  construction      ConstructionMilestone[]
-  nearbyPoints      NearbyPoint[]
-
-  // Convenience aggregates (denormalized for performance)
-  minRatePsf    String? // Supports text values like "₹5000", "₹50K"
-  maxRatePsf    String? // Supports text values like "₹15000", "₹1.5L"
-  minUnitArea   Int?
-  maxUnitArea   Int?
-  totalUnits    Int?    // Total number of units
-  soldUnits     Int?    // Number of units sold
-  availableUnits Int?   // Number of units available
-  isTrending    Boolean @default(false) // Manual trending flag
-}
-
-// Normalized tables for better querying and management
-model Highlight {
-  id        String  @id @default(uuid())
-  projectId String
-  label     String
-  icon      String? // optional icon key
-  sortOrder Int     @default(0)
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-model Amenity {
-  id        String  @id @default(uuid())
-  projectId String
-  category  String  // Retail, F&B, Entertainment, Office, Parking, MEP, Safety, Accessibility
-  name      String
-  details   String?
-  sortOrder Int     @default(0)
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-model Faq {
-  id        String  @id @default(uuid())
-  projectId String
-  question  String
-  answer    String
-  sortOrder Int     @default(0)
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-model Media {
-  id        String    @id @default(uuid())
-  projectId String
-  type      MediaType
-  url       String
-  caption   String?
-  tags      String[]  // ["facade","interior","level-1"]
-  floor     String?
-  sortOrder Int       @default(0)
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-model FloorPlan {
-  id        String  @id @default(uuid())
-  projectId String
-  level     String  // "LGF", "GF", "L1", "L2", "Office", "Multiplex"
-  title     String?
-  imageUrl  String
-  details   Json?
-  sortOrder Int     @default(0)
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-model Document {
-  id         String    @id @default(uuid())
-  projectId  String
-  docType    DocType
-  title      String
-  fileUrl    String
-  number     String?
-  issueDate  DateTime?
-  expiryDate DateTime?
-  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-// Commercial configurations and units
-model ConfigurationType {
-  id           String    @id @default(uuid())
-  projectId    String
-  type         UnitType
-  level        String?   // e.g., "GF", "L1", "L2"
-  areaRangeMin Int?
-  areaRangeMax Int?
-  notes        String?
-  sortOrder    Int       @default(0)
-  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  units        Unit[]
-}
-
-model Unit {
-  id               String          @id @default(uuid())
-  projectId        String
-  configurationId  String?
-  unitNumber       String
-  type             UnitType
-  floor            String          // "GF","L1","L2","Office","Multiplex"
-  areaSqFt         String          // Can be single value (1200) or range (1200-2700)
-  frontageFt       Float?
-  ceilingHeightFt  Float?
-  fitOutStatus     FitOutStatus?
-  nearAnchor       Boolean         @default(false)
-  isCorner         Boolean         @default(false)
-  visibilityScore  Int?            // 1-10
-  ventilationReady Boolean?        // for F&B
-  priceTotal       Int?            // if selling
-  ratePsf          Float?
-  leaseModel       LeaseModel?
-  lockInMonths     Int?
-  escalationPct    Float?
-  availability     Availability    @default(AVAILABLE)
-  notes            String?
-
-  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  configuration ConfigurationType? @relation(fields: [configurationId], references: [id])
-}
-
-// Anchors, multiplex, nearby points
-model AnchorTenant {
-  id        String       @id @default(uuid())
-  projectId String
-  name      String
-  category  String       // Fashion, Hypermarket, Electronics, Cinema
-  status    AnchorStatus @default(PLANNED)
-  floor     String?
-  areaSqFt  String?         // Can be single value (1200) or range (1200-2700)
-  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-model NearbyPoint {
-  id            String     @id @default(uuid())
-  projectId     String
-  type          NearbyType
-  name          String
-  distanceKm    Float?
-  travelTimeMin Int?
-  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-// Pricing plans and charges
-model PricingPlan {
-  id        String   @id @default(uuid())
-  projectId String
-  name      String
-  planType  PlanType
-  schedule  Json?    // [{milestone, percent}]
-  taxes     Json?    // [{name: "GST", percent: 5}]
-  charges   Json?    // [{name: "PLC"}, {name: "IFMS"}, {name: "CAM_estimate"}]
-  notes     String?
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-// Pricing table for different unit types
-model PricingTable {
-  id             String  @id @default(uuid())
-  projectId      String
-  type           String  // Unit type (Retail Shop, Office Space, etc.)
-  reraArea       String  // Area with unit (e.g., "700 Sq.ft")
-  price          String  // Price with currency (e.g., "₹50 Lakhs")
-  pricePerSqft   String? // Price per sqft
-  availableUnits Int?    // Number of available units
-  floorNumbers   String? // Floor numbers (e.g., "G, 1, 2")
-  features       Json?   // Array of features
-  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-// Construction status
-model ConstructionMilestone {
-  id        String   @id @default(uuid())
-  projectId String
-  name      String   // Excavation, Structure, Façade, Interiors
-  status    String   // Not started, In progress, Completed
-  date      DateTime?
-  images    String[] // status photos
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-}
-
-// Click tracking model for properties
-model PropertyClick {
-  id          String   @id @default(uuid())
-  propertyId  String
-  clickCount  Int      @default(1)
-  clickDate   DateTime // Date of the click (used for daily aggregation)
-  lastClickAt DateTime @default(now())
-  clientIP    String?  // Optional IP tracking
-  createdAt   DateTime @default(now())
-  
-  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  
-  @@unique([propertyId, clickDate]) // One record per property per day
 }

@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 // Homepage Components
 import {
   HeroSection,
-  // PropertySearchSection,
+  PropertySearchSection,
   BenefitsSection,
-  FeaturedPropertiesSection,
   FeaturedProjectsSection,
-  TrendingPropertiesSection,
   ServicesSection,
   NewsletterSection,
   ContactSection,
@@ -19,23 +17,6 @@ import Sections from "@/components/homepage/Sections";
 import Newsletter from "@/components/homepage/Newsletter";
 
 // Define the Property type based on the Prisma schema
-type Property = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  address: string;
-  location: string;
-  currency: string;
-  featuredImage: string;
-  galleryImages: string[];
-  beds: number;
-  baths: number;
-  area: number;
-  createdAt: Date;
-};
-
-// Define the Project type
 type Project = {
   id: string;
   slug: string;
@@ -53,9 +34,7 @@ type Project = {
 };
 
 export default function Home() {
-  const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [contactForm, setContactForm] = useState({
     name: "",
@@ -66,32 +45,6 @@ export default function Home() {
   const [contactSuccess, setContactSuccess] = useState(false);
 
   useEffect(() => {
-    async function fetchProperties() {
-      try {
-        console.log("Fetching properties from API...");
-        const response = await fetch("/api/properties");
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("API response:", data);
-
-        // Convert createdAt strings to Date objects
-        const formattedData = (data || []).map((property: Property) => ({
-          ...property,
-          createdAt: new Date(property.createdAt),
-        }));
-
-        setProperties(formattedData);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     async function fetchProjects() {
       try {
         console.log("Fetching projects from API...");
@@ -127,22 +80,10 @@ export default function Home() {
       }
     }
 
-    fetchProperties();
     fetchProjects();
   }, []);
 
-  // Reset loading state when navigating back to this page
-  useEffect(() => {
-    const handleRouteChange = () => {
-      setLoading(true);
-    };
 
-    window.addEventListener("popstate", handleRouteChange);
-
-    return () => {
-      window.removeEventListener("popstate", handleRouteChange);
-    };
-  }, []);
 
   const handleContactChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -185,7 +126,7 @@ export default function Home() {
       {/* Featured Projects Section */}
       <FeaturedProjectsSection projects={projects} loading={projectsLoading} />
 
-      {/* Trending Properties Section */}
+      {/* Trending Projects Section - handled by Sections component */}
 
       {/* Adventure Section */}
       {/* <Adventure /> */}
@@ -200,7 +141,7 @@ export default function Home() {
       <NewsletterSection />
 
       {/* Sections Section */}
-      <Sections properties={properties} loading={loading} />
+      <Sections projects={projects} loading={projectsLoading} />
 
       {/* Newsletter Section */}
       <Newsletter />

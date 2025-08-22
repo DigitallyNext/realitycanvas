@@ -198,7 +198,19 @@ function UnifiedProjectFormContent() {
         state: projectData.state || '',
         reraId: projectData.reraId || '',
         developerName: projectData.developerName || '',
-        possessionDate: projectData.possessionDate ? new Date(projectData.possessionDate).toISOString().split('T')[0] : '',
+        possessionDate: projectData.possessionDate ? (() => {
+          try {
+            const date = new Date(projectData.possessionDate);
+            if (isNaN(date.getTime())) {
+              console.warn('Invalid possession date from API:', projectData.possessionDate);
+              return '';
+            }
+            return date.toISOString().split('T')[0];
+          } catch (error) {
+            console.warn('Error parsing possession date from API:', projectData.possessionDate, error);
+            return '';
+          }
+        })() : '',
         featuredImage: projectData.featuredImage || '',
         galleryImages: Array.isArray(projectData.galleryImages) ? projectData.galleryImages.join(', ') : '',
         bannerTitle: projectData.bannerTitle || '',
@@ -540,7 +552,19 @@ function UnifiedProjectFormContent() {
         state: projectData.state || '',
         reraId: projectData.reraId || '',
         developerName: projectData.developerName || '',
-        possessionDate: projectData.possessionDate ? new Date(projectData.possessionDate).toISOString().split('T')[0] : '',
+        possessionDate: projectData.possessionDate ? (() => {
+          try {
+            const date = new Date(projectData.possessionDate);
+            if (isNaN(date.getTime())) {
+              console.warn('Invalid possession date from import:', projectData.possessionDate);
+              return '';
+            }
+            return date.toISOString().split('T')[0];
+          } catch (error) {
+            console.warn('Error parsing possession date from import:', projectData.possessionDate, error);
+            return '';
+          }
+        })() : '',
         featuredImage: projectData.featuredImage || '',
         galleryImages: Array.isArray(projectData.galleryImages) 
           ? projectData.galleryImages.join(', ') 
@@ -715,6 +739,19 @@ function UnifiedProjectFormContent() {
   };
 
   const handleSubmit = async () => {
+    // Validate required fields before submission
+    if (!project.title || !project.description || !project.address || !project.featuredImage) {
+      const missingFields = [];
+      if (!project.title) missingFields.push('Title');
+      if (!project.description) missingFields.push('Description');
+      if (!project.address) missingFields.push('Address');
+      if (!project.featuredImage) missingFields.push('Featured Image');
+      
+      alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+      setSubmitting(false);
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -724,7 +761,19 @@ function UnifiedProjectFormContent() {
         galleryImages: project.galleryImages ? project.galleryImages.split(',').map(s => s.trim()).filter(Boolean) : [],
         videoUrl: project.videoUrl || undefined,
         videoUrls: videoUrls.filter(Boolean),
-        possessionDate: project.possessionDate ? new Date(project.possessionDate).toISOString() : undefined,
+        possessionDate: project.possessionDate && project.possessionDate.trim() !== '' ? (() => {
+          try {
+            const date = new Date(project.possessionDate);
+            if (isNaN(date.getTime())) {
+              console.warn('Invalid possession date provided:', project.possessionDate);
+              return undefined;
+            }
+            return date.toISOString();
+          } catch (error) {
+            console.warn('Error parsing possession date:', project.possessionDate, error);
+            return undefined;
+          }
+        })() : undefined,
         // Add location data
         sitePlanImage: locationData.mapImage || null,
         latitude: locationData.coordinates?.latitude || null,

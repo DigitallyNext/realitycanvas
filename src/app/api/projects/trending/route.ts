@@ -13,13 +13,13 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
-    // Get trending properties based on clicks in the specified time period
-    const trendingProperties = await prisma.property.findMany({
+    // Get trending projects based on clicks in the specified time period
+    const trendingProjects = await prisma.project.findMany({
       where: {
         OR: [
           {
-            // Properties with recent clicks
-            propertyClicks: {
+            // Projects with recent clicks
+            projectClicks: {
               some: {
                 clickDate: {
                   gte: startDate,
@@ -29,13 +29,13 @@ export async function GET(request: NextRequest) {
             }
           },
           {
-            // Properties manually marked as trending
+            // Projects manually marked as trending
             isTrending: true
           }
         ]
       },
       include: {
-        propertyClicks: {
+        projectClicks: {
           where: {
             clickDate: {
               gte: startDate,
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       },
       orderBy: [
         {
-          isTrending: 'desc' // Manually trending properties first
+          isTrending: 'desc' // Manually trending projects first
         },
         {
           totalClicks: 'desc' // Then by total clicks
@@ -58,31 +58,31 @@ export async function GET(request: NextRequest) {
       take: limit
     });
 
-    // Calculate trending score for each property
-    const propertiesWithScore = trendingProperties.map(property => {
-      const recentClicks = property.propertyClicks.reduce(
+    // Calculate trending score for each project
+    const projectsWithScore = trendingProjects.map(project => {
+      const recentClicks = project.projectClicks.reduce(
         (sum, click) => sum + click.clickCount, 
         0
       );
       
       // Calculate trending score (recent clicks + manual trending boost)
-      const trendingScore = recentClicks + (property.isTrending ? 1000 : 0);
+      const trendingScore = recentClicks + (project.isTrending ? 1000 : 0);
       
       return {
-        ...property,
+        ...project,
         recentClicks,
         trendingScore,
         // Remove the clicks data from response
-        propertyClicks: undefined
+        projectClicks: undefined
       };
     });
 
     // Sort by trending score
-    propertiesWithScore.sort((a, b) => b.trendingScore - a.trendingScore);
+    projectsWithScore.sort((a, b) => b.trendingScore - a.trendingScore);
 
-    return NextResponse.json(propertiesWithScore);
+    return NextResponse.json(projectsWithScore);
   } catch (error) {
-    console.error('Error fetching trending properties:', error);
+    console.error('Error fetching trending projects:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

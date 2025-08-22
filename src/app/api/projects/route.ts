@@ -24,6 +24,7 @@ async function uniqueSlug(base: string) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('POST /api/projects request body:', JSON.stringify(body, null, 2));
 
     const {
       title,
@@ -58,7 +59,21 @@ export async function POST(request: NextRequest) {
     } = body || {};
 
     if (!title || !description || !address || !featuredImage) {
-      return NextResponse.json({ error: 'Missing required fields (title, description, address, featuredImage)' }, { status: 400 });
+      console.log('Missing required fields:', {
+        title: !!title,
+        description: !!description,
+        address: !!address,
+        featuredImage: !!featuredImage
+      });
+      return NextResponse.json({ 
+        error: 'Missing required fields (title, description, address, featuredImage)',
+        received: {
+          title: !!title,
+          description: !!description,
+          address: !!address,
+          featuredImage: !!featuredImage
+        }
+      }, { status: 400 });
     }
 
     const baseSlug = slug ? slugify(slug) : slugify(title);
@@ -101,7 +116,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
     console.error('Create project error:', error);
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    return NextResponse.json({ 
+      error: 'Failed to create project',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 

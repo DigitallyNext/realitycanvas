@@ -163,6 +163,7 @@ export default function ProjectDetailPage() {
 
   // FAQ expanded state
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [showAllFeatures, setShowAllFeatures] = useState(false);
   
   // Units pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -663,12 +664,12 @@ export default function ProjectDetailPage() {
                         <span className="text-2xl">{highlight.icon}</span>
                       )}
                       <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-semibold text-xs text-gray-900 dark:text-white">
                           {highlight.label}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                        {/* <div className="text-sm text-gray-600 dark:text-gray-400">
                           High-end amenities and premium finishes throughout
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ))}
@@ -700,7 +701,7 @@ export default function ProjectDetailPage() {
 
 
                       <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-semibold text-xs text-gray-900 dark:text-white">
                           
                           {amenity.name}
                         </div>
@@ -1177,10 +1178,13 @@ export default function ProjectDetailPage() {
                             {highlight.label}
                           </li>
                         ))}
-                        {project.highlights.length > 3 && (
-                          <li className="text-sm text-blue-600 font-medium">
+                        {project.highlights.length > 2 && (
+                          <button 
+                            onClick={() => setShowAllFeatures(true)}
+                            className="text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors"
+                          >
                             +{project.highlights.length - 2} more features
-                          </li>
+                          </button>
                         )}
                       </ul>
                     </div>
@@ -1468,6 +1472,35 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       )} */}
+
+      {/* All Features Modal */}
+      {showAllFeatures && project && project.highlights && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                All Key Features
+              </h3>
+              <button
+                onClick={() => setShowAllFeatures(false)}
+                className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {project.highlights.map((highlight, index) => (
+                  <div key={highlight.id} className="flex items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-3 flex-shrink-0"></span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{highlight.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Toast */}
       {toast && (

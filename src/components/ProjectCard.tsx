@@ -30,6 +30,21 @@ type ProjectCardProps = {
 export default function ProjectCard({ project }: ProjectCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
 
+  const handleProjectClick = async () => {
+    try {
+      // Track the click
+      await fetch(`/api/projects/${project.id}/click`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('Error tracking project click:', error);
+      // Don't prevent navigation if tracking fails
+    }
+  };
+
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -76,7 +91,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <Link href={`/projects/${project.slug}`} className="block h-full no-underline hover:no-underline focus:no-underline">
+    <Link href={`/projects/${project.slug}`} onClick={handleProjectClick} className="block h-full no-underline hover:no-underline focus:no-underline">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 h-full group cursor-pointer flex flex-col">
         {/* Image Section */}
         <div className="relative h-48 overflow-hidden flex-shrink-0">

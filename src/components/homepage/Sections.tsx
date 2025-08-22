@@ -1,60 +1,14 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import PropertyCard from '../PropertyCard'
+import ProjectCard from '../ProjectCard'
+import TrendingProjectsSection from './TrendingProjectsSection'
 
-const Sections = ({ properties, loading }: { properties: any[], loading: boolean }) => {
+const Sections = ({ projects, loading }: { projects: any[], loading: boolean }) => {
   return (
   <section>
-    {/* Trending Properties Section */}
-    <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              Trending
-              <span className="bg-gradient-to-r from-brand-primary to-brand-primary bg-clip-text text-transparent"> Properties</span>
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Explore the most popular properties that are trending in the market right now
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {loading ? (
-              <>
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden animate-pulse border border-gray-100 dark:border-gray-700">
-                    <div className="h-48 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600"></div>
-                    <div className="p-6">
-                      <div className="h-5 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded-full w-1/2 mb-2"></div>
-                      <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full w-1/3"></div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            ) : properties.length > 0 ? (
-              properties.slice(0, 3).map((property) => (
-                <div key={property.id} className="group transform hover:scale-105 transition-all duration-300">
-                  <PropertyCard property={property} />
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-16">
-                <div className="bg-gradient-to-br from-primary-50 to-primary-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl p-12 max-w-md mx-auto">
-                  <div className="w-20 h-20 bg-gradient-to-r from-brand-primary to-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">No Trending Properties</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">Check back soon for trending properties</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+    {/* Trending Projects Section */}
+    <TrendingProjectsSection projects={projects} loading={loading} />
 
       {/* Upcoming Projects Section */}
       {/* <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900"> */}
