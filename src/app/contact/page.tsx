@@ -56,18 +56,18 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 pt-20">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-16">
+      <div className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-4">Get In Touch</h1>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+          <h1 className="text-5xl font-bold mb-4 ">Get In Touch</h1>
+          <p className="text-xl text-blue-700 max-w-3xl mx-auto">
             Ready to find your dream property? Our expert team is here to help you navigate 
-            the real estate market in Delhi NCR with personalized recommendations and local insights.
+            the real estate market in Delhi NCR with <span className="text-yellow-500">personalized recommendations</span> and <span className="text-blue-600">local insights</span>.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1  gap-12">
           {/* Contact Information */}
           <div className="space-y-8">
             {/* Company Info */}
@@ -83,7 +83,7 @@ export default function ContactPage() {
               </p>
               
               {/* Contact Details */}
-              <div className="space-y-4">
+              <div className="space-y-4 flex gap-10 items-start">
                 <div className="flex items-start space-x-4">
                   <MapPinIcon className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
                   <div>
@@ -155,7 +155,7 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
+          {/* <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
             <div className="flex items-center mb-6">
               <ChatBubbleLeftRightIcon className="w-8 h-8 text-blue-600 mr-3" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Send us a Message</h2>
@@ -302,17 +302,17 @@ export default function ContactPage() {
                 )}
               </button>
             </form>
-          </div>
+          </div> */}
         </div>
 
         {/* Google Maps Section */}
         <div className="mt-16">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
+          <div className="bg-gradient-to-br from-blue-50 to-yellow-50 dark:from-blue-900/20 dark:to-yellow-900/20 rounded-2xl p-8 shadow-xl border border-blue-200 dark:border-yellow-800">
             <div className="flex items-center mb-6">
-              <MapPinIcon className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Find Us</h2>
+              <MapPinIcon className="w-8 h-8 text-yellow-500 mr-3" />
+              <h2 className="text-2xl font-bold text-blue-700 dark:text-yellow-400">Find Us</h2>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <p className="text-blue-700 dark:text-yellow-300 mb-6">
               Visit our office in Gurugram for personalized consultation and property viewing assistance.
             </p>
             
@@ -328,6 +328,14 @@ export default function ContactPage() {
                 referrerPolicy="no-referrer-when-downgrade"
                 title="Realty Canvas Office Location"
               ></iframe>
+              
+              {/* Location Pin Icon - Fixed Position */}
+              <div className="absolute top-[45%] left-[50%] z-10 pointer-events-none">
+                {/* <div className="relative">
+                  <MapPinIcon className="w-12 h-12 text-yellow-500 filter drop-shadow-lg" />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"></div>
+                </div> */}
+              </div>
             </div>
             
             {/* Directions */}
@@ -336,14 +344,14 @@ export default function ContactPage() {
                 href="https://maps.google.com/?q=Landmark+Cyber+Park+Sector+67+Gurugram"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg"
               >
                 <MapPinIcon className="w-4 h-4 mr-2" />
                 Get Directions
               </a>
               <a
                 href="tel:+919810490965"
-                className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors shadow-md hover:shadow-lg"
               >
                 <PhoneIcon className="w-4 h-4 mr-2" />
                 Call Now
@@ -353,7 +361,7 @@ export default function ContactPage() {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-16">
+        {/* <div className="mt-16">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Frequently Asked Questions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -383,7 +391,7 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
