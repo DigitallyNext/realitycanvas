@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Squares2X2Icon, ListBulletIcon, XMarkIcon, PlusIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import ProjectSearchBar from '@/components/ProjectSearchBar';
 import ProjectFilterSidebar from '@/components/ProjectFilterSidebar';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +41,7 @@ type Project = {
 };
 
 export default function ProjectsPage() {
+  const { isAdmin } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -356,7 +358,7 @@ export default function ProjectsPage() {
               <h1 className="text-xl font-semibold">Projects Dashboard</h1>
             </div>
             
-            <div className="ml-auto flex items-center gap-2 px-4">
+            {/* <div className="ml-auto flex items-center gap-2 px-4">
               {(searchQuery || filters.category !== 'ALL' || filters.status !== 'ALL' || filters.city || filters.state) && (
                 <Button 
                   variant="outline"
@@ -368,7 +370,7 @@ export default function ProjectsPage() {
                   Clear filters
                 </Button>
               )}
-            </div>
+            </div> */}
           </header>
 
           {/* Main Content */}
@@ -453,7 +455,7 @@ export default function ProjectsPage() {
                 </div>
 
                 <div className="p-8">
-                  <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
+                  <h3 className="font-bold text-xl text-gray-900 dark:text-yellow-500 mb-2 group-hover:text-blue-600 transition-colors">
                     {project.title}
                   </h3>
                   {project.subtitle && (
@@ -483,37 +485,39 @@ export default function ProjectsPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {/* Created {new Date(project.createdAt).toLocaleDateString()} */}
+                  {isAdmin && (
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                         {/* Created {new Date(project.createdAt).toLocaleDateString()} */}
+                       </div>
+                       <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                         <Link 
+                           href={`/projects/${project.slug}`} 
+                           className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+                           onClick={(e) => e.stopPropagation()}
+                         >
+                           View
+                         </Link>
+                         <Link 
+                           href={`/projects/new?edit=${project.id}`} 
+                           className="px-3 py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
+                           onClick={(e) => e.stopPropagation()}
+                         >
+                           Edit
+                         </Link>
+                         <button 
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             handleDelete(project.id);
+                           }} 
+                           className="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200" 
+                           disabled={deletingId === project.id}
+                         >
+                           {deletingId === project.id ? 'Deleting...' : 'Delete'}
+                         </button>
+                       </div>
                     </div>
-                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                      <Link 
-                        href={`/projects/${project.slug}`} 
-                        className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View
-                      </Link>
-                      <Link 
-                        href={`/projects/new?edit=${project.id}`} 
-                        className="px-3 py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Edit
-                      </Link>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(project.id);
-                        }} 
-                        className="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200" 
-                        disabled={deletingId === project.id}
-                      >
-                        {deletingId === project.id ? 'Deleting...' : 'Delete'}
-                      </button>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             ))}

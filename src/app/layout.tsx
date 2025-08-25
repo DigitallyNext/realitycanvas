@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { ThemeProvider } from "../contexts/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Chatbot from "@/components/Chatbot";
@@ -39,13 +40,15 @@ export default function RootLayout({
         className={`${geistSansVariable} ${geistMonoVariable} antialiased min-h-screen bg-gray-50 dark:bg-gray-900`}
       >
         <ThemeProvider>
-          <Navbar />
-          <div className="">
-            {children}
-          </div>
-          <Footer />
-          <ScrollToTop />
-          <Chatbot />
+          <AuthProvider>
+            <Navbar />
+            <div className="">
+              {children}
+            </div>
+            <Footer />
+            <ScrollToTop />
+            <Chatbot />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

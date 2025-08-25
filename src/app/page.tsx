@@ -113,7 +113,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col pt-16">
+    <main className="flex min-h-screen flex-col pt-16 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Hero Section */}
       <HeroSection />
 

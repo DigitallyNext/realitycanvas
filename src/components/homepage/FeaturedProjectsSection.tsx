@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProjectCard from '@/components/ProjectCard';
 import { BrandButton } from '../ui/BrandButton';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Carousel,
   CarouselContent,
@@ -35,6 +36,7 @@ interface FeaturedProjectsSectionProps {
 }
 
 export default function FeaturedProjectsSection({ projects, loading }: FeaturedProjectsSectionProps) {
+  const { isAdmin } = useAuth();
   const autoplayPlugin = Autoplay({
     delay: 5000,
     stopOnInteraction: true,
@@ -118,12 +120,14 @@ export default function FeaturedProjectsSection({ projects, loading }: FeaturedP
             <p className="text-gray-600 dark:text-gray-300 mb-8">
               We&apos;re working on adding amazing projects. Check back soon!
             </p>
-            <Link
-              href="/projects/new"
-              className="inline-flex items-center bg-gradient-to-r from-brand-primary to-brand-primary hover:from-primary-600 hover:to-primary-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 no-underline hover:no-underline focus:no-underline"
-            >
-              Add Your Project
-            </Link>
+            {isAdmin && (
+              <Link
+                href="/projects/new"
+                className="inline-flex items-center bg-gradient-to-r from-brand-primary to-brand-primary hover:from-primary-600 hover:to-primary-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 no-underline hover:no-underline focus:no-underline"
+              >
+                Add Your Project
+              </Link>
+            )}
           </div>
         )}
       </div>

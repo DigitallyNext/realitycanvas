@@ -56,9 +56,9 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 pt-20">
       {/* Hero Section */}
-      <div className="bg-white py-16">
+      <div className="bg-white dark:bg-gray-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-4 ">Get In Touch</h1>
+          <h1 className="text-5xl font-bold mb-4 text-gray-900 dark:text-white">Get In Touch</h1>
           {/* <p className="text-xl text-blue-700 max-w-3xl mx-auto">
             Ready to find your dream property? Our expert team is here to help you navigate 
             the real estate market in Delhi NCR with <span className="text-yellow-500">personalized recommendations</span> and <span className="text-blue-600">local insights</span>.

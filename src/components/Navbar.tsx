@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import ThemeToggle from './ThemeToggle';
-import { useTheme } from '@/contexts/ThemeContext';
+// Theme toggle removed - using light mode only
+import { useAuth } from '@/contexts/AuthContext';
 import { BrandButton } from './ui/BrandButton';
+import AdminLogin from './AdminLogin';
 import gsap from 'gsap';
 
 const navigation = [
@@ -20,7 +21,8 @@ const navigation = [
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { actualTheme } = useTheme();
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const { user, isAdmin, signOut } = useAuth();
   
   const callNowButtonRef = useRef<HTMLAnchorElement | null>(null);
   const hotlineButtonRef = useRef<HTMLAnchorElement | null>(null);
@@ -107,14 +109,14 @@ export default function Navbar() {
   
   return (
     <nav className="bg-white/95 backdrop-blur-sm shadow-lg dark:bg-gray-900/95 fixed w-full z-50 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="">
             <Link href="/" className="flex items-center no-underline hover:no-underline focus:no-underline">
-              {/* Conditional Logo based on theme */}
+              {/* Logo - Light version only */}
               <Image 
-                src={actualTheme === 'light' ? "/logo1.webp" : "/logo.webp"} 
+                src="/logo1.webp" 
                 alt="Reality Canvas" 
                 width={1200} 
                 height={100} 
@@ -124,7 +126,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-5">
+          <div className="hidden lg:flex lg:items-center ">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -139,7 +141,7 @@ export default function Navbar() {
 
           {/* Right side items */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
-            <ThemeToggle />
+            {/* Theme toggle removed - using light mode only */}
             <Link 
               href="tel:9910007801"
               ref={callNowButtonRef}
@@ -160,92 +162,64 @@ export default function Navbar() {
               </svg>
               9910007801
             </Link>
-            <Link href="/projects/new">
-              <BrandButton
-                variant="primary"
-                size="sm"
-                className="rounded-full whitespace-nowrap text-sm px-3 py-1"
-              >
-                Add Project
-              </BrandButton>
-            </Link>
+            {/* Admin-only Add Project Button */}
+            {isAdmin && (
+              <Link href="/projects/new">
+                <BrandButton
+                  variant="primary"
+                  size="sm"
+                  className="rounded-full whitespace-nowrap text-sm px-3 py-1"
+                >
+                  Add Project
+                </BrandButton>
+              </Link>
+            )}
             
-            {/* Profile Menu */}
-            <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary transition-colors duration-200">
-                <div className="w-7 h-7 bg-gradient-to-r from-brand-primary to-brand-primary rounded-full flex items-center justify-center text-brand-secondary text-sm font-medium">
-                  U
-                </div>
-                <ChevronDownIcon className="w-4 h-4" />
-              </Menu.Button>
-              
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-secondary-800 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/profile"
-                          className={`${
-                            active ? 'bg-gray-100 dark:bg-secondary-700' : ''
-                          } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 no-underline hover:no-underline focus:no-underline`}
-                        >
-                          Your Profile
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/dashboard"
-                          className={`${
-                            active ? 'bg-gray-100 dark:bg-secondary-700' : ''
-                          } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 no-underline hover:no-underline focus:no-underline`}
-                        >
-                          Dashboard
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/settings"
-                          className={`${
-                            active ? 'bg-gray-100 dark:bg-secondary-700' : ''
-                          } block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 no-underline hover:no-underline focus:no-underline`}
-                        >
-                          Settings
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          className={`${
-                            active ? 'bg-gray-100 dark:bg-secondary-700' : ''
-                          } block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
-                        >
-                          Sign out
-                        </button>
-                      )}
-                    </Menu.Item>
+            {/* Admin Authentication - Only show if already logged in as admin */}
+            {user && isAdmin && (
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary transition-colors duration-200">
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    A
                   </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+                  <span className="text-sm font-medium">Admin</span>
+                  <ChevronDownIcon className="w-4 h-4" />
+                </Menu.Button>
+                
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={signOut}
+                            className={`${
+                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                            } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
+                          >
+                            <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
+                            Sign Out
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            )}
           </div>
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center space-x-4">
-            <ThemeToggle />
+            {/* Theme toggle removed - using light mode only */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
@@ -304,36 +278,43 @@ export default function Navbar() {
                     </svg>
                     9910007801
                   </Link>
-                  <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
-                    <BrandButton
-                      variant="primary"
-                      size="sm"
-                      className="w-full rounded-full"
-                    >
-                      Add Project
-                    </BrandButton>
-                  </Link>
+                  {/* Admin-only Add Project Button */}
+                  {isAdmin && (
+                    <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
+                      <BrandButton
+                        variant="primary"
+                        size="sm"
+                        className="w-full rounded-full"
+                      >
+                        Add Project
+                      </BrandButton>
+                    </Link>
+                  )}
                 </div>
-              <div className="px-3 py-2 border-t border-gray-200 dark:border-secondary-700">
-                <Link
-                  href="/profile"
-                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-gray-50 dark:hover:bg-secondary-800 rounded-md transition-colors duration-200 no-underline hover:no-underline focus:no-underline"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Profile
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-gray-50 dark:hover:bg-secondary-800 rounded-md transition-colors duration-200 no-underline hover:no-underline focus:no-underline"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
-              </div>
+              {/* Admin Authentication for Mobile - Only show if already logged in as admin */}
+              {user && isAdmin && (
+                <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors duration-200"
+                  >
+                    <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+                    Sign Out (Admin)
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </Transition>
       </div>
+      
+      {/* Admin Login Modal */}
+      {showAdminLogin && (
+        <AdminLogin onClose={() => setShowAdminLogin(false)} />
+      )}
     </nav>
   );
 }

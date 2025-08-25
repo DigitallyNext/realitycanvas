@@ -13,7 +13,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('system');
+  const [theme, setTheme] = useState<Theme>('light');
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
 
   // Function to get the effective theme
@@ -24,49 +24,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return selectedTheme;
   };
 
-  // Load theme from localStorage on mount
+  // Force light theme only - no localStorage loading
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as Theme;
-    if (stored && ['light', 'dark', 'system'].includes(stored)) {
-      setTheme(stored);
-    }
+    setTheme('light');
+    setActualTheme('light');
   }, []);
 
-  // Update actual theme and DOM when theme changes
+  // Force light theme only
   useEffect(() => {
-    const effectiveTheme = getEffectiveTheme(theme);
-    setActualTheme(effectiveTheme);
+    setActualTheme('light');
 
     // Remove any existing theme classes
     document.documentElement.classList.remove('dark', 'light');
     
-    // Add the new theme class
-    document.documentElement.classList.add(effectiveTheme);
+    // Add light theme class only
+    document.documentElement.classList.add('light');
 
-    // Store preference
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    // Store light theme preference
+    localStorage.setItem('theme', 'light');
+  }, []);
 
-  // Listen for system theme changes when theme is 'system'
-  useEffect(() => {
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      
-      const handleChange = () => {
-        const effectiveTheme = getEffectiveTheme(theme);
-        setActualTheme(effectiveTheme);
-        
-        // Remove any existing theme classes
-        document.documentElement.classList.remove('dark', 'light');
-        
-        // Add the new theme class
-        document.documentElement.classList.add(effectiveTheme);
-      };
-
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-  }, [theme]);
+  // System theme listener removed - using light mode only
 
   return (
     <ThemeContext.Provider value={{ theme, actualTheme, setTheme }}>
