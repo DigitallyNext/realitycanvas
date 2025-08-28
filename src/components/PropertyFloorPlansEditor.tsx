@@ -268,15 +268,8 @@ export default function PropertyFloorPlansEditor({
                             alt={floorPlan.name || 'Floor Plan'}
                             fill
                             className="object-contain"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            onError={(e) => {
-                              console.error('Floor plan editor image failed to load:', floorPlan.image);
-                              // Fallback to regular img if Next.js Image fails
-                              const img = document.createElement('img');
-                              img.src = floorPlan.image;
-                              img.alt = floorPlan.name || 'Floor Plan';
-                              img.className = 'w-full h-full object-contain';
-                              e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
+                            onError={() => {
+                              // Handle image error
                             }}
                           />
                         </div>

@@ -56,16 +56,6 @@ export default function PropertySitePlanDisplay({ sitePlanData, className = '' }
               alt="Site Plan"
               fill
               className="object-contain bg-gray-50"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-              onError={(e) => {
-                console.error('Site plan image failed to load:', sitePlanData.sitePlanImage);
-                // Fallback to regular img if Next.js Image fails
-                const img = document.createElement('img');
-                img.src = sitePlanData.sitePlanImage || '';
-                img.alt = 'Site Plan';
-                img.className = 'w-full h-full object-contain bg-gray-50';
-                e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
-              }}
             />
             
             {/* Zoom Icon Overlay */}
@@ -184,16 +174,6 @@ export default function PropertySitePlanDisplay({ sitePlanData, className = '' }
                 alt="Site Plan - Detailed View"
                 fill
                 className="object-contain"
-                sizes="100vw"
-                onError={(e) => {
-                  console.error('Site plan zoomed image failed to load:', sitePlanData.sitePlanImage);
-                  // Fallback to regular img if Next.js Image fails
-                  const img = document.createElement('img');
-                  img.src = sitePlanData.sitePlanImage || '';
-                  img.alt = 'Site Plan - Detailed View';
-                  img.className = 'w-full h-full object-contain';
-                  e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
-                }}
               />
             </div>
             

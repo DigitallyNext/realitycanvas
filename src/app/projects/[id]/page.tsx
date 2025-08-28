@@ -218,11 +218,6 @@ export default function ProjectDetailPage() {
         
         const data = await res.json();
         console.log('Project data fetched:', data.title);
-        console.log('Floor plans data:', {
-          floorPlans: data.floorPlans,
-          floorPlansCount: data.floorPlans?.length || 0,
-          sitePlanImage: data.sitePlanImage
-        });
         setProject(data);
       } catch (err) {
         console.error('Error fetching project:', err);
