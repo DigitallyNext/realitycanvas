@@ -1,69 +1,80 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ['192.168.1.3'],
+  allowedDevOrigins: ["192.168.1.3"],
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['@heroicons/react'],
+    optimizePackageImports: ["@heroicons/react"],
   },
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === "production",
   },
   images: {
     remotePatterns: [
       // Unsplash (all paths)
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
       },
       // Supabase storage buckets (your project)
       {
-        protocol: 'https',
-        hostname: 'xsgljyuvykzfzvqwgtev.supabase.co',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "xsgljyuvykzfzvqwgtev.supabase.co",
+        pathname: "/**",
       },
       // Generic supabase domain
       {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/**",
       },
       // Pexels
       {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/**",
       },
       // Wikimedia
       {
-        protocol: 'https',
-        hostname: 'upload.wikimedia.org',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        pathname: "/**",
       },
       // M3M Jewel
       {
-        protocol: 'https',
-        hostname: 'm3mjewel.commercial-gurgaon.in',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "m3mjewel.commercial-gurgaon.in",
+        pathname: "/**",
       },
       // Example placeholder
       {
-        protocol: 'https',
-        hostname: 'example.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "example.com",
+        pathname: "/**",
       },
       // M3M Properties
       {
-        protocol: 'https',
-        hostname: 'www.m3mproperties.com',
-        pathname: '/floorplan/**',
+        protocol: "https",
+        hostname: "www.m3mproperties.com",
+        pathname: "/floorplan/**",
       },
       // M3M Jewel New
       {
-        protocol: 'https',
-        hostname: 'm3mjewel.commercial-gurgaon.in',
-        pathname: '/img/**',
+        protocol: "https",
+        hostname: "m3mjewel.commercial-gurgaon.in",
+        pathname: "/img/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.m3mprojects.in",
+        port: "",
+        pathname: "/images/**", // adjust path as needed
+      },
+      {
+        protocol: "https",
+        hostname: "www.m3mrealty.com",
+        pathname: "/commercial/**", // or "/**" if you want to be more permissive
       },
     ],
   },
@@ -76,14 +87,14 @@ const nextConfig = {
           ...config.optimization.splitChunks.cacheGroups,
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
+            name: "vendors",
+            chunks: "all",
             priority: 10,
           },
           common: {
-            name: 'common',
+            name: "common",
             minChunks: 2,
-            chunks: 'all',
+            chunks: "all",
             priority: 5,
             reuseExistingChunk: true,
           },
