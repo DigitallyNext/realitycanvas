@@ -83,6 +83,16 @@ export default function PropertyFloorPlansDisplay({ floorPlans, className = '' }
               alt={`${currentFloor.level} Floor Plan`}
               fill
               className="object-contain bg-gray-50"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+              onError={(e) => {
+                console.error('Floor plan image failed to load:', currentFloor.imageUrl);
+                // Fallback to regular img if Next.js Image fails
+                const img = document.createElement('img');
+                img.src = currentFloor.imageUrl;
+                img.alt = `${currentFloor.level} Floor Plan`;
+                img.className = 'w-full h-full object-contain bg-gray-50';
+                e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
+              }}
             />
             
             {/* Navigation Arrows */}

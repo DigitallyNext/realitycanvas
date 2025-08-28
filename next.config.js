@@ -2,6 +2,9 @@
 const nextConfig = {
   allowedDevOrigins: ['192.168.1.3'],
   images: {
+     domains: [
+      "xsgljyuvykzfzvqwgtev.supabase.co"
+    ],
     remotePatterns: [
       // Unsplash (all paths)
       {

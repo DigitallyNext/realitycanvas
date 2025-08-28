@@ -81,7 +81,17 @@ const PropertyFloorPlans: React.FC<PropertyFloorPlansProps> = ({
                     alt={currentPlan.title || currentPlan.name || 'Floor Plan'} 
                     fill
                     className="object-contain rounded-lg"
-                    onError={() => setImageError(true)}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                    onError={(e) => {
+                      console.error('Floor plan image failed to load:', imageUrl);
+                      // Fallback to regular img if Next.js Image fails
+                      const img = document.createElement('img');
+                      img.src = imageUrl;
+                      img.alt = currentPlan.title || currentPlan.name || 'Floor Plan';
+                      img.className = 'w-full h-full object-contain rounded-lg';
+                      e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
+                      setImageError(true);
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">

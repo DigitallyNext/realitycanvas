@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 // import { notFound } from "next/navigation";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   HeartIcon,
   ShareIcon,
@@ -217,6 +218,11 @@ export default function ProjectDetailPage() {
         
         const data = await res.json();
         console.log('Project data fetched:', data.title);
+        console.log('Floor plans data:', {
+          floorPlans: data.floorPlans,
+          floorPlansCount: data.floorPlans?.length || 0,
+          sitePlanImage: data.sitePlanImage
+        });
         setProject(data);
       } catch (err) {
         console.error('Error fetching project:', err);
@@ -417,14 +423,17 @@ export default function ProjectDetailPage() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             <div className="relative h-[70vh] overflow-hidden max-w-7xl mx-auto rounded-3xl">
-              <img
+              <Image
                 src={
                   (project.galleryImages &&
                     project.galleryImages[activeImageIndex]) ||
                   project.featuredImage
                 }
                 alt={project.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
               />
 
               {/* Overlay */}
@@ -475,10 +484,13 @@ export default function ProjectDetailPage() {
                       }`}
                       aria-label={`Show image ${index + 1}`}
                     >
-                      <img
+                      <Image
                         src={image}
                         alt={`Gallery ${index + 1}`}
+                        width={64}
+                        height={64}
                         className="w-16 h-16 object-cover rounded-lg"
+                        sizes="64px"
                       />
                     </button>
                   ))}
@@ -851,13 +863,23 @@ export default function ProjectDetailPage() {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                     Location Map
                   </h3>
-                  <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
-                    <img
-                      src={project.sitePlanImage}
-                      alt="Project Location Map"
-                      className="w-full h-auto object-cover"
-                      onError={(e) => { e.currentTarget.src = '/placeholder-map.jpg'; }}
-                    />
+                  <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 relative aspect-video">
+                    <Image
+                       src={project.sitePlanImage}
+                       alt="Project Location Map"
+                       fill
+                       className="object-cover"
+                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                       onError={(e) => {
+                         console.error('Site plan image failed to load:', project.sitePlanImage);
+                         // Fallback to regular img if Next.js Image fails
+                         const img = document.createElement('img');
+                         img.src = project.sitePlanImage || '';
+                         img.alt = 'Project Location Map';
+                         img.className = 'w-full h-auto object-cover';
+                         e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
+                       }}
+                     />
                   </div>
                 </div>
               )}
@@ -930,10 +952,21 @@ export default function ProjectDetailPage() {
                     >
                       {plan.imageUrl && (
                         <div className="aspect-video relative">
-                          <img
+                          <Image
                             src={plan.imageUrl}
                             alt={`${plan.level} floor plan`}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            onError={(e) => {
+                              console.error('Floor plan image failed to load:', plan.imageUrl);
+                              // Fallback to regular img if Next.js Image fails
+                              const img = document.createElement('img');
+                              img.src = plan.imageUrl;
+                              img.alt = `${plan.level} floor plan`;
+                              img.className = 'w-full h-full object-cover';
+                              e.currentTarget.parentNode?.replaceChild(img, e.currentTarget);
+                            }}
                           />
                         </div>
                       )}
@@ -1260,10 +1293,13 @@ export default function ProjectDetailPage() {
             <div className="flex-1 grid grid-rows-[1fr_auto]">
               {/* Large preview */}
               <div className="relative bg-black">
-                <img
+                <Image
                   src={project.galleryImages[activeImageIndex]}
                   alt={`Photo ${activeImageIndex + 1}`}
-                  className="w-full h-[80vh] object-contain"
+                  fill
+                  className="object-contain"
+                  priority={activeImageIndex === 0}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                 />
                 <button
                   onClick={() => {
@@ -1302,10 +1338,13 @@ export default function ProjectDetailPage() {
                           : "border-gray-200 dark:border-gray-700"
                       }`}
                     >
-                      <img
+                      <Image
                         src={img}
                         alt={`Thumb ${i + 1}`}
+                        width={96}
+                        height={80}
                         className="w-24 h-20 object-cover rounded-lg"
+                        sizes="96px"
                       />
                     </button>
                   ))}
