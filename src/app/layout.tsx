@@ -58,7 +58,7 @@ export default function RootLayout({
             </div>
             <Footer />
             <ScrollToTop />
-            <Chatbot />
+            {/* <Chatbot /> */}
             <LeadCaptureModal />
           </AuthProvider>
         </ThemeProvider>

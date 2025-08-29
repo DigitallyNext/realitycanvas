@@ -67,10 +67,10 @@ export default function TrendingProjectsSection({ projects = [], loading = false
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center mb-4">
-            <FireIcon className="w-8 h-8 text-orange-500 mr-3" />
+            <FireIcon className="w-8 h-8 text-yellow-500 mr-3" />
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
               Trending
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
                 {" "}
                 Projects
               </span>
@@ -97,7 +97,7 @@ export default function TrendingProjectsSection({ projects = [], loading = false
                 <div key={project.id} className="relative">
                   {/* Trending Badge */}
                   {index < 3 && (
-                    <div className="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-lg">
+                    <div className="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-lg">
                       <FireIcon className="w-3 h-3 mr-1" />
                       #{index + 1} Trending
                     </div>
@@ -112,7 +112,7 @@ export default function TrendingProjectsSection({ projects = [], loading = false
                 <BrandButton
                   variant="secondary"
                   size="lg"
-                  className="rounded-2xl inline-flex items-center bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-none"
+                  className="rounded-2xl inline-flex items-center bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-none"
                 >
                   <FireIcon className="mr-2 w-5 h-5" />
                   View All Projects
@@ -126,7 +126,7 @@ export default function TrendingProjectsSection({ projects = [], loading = false
         ) : (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FireIcon className="w-12 h-12 text-orange-400" />
+              <FireIcon className="w-12 h-12 text-yellow-400" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               No trending projects yet
@@ -136,7 +136,7 @@ export default function TrendingProjectsSection({ projects = [], loading = false
             </p>
             <Link
               href="/projects/new"
-              className="inline-flex items-center bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 no-underline hover:no-underline focus:no-underline"
+              className="inline-flex items-center bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 no-underline hover:no-underline focus:no-underline"
             >
               <FireIcon className="mr-2 w-5 h-5" />
               List Your Project

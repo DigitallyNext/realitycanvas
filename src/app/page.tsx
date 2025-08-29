@@ -144,7 +144,7 @@ export default function Home() {
       <Sections projects={projects} loading={projectsLoading} />
 
       {/* Newsletter Section */}
-      <Newsletter />
+      {/* <Newsletter /> */}
 
       {/* Contact Section */}
       {/* <ContactSection

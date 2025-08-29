@@ -12,15 +12,33 @@ export default function NewsletterSection() {
     e.preventDefault();
     setSubscribing(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    setSubscribed(true);
-    setEmail('');
-    setSubscribing(false);
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
 
-    // Reset success message after 3 seconds
-    setTimeout(() => setSubscribed(false), 3000);
+      if (response.ok) {
+         setSubscribed(true);
+         setEmail('');
+         console.log('Newsletter subscription successful');
+         
+         // Reset success message after 3 seconds
+         setTimeout(() => setSubscribed(false), 3000);
+       } else {
+        const errorData = await response.json();
+        console.error('Newsletter subscription failed:', errorData.error);
+        alert('Failed to subscribe. Please try again.');
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      alert('Failed to subscribe. Please check your connection and try again.');
+    } finally {
+       setSubscribing(false);
+     }
   };
 
   return (
