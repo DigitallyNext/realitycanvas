@@ -29,11 +29,14 @@ export default function LeadCaptureModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Check if modal has been shown before
     const hasShownModal = localStorage.getItem('leadCaptureModalShown');
     
     if (!hasShownModal) {
-      // Show modal after 20 seconds
+      // Show modal after 5 seconds
       const timer = setTimeout(() => {
         setIsOpen(true);
         localStorage.setItem('leadCaptureModalShown', 'true');

@@ -5,9 +5,10 @@ import Navbar from "../components/Navbar";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
-import ScrollToTop from "@/components/ScrollToTop";
-import Chatbot from "@/components/Chatbot";
-import LeadCaptureModal from "@/components/LeadCaptureModal";
+// Import client components directly (dynamic imports causing issues)
+import ScrollToTop from '@/components/ScrollToTop';
+import Chatbot from '@/components/Chatbot';
+import LeadCaptureModal from '@/components/LeadCaptureModal';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,10 +43,62 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Critical font preloading for faster LCP */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        
+        {/* Font preload removed due to invalid URL - Next.js font optimization handles this */}
+        
+        {/* Critical CSS for above-the-fold content */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            /* Critical CSS for immediate rendering */
+            body {
+              font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+              line-height: 1.6;
+              margin: 0;
+              padding: 0;
+            }
+            
+            /* Critical navigation styles */
+            nav {
+              position: fixed;
+              top: 0;
+              width: 100%;
+              z-index: 50;
+              background: rgba(255, 255, 255, 0.95);
+              backdrop-filter: blur(10px);
+            }
+            
+            /* Critical hero section styles */
+            .hero-section {
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            
+            /* Prevent layout shift */
+            img {
+              max-width: 100%;
+              height: auto;
+            }
+            
+            /* Critical loading state */
+            .loading-skeleton {
+              background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+              background-size: 200% 100%;
+              animation: loading 1.5s infinite;
+            }
+            
+            @keyframes loading {
+              0% { background-position: 200% 0; }
+              100% { background-position: -200% 0; }
+            }
+          `
+        }} />
       </head>
       <body
         className={`${geistSansVariable} ${geistMonoVariable} antialiased min-h-screen bg-gray-50 dark:bg-gray-900`}

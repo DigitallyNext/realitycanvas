@@ -132,7 +132,8 @@ export default function Navbar() {
                 alt="Reality Canvas" 
                 width={1200} 
                 height={100} 
-                className="w-40 h-10" 
+                className="w-40 h-10"
+                priority
               />
             </Link>
           </div>
