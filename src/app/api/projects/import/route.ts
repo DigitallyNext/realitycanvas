@@ -263,6 +263,18 @@ export async function POST(request: NextRequest) {
       return createdProject;
     });
 
+    // Trigger revalidation for the new project page
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/revalidate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: `/projects/${result.slug}` })
+      });
+      console.log(`Triggered revalidation for new project: /projects/${result.slug}`);
+    } catch (revalidateError) {
+      console.warn('Failed to trigger revalidation for new project:', revalidateError);
+    }
+
     return NextResponse.json({ 
       success: true, 
       project: result,

@@ -316,6 +316,23 @@ async function putProjectHandler(request: NextRequest, { params }: { params: Pro
         availableUnits: typeof availableUnits === 'number' ? availableUnits : null,
       },
     });
+    
+    // Clear cache for this project
+    projectCache.delete(id);
+    console.log(`Cleared cache for project: ${id}`);
+    
+    // Trigger revalidation for the project detail page
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/revalidate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: `/projects/${id}` })
+      });
+      console.log(`Triggered revalidation for /projects/${id}`);
+    } catch (revalidateError) {
+      console.warn('Failed to trigger revalidation:', revalidateError);
+    }
+    
     return NextResponse.json(updated);
   } catch (error) {
     console.error('Update project error:', error);

@@ -283,6 +283,6 @@ export async function generateStaticParams() {
 }
 
 // Enable static generation with revalidation
-export const revalidate = 1800; // Revalidate every 30 minutes
+export const revalidate = 60; // Revalidate every 1 minute for faster updates
 export const dynamic = 'force-static'; // Force static generation
 export const dynamicParams = true; // Allow dynamic params for ISR
