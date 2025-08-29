@@ -7,60 +7,66 @@ import ProjectSearchBar from "../ProjectSearchBar";
 
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center lg:py-0 py-12">
-      {/* Background Image */}
-      <Image
-        src="/banner.webp"
-        alt="Banner background"
-        fill  // makes image fill the section
-        priority // loads faster
-        className="object-cover object-center -z-10" // keeps it behind content
+    <section 
+      className="relative overflow-hidden mb-10 h-screen flex items-center lg:py-6 py-8">
+     <Image 
+      src="/home.png"
+      alt="Hero Background"
+      objectFit="cover"
+      fill
+      quality={100}
+      className="mt-[-1.5vw] "
       />
+    
+      {/* Background overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/20 -z-10"></div>
       {/* Background Pattern */}
       {/* <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'%3E%3C/circle%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div> */}
 
       {/* Floating Elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-brand-primary/20 to-brand-primary/20 rounded-full blur-3xl"></div>
+      {/* <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-brand-primary/20 to-brand-primary/20 rounded-full blur-3xl"></div>
       <div className="absolute bottom-32 right-16 w-40 h-40 bg-gradient-to-r from-brand-primary/20 to-brand-primary/20 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-gradient-to-r from-brand-primary/20 to-brand-primary/20 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/3 right-1/4 w-24 h-24 bg-gradient-to-r from-brand-primary/20 to-brand-primary/20 rounded-full blur-2xl"></div> */}
 
-      <div className="max-w-7xl mx-auto  px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 relative z-10 rounded-3xl">
         {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"> */}
         <div className=" gap-12 items-center">
           {/* Left Content */}
           <div className="text-center lg:text-left">
-            <div className="mb-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
-              <div className="flex flex-row items-center justify-center gap-4">
-                <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight text-gray-900 dark:text-white">
-                  Find Your   
-                 
+            <div className="mb-6 lg:mb-4 max-w-5xl mx-auto flex flex-col items-center justify-center">
+              <div className="flex flex-col lg:flex-row items-center justify-center lg:gap-4 gap-2 text-center lg:text-left">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-white">
+                  Find Your
                 </h1>
-                <span className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tigh block bg-gradient-to-r from-brand-primary to-brand-primary bg-clip-text text-transparent">
-                    Dream Project
-                  </span>
-              
+                <span className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight bg-gradient-to-r from-brand-primary to-brand-primary bg-clip-text text-transparent">
+                  Dream Project
+                </span>
               </div>
-              <p className="text-xl md:text-2xl mb-8 text-gray-600 dark:text-gray-300 text-center max-w-5xl mx-auto lg:mx-0 leading-relaxed">
+
+              <p className="text-sm md:text-lg mt-4 text-white text-center  mx-auto lg:mx-0 leading-relaxed max-w-xl">
                 Discover premium properties across India with our curated
                 collection of residential and commercial spaces
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center  items-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center  items-center mb-8">
               <Link href="/projects">
                 <BrandButton
                   variant="primary"
                   size="lg"
-                  className="rounded-2xl min-w-[200px] "
+                  className="rounded-2xl text-sm "
                 >
                   Explore Projects
                 </BrandButton>
               </Link>
-              <Link
-                href="/projects/new"
-                className="px-10 py-5 bg-transparent border-2 border-blue-950 text-blue-950 dark:border-white dark:text-white rounded-xl"
-              >
-                List Your Project
+              <Link href="/contact">
+                  <BrandButton
+                  variant="primary"
+                  size="lg"
+                  className="rounded-2xl text-sm "
+                >
+                Get In Touch
+                 </BrandButton>
               </Link>
             </div>
 

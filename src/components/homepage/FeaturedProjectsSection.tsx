@@ -5,14 +5,6 @@ import Link from 'next/link';
 import ProjectCard from '@/components/ProjectCard';
 import { BrandButton } from '../ui/BrandButton';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
 
 type Project = {
   id: string;
@@ -37,13 +29,85 @@ interface FeaturedProjectsSectionProps {
 
 export default function FeaturedProjectsSection({ projects, loading }: FeaturedProjectsSectionProps) {
   const { isAdmin } = useAuth();
-  const autoplayPlugin = Autoplay({
-    delay: 5000,
-    stopOnInteraction: true,
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 9; // 3 columns × 3 rows
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(projects.length / projectsPerPage);
+  const startIndex = (currentPage - 1) * projectsPerPage;
+  const endIndex = startIndex + projectsPerPage;
+  const currentProjects = projects.slice(startIndex, endIndex);
+  
+  // Reset to first page when projects change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [projects]);
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of section
+    document.getElementById('featured-projects')?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    // Previous button
+    if (currentPage > 1) {
+      buttons.push(
+        <button
+          key="prev"
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="px-3 py-2 mx-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Previous
+        </button>
+      );
+    }
+    
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-2 mx-1 text-sm font-medium rounded-md ${
+            i === currentPage
+              ? 'text-white bg-brand-primary border border-brand-primary'
+              : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
+          }`}
+        >
+          {i}
+        </button>
+      );
+    }
+    
+    // Next button
+    if (currentPage < totalPages) {
+      buttons.push(
+        <button
+          key="next"
+          onClick={() => handlePageChange(currentPage + 1)}
+          className="px-3 py-2 mx-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Next
+        </button>
+      );
+    }
+    
+    return buttons;
+  };
 
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
+    <section id="featured-projects" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
@@ -61,7 +125,7 @@ export default function FeaturedProjectsSection({ projects, loading }: FeaturedP
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
               <div
                 key={i}
                 className="bg-gray-200 dark:bg-gray-700 rounded-2xl h-96 animate-pulse"
@@ -70,27 +134,30 @@ export default function FeaturedProjectsSection({ projects, loading }: FeaturedP
           </div>
         ) : projects.length > 0 ? (
           <>
-            {/* Shadcn Carousel */}
-            <div className="relative mb-12">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                plugins={[autoplayPlugin]}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-2 md:-ml-4">
-                  {projects.map((project) => (
-                    <CarouselItem key={project.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                      <ProjectCard project={project} />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="-left-12 bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700" />
-                <CarouselNext className="-right-12 bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700" />
-              </Carousel>
+            {/* Projects Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {currentProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
             </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mb-12">
+                <div className="flex items-center space-x-1">
+                  {renderPaginationButtons()}
+                </div>
+              </div>
+            )}
+            
+            {/* Show results info */}
+            {totalPages > 1 && (
+              <div className="text-center mb-8">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Showing {startIndex + 1} to {Math.min(endIndex, projects.length)} of {projects.length} projects
+                </p>
+              </div>
+            )}
             
             <div className="text-center">
               <Link href="/projects">

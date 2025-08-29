@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Chatbot from "@/components/Chatbot";
+import LeadCaptureModal from "@/components/LeadCaptureModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,6 +59,7 @@ export default function RootLayout({
             <Footer />
             <ScrollToTop />
             <Chatbot />
+            <LeadCaptureModal />
           </AuthProvider>
         </ThemeProvider>
       </body>

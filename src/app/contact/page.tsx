@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   PhoneIcon,
   EnvelopeIcon,
@@ -11,6 +12,7 @@ import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -126,6 +128,45 @@ export default function ContactPage() {
                       <p>Sunday: 11:00 AM - 4:00 PM</p>
                     </div>
                   </div>
+                </div>
+              </div>
+              
+              {/* Social Media Links */}
+              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Us</h3>
+                <div className="flex space-x-4">
+                  <Link
+                    href="https://www.facebook.com/realtycanvasofficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-100 dark:bg-gray-700 hover:bg-gradient-to-r hover:from-brand-primary hover:to-brand-primary p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 group"
+                  >
+                    <FaFacebookF className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white" />
+                  </Link>
+                  <Link
+                    href="https://www.instagram.com/realty__canvas?igsh=MWxhanFienFiYnFrcQ=="
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-100 dark:bg-gray-700 hover:bg-gradient-to-r hover:from-brand-primary hover:to-brand-primary p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 group"
+                  >
+                    <FaInstagram className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white" />
+                  </Link>
+                  <Link
+                    href="https://www.linkedin.com/company/realtycanvas/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-100 dark:bg-gray-700 hover:bg-gradient-to-r hover:from-brand-primary hover:to-brand-primary p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 group"
+                  >
+                    <FaLinkedinIn className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white" />
+                  </Link>
+                  <Link
+                    href="https://www.youtube.com/@Realty_Canvas"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-100 dark:bg-gray-700 hover:bg-gradient-to-r hover:from-brand-primary hover:to-brand-primary p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 group"
+                  >
+                    <FaYoutube className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white" />
+                  </Link>
                 </div>
               </div>
             </div>

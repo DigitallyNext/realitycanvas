@@ -5,7 +5,7 @@ import Image from 'next/image';
 export default function BenefitsSection() {
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left side - Benefits */}
           <div className="space-y-8">
@@ -33,7 +33,7 @@ export default function BenefitsSection() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     Verified Properties
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     All our properties are thoroughly verified with proper documentation and legal clearance.
                   </p>
                 </div>
@@ -49,7 +49,7 @@ export default function BenefitsSection() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     Quick Process
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Our streamlined process ensures quick property registration and documentation.
                   </p>
                 </div>
@@ -65,7 +65,7 @@ export default function BenefitsSection() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     Best Prices
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Get the best market prices with transparent pricing and no hidden charges.
                   </p>
                 </div>
@@ -81,7 +81,7 @@ export default function BenefitsSection() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     24/7 Support
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Round-the-clock customer support to assist you with all your queries.
                   </p>
                 </div>
