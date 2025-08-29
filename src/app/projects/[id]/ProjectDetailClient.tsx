@@ -539,54 +539,7 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
               )}
 
               {/* Nearby Points */}
-              {project.nearbyPoints && project.nearbyPoints.length > 0 ? (
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Nearby Landmarks
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {project.nearbyPoints.map((point) => (
-                      <div
-                        key={point.id}
-                        className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
-                      >
-                        <div>
-                          <div className="font-semibold text-gray-900 dark:text-white">
-                            {point.name}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                            {point.type.replace("_", " ")}
-                          </div>
-                        </div>
-                        <div className="text-right text-sm">
-                          {point.distanceKm && (
-                            <div className="font-medium text-blue-600">
-                              {point.distanceKm} km
-                            </div>
-                          )}
-                          {point.travelTimeMin && (
-                            <div className="text-gray-500 dark:text-gray-400">
-                              {point.travelTimeMin} min
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Nearby Landmarks
-                  </h3>
-                  <div className="text-center py-6">
-                    <MapPinIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Nearby landmarks information will be updated soon.
-                    </p>
-                  </div>
-                </div>
-               )}
+              
                </div>
              </LazySection>
 

@@ -38,6 +38,7 @@ const defaultFloorLevels = [
   'Ninth Floor',
   'Tenth Floor',
   'Typical Floor',
+  '5 BHK',
   '4 BHK',
   '3 BHK',
   '2 BHK',
