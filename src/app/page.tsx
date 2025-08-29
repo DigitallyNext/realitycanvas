@@ -65,11 +65,14 @@ export default function Home() {
         const data = await response.json();
         console.log("Projects API response:", data);
 
-        // Ensure data is an array
-        if (Array.isArray(data)) {
+        // Handle new paginated response format
+        if (data.projects && Array.isArray(data.projects)) {
+          setProjects(data.projects);
+        } else if (Array.isArray(data)) {
+          // Fallback for old format
           setProjects(data);
         } else {
-          console.error('Projects API did not return an array:', data);
+          console.error('Projects API did not return expected format:', data);
           setProjects([]);
         }
       } catch (error) {
