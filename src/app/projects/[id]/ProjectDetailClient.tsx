@@ -23,6 +23,7 @@ import {
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import UnitsSection from "@/components/Notes/Units";
 import LazySection from "@/components/LazySection";
+import PropertyFAQ from "@/components/PropertyFAQ";
 
 type Unit = {
   id: string;
@@ -689,45 +690,17 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
             </div>
 
             {/* FAQ Section - Lazy Loaded */}
-            {project.faqs && project.faqs.length > 0 && (
-              <LazySection>
-                <div
-                  ref={faqRef}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg"
-                >
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                  Frequently Asked Questions
-                </h2>
-                <div className="space-y-4">
-                  {project.faqs.map((faq) => (
-                    <div
-                      key={faq.id}
-                      className="border border-gray-200 dark:border-gray-600 rounded-lg"
-                    >
-                      <button
-                        onClick={() =>
-                          setExpandedFaq(expandedFaq === faq.id ? null : faq.id)
-                        }
-                        className="text-left w-full font-medium text-gray-900 dark:text-white hover:text-blue-600 transition-colors p-4 flex items-center justify-between"
-                      >
-                        <span>{faq.question}</span>
-                        {expandedFaq === faq.id ? (
-                          <ChevronUpIcon className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDownIcon className="w-5 h-5 text-gray-500" />
-                        )}
-                      </button>
-                      {expandedFaq === faq.id && faq.answer && (
-                        <div className="px-4 pb-4 text-gray-600 dark:text-gray-400 text-sm border-t border-gray-200 dark:border-gray-600 pt-4 mt-2">
-                          {faq.answer}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                </div>
-              </LazySection>
-            )}
+            <LazySection>
+              <div ref={faqRef}>
+                <PropertyFAQ 
+                  faqs={project.faqs?.map(faq => ({
+                    question: faq.question,
+                    answer: faq.answer || ''
+                  })) || []}
+                  title="Frequently Asked Questions"
+                />
+              </div>
+            </LazySection>
           </div>
 
           {/* Right Column - Contact & Details */}

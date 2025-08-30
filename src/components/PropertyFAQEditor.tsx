@@ -64,20 +64,19 @@ export default function PropertyFAQEditor({
   };
 
   const commonQuestions = [
-    "What are the maintenance charges?",
-    "Is parking included?",
-    "When is the possession date?",
-    "What are the nearby amenities?",
-    "Is the property ready to move?",
-    "What is the security deposit?",
-    "Are pets allowed?",
-    "What is included in the rent/sale?",
-    "What are the utility costs?",
-    "Is there 24/7 security?",
+
+    "How can I contact you for more information about this property?",
   ];
 
   const addCommonQuestion = (question: string) => {
-    const newFAQs = [...faqs, { question, answer: '' }];
+    let answer = '';
+    
+    // Provide default answer for contact question
+    if (question === "How can I contact you for more information about this property?") {
+      answer = "For purchasing this property or to get more information, please contact us:\n\n📞 Phone: +91 9910007801\n📧 Email: sales@realtycanvas.in\n\nOur team is available to assist you with all your queries and help you with the property purchase process. We look forward to hearing from you!";
+    }
+    
+    const newFAQs = [...faqs, { question, answer }];
     updateFAQs(newFAQs);
     setExpandedFAQ(newFAQs.length - 1);
   };

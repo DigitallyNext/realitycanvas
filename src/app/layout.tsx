@@ -31,8 +31,8 @@ const geistSansVariable = geistSans?.variable || "";
 const geistMonoVariable = geistMono?.variable || "";
 
 export const metadata: Metadata = {
-  title: "RealityCanvas - Real Estate Listings",
-  description: "Find your dream property with RealityCanvas",
+  title: "Realty Canvas - Real Estate Listings",
+  description: "Find your dream property with Realty Canvas",
 };
 
 export default function RootLayout({

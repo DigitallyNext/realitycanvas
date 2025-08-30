@@ -21,6 +21,15 @@ export default function PropertyFAQ({
 }: PropertyFAQProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  // Add default contact FAQ if not already present
+  const defaultContactFAQ = {
+    question: "How can I contact you for more information about this property?",
+    answer: "For purchasing this property or to get more information, please contact us:\n\n📞 Phone: +91 9910007801\n📧 Email: sales@realtycanvas.in\n\nOur team is available to assist you with all your queries and help you with the property purchase process. We look forward to hearing from you!"
+  };
+
+  // Always include the contact FAQ at the end
+  const allFAQs = [...faqs, defaultContactFAQ];
+
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -34,9 +43,9 @@ export default function PropertyFAQ({
         </p>
       </div>
 
-      {faqs.length > 0 ? (
+      {allFAQs.length > 0 ? (
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {allFAQs.map((faq, index) => (
             <div 
               key={index} 
               className="bg-white rounded-xl shadow-md overflow-hidden"
@@ -55,7 +64,7 @@ export default function PropertyFAQ({
               
               {openIndex === index && (
                 <div className="px-6 pb-6 pt-0">
-                  <p className="text-gray-600">{faq.answer}</p>
+                  <div className="text-gray-600 whitespace-pre-line">{faq.answer}</div>
                 </div>
               )}
             </div>

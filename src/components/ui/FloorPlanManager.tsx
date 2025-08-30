@@ -3,6 +3,25 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon, XMarkIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
 import ImageUpload from './ImageUpload';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface FloorPlan {
   id: string;
@@ -46,8 +65,190 @@ const defaultFloorLevels = [
   'None'
 ];
 
+// Sortable Floor Plan Item Component
+interface SortableFloorPlanItemProps {
+  floorPlan: FloorPlan;
+  index: number;
+  onUpdate: (index: number, field: keyof FloorPlan, value: string | number) => void;
+  onRemove: (index: number) => void;
+}
+
+function SortableFloorPlanItem({ floorPlan, index, onUpdate, onRemove }: SortableFloorPlanItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: floorPlan.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm ${
+        isDragging ? 'shadow-lg ring-2 ring-blue-500' : ''
+      }`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-3">
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            title="Drag to reorder"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M7 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 14a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM17 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM17 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM17 14a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+            </svg>
+          </div>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-white">
+            Floor Plan {index + 1}
+          </h4>
+        </div>
+        <button
+          type="button"
+          onClick={() => onRemove(index)}
+          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+        >
+          <XMarkIcon className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Floor Plan Image */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Floor Plan Image
+          </label>
+          <ImageUpload
+            value={floorPlan.imageUrl}
+            onChange={(url) => onUpdate(index, 'imageUrl', url)}
+            placeholder="Upload floor plan image"
+            folder="projects/floor-plans"
+          />
+        </div>
+
+        {/* Floor Details */}
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Floor Level *
+            </label>
+            <select
+              value={floorPlan.level}
+              onChange={(e) => onUpdate(index, 'level', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="">Select Floor Level</option>
+              {defaultFloorLevels.map(level => (
+                <option key={level} value={level}>{level}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Floor Title
+            </label>
+            <input
+              type="text"
+              value={floorPlan.title}
+              onChange={(e) => onUpdate(index, 'title', e.target.value)}
+              placeholder="e.g., Retail & Food Court"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Description
+            </label>
+            <textarea
+              value={floorPlan.description}
+              onChange={(e) => onUpdate(index, 'description', e.target.value)}
+              placeholder="Brief description of this floor"
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Total Units
+              </label>
+              <input
+                type="number"
+                value={floorPlan.totalUnits || ''}
+                onChange={(e) => onUpdate(index, 'totalUnits', parseInt(e.target.value) || 0)}
+                placeholder="0"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Available Units
+              </label>
+              <input
+                type="number"
+                value={floorPlan.availableUnits || ''}
+                onChange={(e) => onUpdate(index, 'availableUnits', parseInt(e.target.value) || 0)}
+                placeholder="0"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Area Range
+              </label>
+              <input
+                type="text"
+                value={floorPlan.areaRange}
+                onChange={(e) => onUpdate(index, 'areaRange', e.target.value)}
+                placeholder="500-800 Sq.ft"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Price Range
+              </label>
+              <input
+                type="text"
+                value={floorPlan.priceRange}
+                onChange={(e) => onUpdate(index, 'priceRange', e.target.value)}
+                placeholder="₹2-4 Crore"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FloorPlanManager({ value, onChange, className = '' }: FloorPlanManagerProps) {
   const [floorPlans, setFloorPlans] = useState<FloorPlan[]>(value);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Sync with parent value changes (for when data is loaded from API)
   useEffect(() => {
@@ -86,6 +287,19 @@ export default function FloorPlanManager({ value, onChange, className = '' }: Fl
     onChange(updated);
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = floorPlans.findIndex((item) => item.id === active.id);
+      const newIndex = floorPlans.findIndex((item) => item.id === over?.id);
+
+      const reorderedFloorPlans = arrayMove(floorPlans, oldIndex, newIndex);
+      setFloorPlans(reorderedFloorPlans);
+      onChange(reorderedFloorPlans);
+    }
+  };
+
   return (
     <div className={`space-y-6 ${className}`}>
       <div className="flex items-center justify-between">
@@ -119,141 +333,25 @@ export default function FloorPlanManager({ value, onChange, className = '' }: Fl
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {floorPlans.map((floorPlan, index) => (
-            <div
-              key={floorPlan.id}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-medium text-gray-900 dark:text-white">
-                  Floor Plan {index + 1}
-                </h4>
-                <button
-                  type="button"
-                  onClick={() => removeFloorPlan(index)}
-                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
-                >
-                  <XMarkIcon className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Floor Plan Image */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Floor Plan Image
-                  </label>
-                  <ImageUpload
-                    value={floorPlan.imageUrl}
-                    onChange={(url) => updateFloorPlan(index, 'imageUrl', url)}
-                    placeholder="Upload floor plan image"
-                    folder="projects/floor-plans"
-                  />
-                </div>
-
-                {/* Floor Details */}
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Floor Level *
-                    </label>
-                    <select
-                      value={floorPlan.level}
-                      onChange={(e) => updateFloorPlan(index, 'level', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    >
-                      <option value="">Select Floor Level</option>
-                      {defaultFloorLevels.map(level => (
-                        <option key={level} value={level}>{level}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Floor Title
-                    </label>
-                    <input
-                      type="text"
-                      value={floorPlan.title}
-                      onChange={(e) => updateFloorPlan(index, 'title', e.target.value)}
-                      placeholder="e.g., Retail & Food Court"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      value={floorPlan.description}
-                      onChange={(e) => updateFloorPlan(index, 'description', e.target.value)}
-                      placeholder="Brief description of this floor"
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Total Units
-                      </label>
-                      <input
-                        type="number"
-                        value={floorPlan.totalUnits || ''}
-                        onChange={(e) => updateFloorPlan(index, 'totalUnits', parseInt(e.target.value) || 0)}
-                        placeholder="0"
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Available Units
-                      </label>
-                      <input
-                        type="number"
-                        value={floorPlan.availableUnits || ''}
-                        onChange={(e) => updateFloorPlan(index, 'availableUnits', parseInt(e.target.value) || 0)}
-                        placeholder="0"
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Area Range
-                      </label>
-                      <input
-                        type="text"
-                        value={floorPlan.areaRange}
-                        onChange={(e) => updateFloorPlan(index, 'areaRange', e.target.value)}
-                        placeholder="500-800 Sq.ft"
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Price Range
-                      </label>
-                      <input
-                        type="text"
-                        value={floorPlan.priceRange}
-                        onChange={(e) => updateFloorPlan(index, 'priceRange', e.target.value)}
-                        placeholder="₹2-4 Crore"
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={floorPlans.map(fp => fp.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-6">
+              {floorPlans.map((floorPlan, index) => (
+                <SortableFloorPlanItem
+                  key={floorPlan.id}
+                  floorPlan={floorPlan}
+                  index={index}
+                  onUpdate={updateFloorPlan}
+                  onRemove={removeFloorPlan}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   );
