@@ -125,7 +125,7 @@ export default function ContactPage() {
                     <div className="text-gray-600 dark:text-gray-300">
                       <p>Monday - Friday: 9:00 AM - 7:00 PM</p>
                       <p>Saturday: 10:00 AM - 6:00 PM</p>
-                      <p>Sunday: 11:00 AM - 4:00 PM</p>
+                      <p>Sunday: 11:00 AM - 6:00 PM</p>
                     </div>
                   </div>
                 </div>
@@ -144,7 +144,7 @@ export default function ContactPage() {
                     <FaFacebookF className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white" />
                   </Link>
                   <Link
-                    href="https://www.instagram.com/realty__canvas?igsh=MWxhanFienFiYnFrcQ=="
+                    href="https://www.instagram.com/realtycanvas.official/?igsh=NnQ3Nmx2YzBhbDU4"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-gray-100 dark:bg-gray-700 hover:bg-gradient-to-r hover:from-brand-primary hover:to-brand-primary p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 group"

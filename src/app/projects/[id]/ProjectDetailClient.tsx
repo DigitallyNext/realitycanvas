@@ -771,7 +771,7 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
                       <div className="text-2xl font-bold text-gray-900 dark:text-white">
                         {project.units.length}
                       </div>
-                      <div className="text-sm text-gray-500">Total Units</div>
+                      <div className="text-sm text-gray-500">Land Areas</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-green-600">

@@ -34,7 +34,7 @@ const Footer = () => {
                    <FaFacebookF className="w-5 h-5" />
                  </Link>
                  <Link
-                   href="https://www.instagram.com/realty__canvas?igsh=MWxhanFienFiYnFrcQ=="
+                   href="https://www.instagram.com/realtycanvas.official/?igsh=NnQ3Nmx2YzBhbDU4"
                    target="_blank"
                    rel="noopener noreferrer"
                    className="bg-gray-800 hover:bg-gradient-to-r hover:from-brand-primary hover:to-brand-primary p-3 rounded-2xl transition-all duration-300 transform hover:scale-110"
@@ -74,7 +74,7 @@ const Footer = () => {
                  </li>
                  <li>
                    <Link
-                     href="/about"
+                     href="/coming-soon"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      About
@@ -82,7 +82,7 @@ const Footer = () => {
                  </li>
                  <li>
                    <Link
-                     href="/properties"
+                     href="/projects"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      Properties
@@ -90,7 +90,7 @@ const Footer = () => {
                  </li>
                  <li>
                    <Link
-                     href="/blog"
+                     href="/coming-soon"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      Blog
@@ -108,12 +108,12 @@ const Footer = () => {
              </div>
  
              {/* Services */}
-             <div>
+             {/* <div>
                <h4 className="text-xl font-bold mb-6 text-white">Services</h4>
                <ul className="space-y-3">
                  <li>
                    <Link
-                     href="#"
+                     href="/coming-soon"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      Residential
@@ -121,7 +121,7 @@ const Footer = () => {
                  </li>
                  <li>
                    <Link
-                     href="#"
+                     href="/coming-soon"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      Commercial
@@ -129,7 +129,7 @@ const Footer = () => {
                  </li>
                  <li>
                    <Link
-                     href="#"
+                     href="/coming-soon"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      Property Management
@@ -137,7 +137,7 @@ const Footer = () => {
                  </li>
                  <li>
                    <Link
-                     href="#"
+                     href="/coming-soon"
                      className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                    >
                      Investment Advisory
@@ -152,7 +152,7 @@ const Footer = () => {
                    </Link>
                  </li>
                </ul>
-             </div>
+             </div> */}
            </div>
  
            {/* Contact Info */}
