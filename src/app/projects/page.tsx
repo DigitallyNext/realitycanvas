@@ -475,7 +475,7 @@ function ProjectsContent() {
                       </div>
                     ) : searchQuery && (
                       <div className="p-4 text-center text-gray-500">
-                        <p className="text-sm">No projects found for "{searchQuery}"</p>
+                        <p className="text-sm">No projects found for &quot;{searchQuery}&quot;</p>
                       </div>
                     )}
                   </div>
