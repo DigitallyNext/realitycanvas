@@ -749,25 +749,25 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
                       <>
                         <div>
                           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {project.landArea || '2.5 Acres'}
+                            {project.landArea || '2.5 '} <span className="text-sm text-blue-500">Acres</span>
                           </div>
-                          <div className="text-sm text-gray-500">Land Area</div>
+                          <div className="text-sm text-red-500 font-semibold">Land Area</div>
                         </div>
                         <div>
-                          <div className="text-2xl font-bold text-green-600">
+                          <div className="text-2xl font-bold text-black">
                             {project.numberOfTowers || Math.max(1, Math.ceil(project.units.length / 50))}
                           </div>
-                          <div className="text-sm text-gray-500">No. of Towers</div>
+                          <div className="text-sm font-semibold text-green-600">Towers</div>
                         </div>
                         <div>
-                          <div className="text-2xl font-bold text-purple-600">
+                          <div className="text-2xl font-bold text-black">
                             {project.numberOfApartments || project.units.filter(unit => 
                               unit.type.toLowerCase().includes('apartment') || 
                               unit.type.toLowerCase().includes('studio') ||
                               unit.type.toLowerCase().includes('bhk')
                             ).length || project.units.length}
                           </div>
-                          <div className="text-sm text-gray-500">No. of Apartments</div>
+                          <div className="text-sm font-semibold text-blue-700">Apartments</div>
                         </div>
                       </>
                     ) : (

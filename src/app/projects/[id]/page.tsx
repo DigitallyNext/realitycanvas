@@ -137,7 +137,36 @@ async function getProjectData(slug: string) {
   try {
     const project = await prisma.project.findUnique({
       where: { slug },
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        description: true,
+        category: true,
+        status: true,
+        address: true,
+        city: true,
+        state: true,
+        featuredImage: true,
+        galleryImages: true,
+        reraId: true,
+        developerName: true,
+        possessionDate: true,
+        basePrice: true,
+        priceRange: true,
+        minRatePsf: true,
+        maxRatePsf: true,
+        latitude: true,
+        longitude: true,
+        sitePlanImage: true,
+        videoUrl: true,
+        videoUrls: true,
+        landArea: true,
+        numberOfTowers: true,
+        numberOfApartments: true,
+        createdAt: true,
+        updatedAt: true,
         units: {
           select: {
             id: true,
@@ -283,6 +312,5 @@ export async function generateStaticParams() {
 }
 
 // Enable static generation with revalidation
-export const revalidate = 60; // Revalidate every 1 minute for faster updates
-export const dynamic = 'force-static'; // Force static generation
-export const dynamicParams = true; // Allow dynamic params for ISR
+export const dynamic = 'force-dynamic'; // Force dynamic rendering for fresh data
+export const revalidate = 0; // Disable caching for immediate updates

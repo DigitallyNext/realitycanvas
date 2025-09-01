@@ -271,6 +271,10 @@ async function putProjectHandler(request: NextRequest, { params }: { params: Pro
       totalUnits,
       soldUnits,
       availableUnits,
+      // Residential project specific fields
+      landArea,
+      numberOfTowers,
+      numberOfApartments,
     } = body;
 
     const updated = await prisma.project.update({
@@ -314,6 +318,10 @@ async function putProjectHandler(request: NextRequest, { params }: { params: Pro
         totalUnits: typeof totalUnits === 'number' ? totalUnits : null,
         soldUnits: typeof soldUnits === 'number' ? soldUnits : null,
         availableUnits: typeof availableUnits === 'number' ? availableUnits : null,
+        // Residential project specific fields
+        landArea: landArea || null,
+        numberOfTowers: typeof numberOfTowers === 'number' ? numberOfTowers : null,
+        numberOfApartments: typeof numberOfApartments === 'number' ? numberOfApartments : null,
       },
     });
     
