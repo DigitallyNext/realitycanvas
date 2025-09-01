@@ -139,6 +139,10 @@ type Project = {
   nearbyPoints: NearbyPoint[];
   videoUrl?: string | null;
   videoUrls?: string[];
+  // Residential project specific fields
+  landArea?: string | null;
+  numberOfTowers?: number | null;
+  numberOfApartments?: number | null;
 };
 
 interface ProjectDetailClientProps {
@@ -740,24 +744,55 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
 
                   {/* Key Stats */}
                   <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {project.units.length}
-                      </div>
-                      <div className="text-sm text-gray-500">Land Areas</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-green-600">
-                        {project.units.filter(unit => unit.availability === 'AVAILABLE').length}
-                      </div>
-                      <div className="text-sm text-gray-500">Available</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-purple-600">
-                        {project.amenities.length}
-                      </div>
-                      <div className="text-sm text-gray-500">Amenities</div>
-                    </div>
+                    {project.category?.toLowerCase() === 'residential' ? (
+                      // Residential Project Stats
+                      <>
+                        <div>
+                          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                            {project.landArea || '2.5 Acres'}
+                          </div>
+                          <div className="text-sm text-gray-500">Land Area</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-green-600">
+                            {project.numberOfTowers || Math.max(1, Math.ceil(project.units.length / 50))}
+                          </div>
+                          <div className="text-sm text-gray-500">No. of Towers</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-purple-600">
+                            {project.numberOfApartments || project.units.filter(unit => 
+                              unit.type.toLowerCase().includes('apartment') || 
+                              unit.type.toLowerCase().includes('studio') ||
+                              unit.type.toLowerCase().includes('bhk')
+                            ).length || project.units.length}
+                          </div>
+                          <div className="text-sm text-gray-500">No. of Apartments</div>
+                        </div>
+                      </>
+                    ) : (
+                      // Commercial Project Stats (unchanged)
+                      <>
+                        <div>
+                          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                            {project.units.length}
+                          </div>
+                          <div className="text-sm text-gray-500">Total Units</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-green-600">
+                            {project.units.filter(unit => unit.availability === 'AVAILABLE').length}
+                          </div>
+                          <div className="text-sm text-gray-500">Available</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-purple-600">
+                            {project.amenities.length}
+                          </div>
+                          <div className="text-sm text-gray-500">Amenities</div>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Status Badge */}

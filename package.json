@@ -22,6 +22,7 @@
     "@lexical/react": "^0.33.1",
     "@lexical/rich-text": "^0.33.1",
     "@lexical/table": "^0.33.1",
+    "@lottiefiles/dotlottie-react": "^0.15.2",
     "@prisma/client": "^6.13.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-separator": "^1.1.7",

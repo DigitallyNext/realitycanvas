@@ -140,6 +140,10 @@ function UnifiedProjectFormContent() {
     minRatePsf: '',
     maxRatePsf: '',
     isTrending: false,
+    // Residential project specific fields
+    landArea: '',
+    numberOfTowers: '',
+    numberOfApartments: '',
   });
 
   // Video state
@@ -227,6 +231,10 @@ function UnifiedProjectFormContent() {
         minRatePsf: projectData.minRatePsf || '',
         maxRatePsf: projectData.maxRatePsf || '',
         isTrending: projectData.isTrending || false,
+        // Residential project specific fields
+        landArea: projectData.landArea || '',
+        numberOfTowers: projectData.numberOfTowers?.toString() || '',
+        numberOfApartments: projectData.numberOfApartments?.toString() || '',
       });
 
       // Load video URLs
@@ -381,6 +389,10 @@ function UnifiedProjectFormContent() {
             aboutDescription: project.aboutDescription,
             minRatePsf: project.minRatePsf,
             maxRatePsf: project.maxRatePsf,
+            // Add residential project specific fields
+            landArea: project.landArea || null,
+            numberOfTowers: project.numberOfTowers ? parseInt(project.numberOfTowers) : null,
+            numberOfApartments: project.numberOfApartments ? parseInt(project.numberOfApartments) : null,
           };
 
           // Update project basic info without recreating nested data
@@ -583,6 +595,10 @@ function UnifiedProjectFormContent() {
         minRatePsf: projectData.minRatePsf || '',
         maxRatePsf: projectData.maxRatePsf || '',
         isTrending: projectData.isTrending || false,
+        // Residential project specific fields
+        landArea: projectData.landArea || '',
+        numberOfTowers: projectData.numberOfTowers?.toString() || '',
+        numberOfApartments: projectData.numberOfApartments?.toString() || '',
       });
 
       // Import video URLs
@@ -779,6 +795,10 @@ function UnifiedProjectFormContent() {
         sitePlanImage: locationData.mapImage || null,
         latitude: locationData.coordinates?.latitude || null,
         longitude: locationData.coordinates?.longitude || null,
+        // Add residential project specific fields
+        landArea: project.landArea || null,
+        numberOfTowers: project.numberOfTowers ? parseInt(project.numberOfTowers) : null,
+        numberOfApartments: project.numberOfApartments ? parseInt(project.numberOfApartments) : null,
       };
 
       let projectResult;
@@ -1467,6 +1487,37 @@ function UnifiedProjectFormContent() {
                 onChange={e => setProject(prev => ({ ...prev, maxRatePsf: e.target.value }))}
               />
             </div>
+
+            {/* Residential Project Specific Fields */}
+            {project.category === 'RESIDENTIAL' && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-4">
+                  🏠 Residential Project Details
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    placeholder="Land Area (e.g., 2.5 Acres, 10,000 sq ft)"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={project.landArea}
+                    onChange={e => setProject(prev => ({ ...prev, landArea: e.target.value }))}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Number of Towers"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={project.numberOfTowers}
+                    onChange={e => setProject(prev => ({ ...prev, numberOfTowers: e.target.value }))}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Number of Apartments"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={project.numberOfApartments}
+                    onChange={e => setProject(prev => ({ ...prev, numberOfApartments: e.target.value }))}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* AI Description Generator */}
             {isAIAssisted && project.title && project.address && (

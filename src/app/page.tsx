@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { prisma } from '@/lib/prisma';
 // Homepage Components
 import {
   HeroSection,
@@ -11,12 +9,10 @@ import {
   NewsletterSection,
   ContactSection,
 } from "@/components/homepage";
-// import Adventure from "@/components/homepage/Adventure";
-// import Developer from "@/components/homepage/Developer";
 import Sections from "@/components/homepage/Sections";
 import Newsletter from "@/components/homepage/Newsletter";
 
-// Define the Property type based on the Prisma schema
+// Define the Project type based on the Prisma schema
 type Project = {
   id: string;
   slug: string;
@@ -31,111 +27,116 @@ type Project = {
   createdAt: string;
   minRatePsf?: string | null;
   maxRatePsf?: string | null;
+  isTrending?: boolean;
+  totalClicks?: number;
 };
 
-export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectsLoading, setProjectsLoading] = useState(true);
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [contactSubmitting, setContactSubmitting] = useState(false);
-  const [contactSuccess, setContactSuccess] = useState(false);
+// Server-side data fetching with ISR
+async function getHomePageData() {
+  try {
+    // Fetch featured projects (latest projects)
+    const featuredProjectsRaw = await prisma.project.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take: 12, // Get more for pagination
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        category: true,
+        status: true,
+        address: true,
+        city: true,
+        state: true,
+        featuredImage: true,
+        createdAt: true,
+        minRatePsf: true,
+        maxRatePsf: true,
+        isTrending: true,
+        totalClicks: true,
+      },
+    });
 
-  useEffect(() => {
-    async function fetchProjects() {
-      try {
-        console.log("Fetching projects from API...");
-        const timestamp = new Date().getTime();
-        const response = await fetch(`/api/projects?t=${timestamp}`, { 
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Projects API response:", data);
-
-        // Handle new paginated response format
-        if (data.projects && Array.isArray(data.projects)) {
-          setProjects(data.projects);
-        } else if (Array.isArray(data)) {
-          // Fallback for old format
-          setProjects(data);
-        } else {
-          console.error('Projects API did not return expected format:', data);
-          setProjects([]);
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        setProjects([]);
-      } finally {
-        setProjectsLoading(false);
-      }
-    }
-
-    fetchProjects();
-  }, []);
-
-
-
-  const handleContactChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setContactForm((prev) => ({
-      ...prev,
-      [name]: value,
+    // Convert Date to string for client compatibility
+    const featuredProjects = featuredProjectsRaw.map(project => ({
+      ...project,
+      createdAt: project.createdAt.toISOString(),
     }));
-  };
 
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setContactSubmitting(true);
+    // Fetch trending projects (most clicked in last 30 days)
+    const trendingProjectsRaw = await prisma.project.findMany({
+      where: {
+        projectClicks: {
+          some: {
+            clickDate: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+            }
+          }
+        }
+      },
+      orderBy: [
+        { totalClicks: 'desc' },
+        { updatedAt: 'desc' }
+      ],
+      take: 6,
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        category: true,
+        status: true,
+        address: true,
+        city: true,
+        state: true,
+        featuredImage: true,
+        createdAt: true,
+        minRatePsf: true,
+        maxRatePsf: true,
+        isTrending: true,
+        totalClicks: true,
+      },
+    });
 
-    // Simulate API call
-    try {
-      // In a real app, you would send this data to your backend
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setContactSuccess(true);
-      setContactForm({ name: "", email: "", message: "" });
-    } catch (error) {
-      console.error("Error submitting contact form:", error);
-    } finally {
-      setContactSubmitting(false);
-    }
-  };
+    // Convert Date to string for client compatibility
+    const trendingProjects = trendingProjectsRaw.map(project => ({
+      ...project,
+      createdAt: project.createdAt.toISOString(),
+    }));
+
+    // If no trending projects found, fallback to recent projects
+    const finalTrendingProjects = trendingProjects.length > 0 
+      ? trendingProjects 
+      : featuredProjects.slice(0, 6);
+
+    return {
+      featuredProjects,
+      trendingProjects: finalTrendingProjects,
+    };
+  } catch (error) {
+    console.error('Error fetching homepage data:', error);
+    return {
+      featuredProjects: [],
+      trendingProjects: [],
+    };
+  }
+}
+
+// Server component with ISR
+export default async function Home() {
+  // Fetch data on the server with ISR
+  const { featuredProjects, trendingProjects } = await getHomePageData();
 
   return (
     <main className="flex min-h-screen flex-col pt-16 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Property Search Section */}
-      {/* <PropertySearchSection /> */}
-
       {/* Benefits Section */}
       <BenefitsSection />
 
-      {/* Featured Projects Section */}
-      <FeaturedProjectsSection projects={projects} loading={projectsLoading} />
-
-      {/* Trending Projects Section - handled by Sections component */}
-
-      {/* Adventure Section */}
-      {/* <Adventure /> */}
-
-      {/* Developer Section */}
-      {/* <Developer /> */}
+      {/* Featured Projects Section - Server-side rendered with ISR */}
+      <FeaturedProjectsSection projects={featuredProjects} loading={false} />
 
       {/* Services Section */}
       <ServicesSection />
@@ -143,20 +144,11 @@ export default function Home() {
       {/* Newsletter Section */}
       <NewsletterSection />
 
-      {/* Sections Section */}
-      <Sections projects={projects} loading={projectsLoading} />
-
-      {/* Newsletter Section */}
-      {/* <Newsletter /> */}
-
-      {/* Contact Section */}
-      {/* <ContactSection
-        contactForm={contactForm}
-        contactSubmitting={contactSubmitting}
-        contactSuccess={contactSuccess}
-        onFormChange={handleContactChange}
-        onFormSubmit={handleContactSubmit}
-      /> */}
+      {/* Trending Projects Section - Server-side rendered with ISR */}
+      <Sections projects={trendingProjects} loading={false} />
     </main>
   );
 }
+
+// Enable ISR with revalidation every 5 minutes (300 seconds)
+export const revalidate = 300;

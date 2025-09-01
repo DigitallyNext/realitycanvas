@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from '@/components/ScrollToTop';
 import Chatbot from '@/components/Chatbot';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import ClientLayout from '@/components/ClientLayout';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -105,14 +106,16 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            <Navbar />
-            <div className="">
-              {children}
-            </div>
-            <Footer />
-            <ScrollToTop />
-            {/* <Chatbot /> */}
-            <LeadCaptureModal />
+            <ClientLayout>
+              <Navbar />
+              <div className="">
+                {children}
+              </div>
+              <Footer />
+              <ScrollToTop />
+              {/* <Chatbot /> */}
+              <LeadCaptureModal />
+            </ClientLayout>
           </AuthProvider>
         </ThemeProvider>
       </body>

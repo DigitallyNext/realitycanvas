@@ -135,19 +135,63 @@ export async function GET(request: NextRequest) {
       headers: Object.fromEntries(request.headers.entries())
     });
     
-    // Parse query parameters for pagination
+    // Parse query parameters for pagination and search
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '6');
     const skip = (page - 1) * limit;
+    const search = searchParams.get('search') || '';
+    const category = searchParams.get('category') || '';
+    const status = searchParams.get('status') || '';
+    const city = searchParams.get('city') || '';
+    const state = searchParams.get('state') || '';
     
     console.log(`Pagination: page=${page}, limit=${limit}, skip=${skip}`);
+    console.log(`Filters: search=${search}, category=${category}, status=${status}, city=${city}, state=${state}`);
     
-    // Get total count for pagination info
-    const totalCount = await prisma.project.count();
+    // Build where clause for filtering
+    const whereClause: any = {};
     
-    // Query projects with pagination, ordered by updatedAt (most recently updated first)
+    // Add search functionality
+    if (search) {
+      whereClause.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { subtitle: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { address: { contains: search, mode: 'insensitive' } },
+        { locality: { contains: search, mode: 'insensitive' } },
+        { city: { contains: search, mode: 'insensitive' } },
+        { state: { contains: search, mode: 'insensitive' } },
+        { developerName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+    
+    // Add category filter
+    if (category && category !== 'ALL') {
+      whereClause.category = category;
+    }
+    
+    // Add status filter
+    if (status && status !== 'ALL') {
+      whereClause.status = status;
+    }
+    
+    // Add city filter
+    if (city) {
+      whereClause.city = { contains: city, mode: 'insensitive' };
+    }
+    
+    // Add state filter
+    if (state) {
+      whereClause.state = { contains: state, mode: 'insensitive' };
+    }
+    
+    // Get total count for pagination info with filters
+    const totalCount = await prisma.project.count({ where: whereClause });
+    
+    // Query projects with pagination and filters, ordered by updatedAt (most recently updated first)
     const projects = await prisma.project.findMany({
+      where: whereClause,
       orderBy: { updatedAt: 'desc' },
       skip,
       take: limit,

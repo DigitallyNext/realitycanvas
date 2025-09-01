@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Squares2X2Icon, ListBulletIcon, XMarkIcon, PlusIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { Squares2X2Icon, ListBulletIcon, XMarkIcon, PlusIcon, ArrowPathIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import ProjectSearchBar from '@/components/ProjectSearchBar';
 import ProjectFilterSidebar from '@/components/ProjectFilterSidebar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -40,8 +41,10 @@ type Project = {
   maxRatePsf?: string | null;
 };
 
-export default function ProjectsPage() {
+// Component that uses sidebar context for toast notifications
+function ProjectsContent() {
   const { isAdmin } = useAuth();
+  const { open, setOpen } = useSidebar();
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,9 +68,31 @@ export default function ProjectsPage() {
     hasMore: false,
     hasPrevious: false
   });
+  const [searchResults, setSearchResults] = useState<Project[]>([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
 
+  // Toast notification helper
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(''), 2200);
+  };
+
+  // Handle sidebar state changes with toast notifications
+  useEffect(() => {
+    if (open) {
+      showToast('Filters panel opened');
+    } else {
+      showToast('Filters panel closed');
+    }
+  }, [open]);
+
+  // Load projects only when needed (for ISR optimization)
   useEffect(() => {
     const fetchProjects = async () => {
+      // Only fetch if no search query is active
+      if (searchQuery) return;
+      
       try {
         setLoading(true);
         const res = await fetch(`/api/projects?page=${currentPage}&limit=6`, { 
@@ -101,27 +126,15 @@ export default function ProjectsPage() {
         setLoading(false);
       }
     };
-    
+
     fetchProjects();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
   
-  // Filter projects when search query or filters change
+  // Filter projects when filters change (but NOT search query)
   useEffect(() => {
     if (!projects.length) return;
     
     let filtered = [...projects];
-    
-    // Apply search query filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(project => 
-        project.title.toLowerCase().includes(query) ||
-        (project.subtitle && project.subtitle.toLowerCase().includes(query)) ||
-        project.address.toLowerCase().includes(query) ||
-        (project.city && project.city.toLowerCase().includes(query)) ||
-        (project.state && project.state.toLowerCase().includes(query))
-      );
-    }
     
     // Apply category filter
     if (filters.category !== 'ALL') {
@@ -166,7 +179,7 @@ export default function ProjectsPage() {
     });
     
     setFilteredProjects(filtered);
-  }, [projects, searchQuery, filters]);
+  }, [projects, filters]); // Removed searchQuery from dependencies
   
   // Add a refresh button function
   const refreshProjects = async () => {
@@ -206,10 +219,61 @@ export default function ProjectsPage() {
     }
   };
   
+  // Handle search input with dropdown results
+  const handleSearchInput = async (query: string) => {
+    setSearchQuery(query);
+    
+    if (!query.trim()) {
+      setShowSearchDropdown(false);
+      setSearchResults([]);
+      return;
+    }
+    
+    setSearchLoading(true);
+    setShowSearchDropdown(true);
+    
+    try {
+      // Build search URL with query parameters
+      const searchParams = new URLSearchParams({
+        page: '1',
+        limit: '10', // Limit for dropdown results
+        search: query
+      });
+      
+      const res = await fetch(`/api/projects?${searchParams.toString()}`, {
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data.projects && Array.isArray(data.projects)) {
+        setSearchResults(data.projects);
+      }
+    } catch (error) {
+      console.error('Failed to search projects:', error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+  
+  // Handle clicking on search result
+  const handleSearchResultClick = (projectSlug: string, projectTitle: string) => {
+    setShowSearchDropdown(false);
+    setSearchQuery('');
+    window.location.href = `/projects/${projectSlug}`;
+  };
+
   // Handle search query changes
   const handleSearch = (filters: any) => {
     if (typeof filters === 'string') {
-      setSearchQuery(filters);
+      handleSearchInput(filters);
     } else {
       // Handle SearchFilters object
       setSearchQuery('');
@@ -238,11 +302,6 @@ export default function ProjectsPage() {
       priceRange: { min: 0, max: 10000000 },
     });
     setSearchQuery('');
-  };
-
-  const showToast = (message: string) => {
-    setToast(message);
-    setTimeout(() => setToast(''), 2200);
   };
 
   const handleDelete = async (id: string) => {
@@ -281,90 +340,148 @@ export default function ProjectsPage() {
   };
 
   return (
-    <SidebarProvider>
-      <div className="h-screen flex w-full overflow-hidden mt-16">
-        {/* Sidebar */}
-        <Sidebar variant="inset">
-          <SidebarHeader>
-            <div className="flex items-center gap-2 px-4 py-2">
-              <h2 className="text-lg font-semibold">Projects</h2>
-            </div>
-          </SidebarHeader>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 mt-16">
+      <div className="flex w-full">
+          {/* Left Sidebar - Filters */}
+          <Sidebar variant="inset" className="h-[calc(100vh-4rem)] sticky top-16">
+            <SidebarHeader>
+              <div className="flex items-center justify-between gap-2 px-4 py-2">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                {/* <SidebarTrigger className="h-6 w-6" /> */}
+              </div>
+            </SidebarHeader>
+            
+            <SidebarContent className="flex-1 overflow-y-auto">
+              <SidebarGroup>
+                <SidebarGroupLabel>View Options</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('grid')}
+                      className="h-8 flex-1 text-xs"
+                    >
+                      <Squares2X2Icon className="h-3 w-3 mr-1" />
+                      Grid
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                      className="h-8 flex-1 text-xs"
+                    >
+                      <ListBulletIcon className="h-3 w-3 mr-1" />
+                      List
+                    </Button>
+                  </div>
+                </SidebarGroupContent>
+              </SidebarGroup>
+              
+              <Separator />
+              
+              <SidebarGroup className="flex-1">
+                <SidebarGroupContent className="space-y-4">
+                  <ProjectFilterSidebar 
+                    filters={filters}
+                    onFiltersChange={handleFiltersChange}
+                    onClearFilters={handleClearFilters}
+                  />
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+            
+            <SidebarFooter className="border-t">
+              <div className="px-4 py-2 text-xs text-muted-foreground">
+                {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'} found
+              </div>
+            </SidebarFooter>
+          </Sidebar>
           
-          <SidebarContent className="overflow-y-auto">
-           
+          {/* Main Content Area */}
+          <div className="flex-1 min-h-screen">
+            {/* Toast Notification */}
+            {toast && (
+              <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 animate-fade-in-out">
+                {toast}
+              </div>
+            )}
             
-            <Separator />
             
-            <SidebarGroup>
-              <SidebarGroupLabel>View Options</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                    className="h-8 flex-1 text-xs"
-                  >
-                    <Squares2X2Icon className="h-3 w-3 mr-1" />
-                    Grid
-                  </Button>
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                    className="h-8 flex-1 text-xs"
-                  >
-                    <ListBulletIcon className="h-3 w-3 mr-1" />
-                    List
-                  </Button>
-                </div>
-              </SidebarGroupContent>
-            </SidebarGroup>
-            
-            <Separator />
-            
-            <SidebarGroup className="flex-1">
-              {/* <SidebarGroupLabel>Search & Filters</SidebarGroupLabel> */}
-              <SidebarGroupContent className="space-y-4">
-                {/* <ProjectSearchBar 
-                  onSearch={handleSearch}
-                  compact={true}
-                /> */}
-                <ProjectFilterSidebar 
-                  filters={filters}
-                  onFiltersChange={handleFiltersChange}
-                  onClearFilters={handleClearFilters}
-                />
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          
-          <SidebarFooter>
-            <div className="px-4 py-2 text-xs text-muted-foreground">
-              {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'} found
-            </div>
-          </SidebarFooter>
-        </Sidebar>
-        
-        {/* Main Content */}
-        <SidebarInset>
-          {/* Toast Notification */}
-          {toast && (
-            <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 animate-fade-in-out">
-              {toast}
-            </div>
-          )}
-          
-          {/* Header with sidebar toggle */}
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            {/* Header with Search */}
+            <header className="sticky top-16 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-white dark:bg-gray-900">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
               <h1 className="text-xl font-semibold">Projects Dashboard</h1>
             </div>
             
-            {/* <div className="ml-auto flex items-center gap-2 px-4">
+            {/* Search Bar in Header */}
+            <div className="ml-auto flex items-center gap-2 px-4">
+              <div className="relative w-80">
+                <input
+                  type="text"
+                  placeholder="Search projects by title, location..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearchInput(e.target.value)}
+                  onFocus={() => searchQuery && setShowSearchDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowSearchDropdown(false), 200)}
+                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                </div>
+                
+                {/* Search Dropdown */}
+                {showSearchDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-80 overflow-y-auto overflow-x-hidden z-50">
+                    {searchLoading ? (
+                      <div className="p-4 text-center text-gray-500">
+                        <p className="text-sm">Searching...</p>
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div className="py-2">
+                        {searchResults.map((project) => (
+                           <div
+                             key={project.id}
+                             onClick={() => handleSearchResultClick(project.slug, project.title)}
+                             className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                           >
+                            <div className="flex items-center space-x-3 min-w-0">
+                              <img
+                                src={project.featuredImage}
+                                alt={project.title}
+                                className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                              />
+                              <div className="flex-1 min-w-0 overflow-hidden">
+                                <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                  {project.title}
+                                </h4>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                  {project.address}
+                                </p>
+                                <div className="flex items-center space-x-2 mt-1 overflow-hidden">
+                                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full whitespace-nowrap">
+                                    {project.category}
+                                  </span>
+                                  <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full whitespace-nowrap">
+                                    {project.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : searchQuery && (
+                      <div className="p-4 text-center text-gray-500">
+                        <p className="text-sm">No projects found for "{searchQuery}"</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
               {(searchQuery || filters.category !== 'ALL' || filters.status !== 'ALL' || filters.city || filters.state) && (
                 <Button 
                   variant="outline"
@@ -376,11 +493,11 @@ export default function ProjectsPage() {
                   Clear filters
                 </Button>
               )}
-            </div> */}
+            </div>
           </header>
 
-          {/* Main Content */}
-          <main className="flex-1 space-y-4 p-4 pt-0 overflow-y-auto">
+            {/* Main Content - Full Width */}
+            <main className="p-6 bg-white dark:bg-gray-900">
 
         {loading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -592,32 +709,34 @@ export default function ProjectsPage() {
                         </div>
                       )}
                       
-                      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <Link 
-                          href={`/projects/${project.slug}`} 
-                          className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          View
-                        </Link>
-                        <Link 
-                          href={`/projects/new?edit=${project.slug}`} 
-                          className="px-3 py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Edit
-                        </Link>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(project.id);
-                          }} 
-                          className="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200" 
-                          disabled={deletingId === project.id}
-                        >
-                          {deletingId === project.id ? 'Deleting...' : 'Delete'}
-                        </button>
-                      </div>
+                      {isAdmin && (
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                          <Link 
+                            href={`/projects/${project.slug}`} 
+                            className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            View
+                          </Link>
+                          <Link 
+                            href={`/projects/new?edit=${project.slug}`} 
+                            className="px-3 py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Edit
+                          </Link>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(project.id);
+                            }} 
+                            className="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200" 
+                            disabled={deletingId === project.id}
+                          >
+                            {deletingId === project.id ? 'Deleting...' : 'Delete'}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -688,16 +807,18 @@ export default function ProjectsPage() {
           </div>
         )}
        
-      </main>
-      
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <div className="px-4 py-2 rounded-xl bg-black text-white shadow-lg">{toast}</div>
+            </main>
+          </div>
         </div>
-      )}
-        </SidebarInset>
-      </div>
+      </div>  
+  );
+}
+
+// Main component that wraps ProjectsContent with SidebarProvider
+export default function ProjectsPage() {
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <ProjectsContent />
     </SidebarProvider>
   );
 }
