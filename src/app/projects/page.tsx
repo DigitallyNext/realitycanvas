@@ -641,7 +641,7 @@ function ProjectsContent() {
                         Under Maintenance
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400 mb-8">
-                        We're experiencing some technical difficulties. Please
+                        We&apos;re experiencing some technical difficulties. Please
                         check back in a few minutes.
                       </p>
                       <button
