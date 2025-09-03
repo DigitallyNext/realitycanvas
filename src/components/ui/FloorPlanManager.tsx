@@ -43,6 +43,7 @@ interface FloorPlanManagerProps {
 
 const defaultFloorLevels = [
   'Basement',
+  'Terrace',
   'Lower Ground Floor',
   'Ground Floor',
   'First Floor', 
@@ -62,6 +63,9 @@ const defaultFloorLevels = [
   '3 BHK',
   '2 BHK',
   '1 BHK',
+  'Main Site',
+  'Site Map',
+  'Apartment',
   'None'
 ];
 

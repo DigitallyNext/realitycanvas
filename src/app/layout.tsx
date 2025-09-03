@@ -34,6 +34,28 @@ const geistMonoVariable = geistMono?.variable || "";
 export const metadata: Metadata = {
   title: "Realty Canvas - Real Estate Listings",
   description: "Find your dream property with Realty Canvas",
+  openGraph: {
+    title: "Realty Canvas - Real Estate Listings",
+    description: "Find your dream property with Realty Canvas",
+    url: "https://www.realtycanvas.in",
+    siteName: "Realty Canvas",
+    images: [
+      {
+        url: "https://www.realtycanvas.in/logo.webp",
+        width: 1200,
+        height: 630,
+        alt: "Realty Canvas - Real Estate Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Realty Canvas - Real Estate Listings",
+    description: "Find your dream property with Realty Canvas",
+    images: ["https://www.realtycanvas.in/logo.webp"],
+  },
 };
 
 export default function RootLayout({

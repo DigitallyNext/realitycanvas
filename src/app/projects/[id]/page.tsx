@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { prisma } from '@/lib/prisma';
 import ProjectDetailClient from '@/app/projects/[id]/ProjectDetailClient';
 
@@ -13,6 +14,58 @@ type Unit = {
   availability: string;
   notes?: string | null;
 };
+
+// Generate dynamic metadata for Open Graph sharing
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  
+  try {
+    const project = await getProjectData(id);
+    
+    if (!project) {
+      return {
+        title: 'Project Not Found - Realty Canvas',
+        description: 'The requested project could not be found.',
+      };
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in';
+    const projectUrl = `${baseUrl}/projects/${project.slug}`;
+    
+    return {
+      title: `${project.title} - Realty Canvas`,
+      description: project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`,
+      openGraph: {
+        title: `${project.title} - Realty Canvas`,
+        description: project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`,
+        url: projectUrl,
+        siteName: 'Realty Canvas',
+        images: [
+          {
+            url: project.featuredImage,
+            width: 1200,
+            height: 630,
+            alt: `${project.title} - Featured Image`,
+          },
+        ],
+        locale: 'en_US',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${project.title} - Realty Canvas`,
+        description: project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`,
+        images: [project.featuredImage],
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Realty Canvas - Real Estate Listings',
+      description: 'Find your dream property with Realty Canvas',
+    };
+  }
+}
 
 type Highlight = {
   id: string;

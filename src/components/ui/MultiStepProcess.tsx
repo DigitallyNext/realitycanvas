@@ -21,6 +21,9 @@ interface MultiStepProcessProps {
   children: ReactNode;
   isStepComplete?: (stepIndex: number) => boolean;
   isSubmitting?: boolean;
+  publishingProgress?: number;
+  publishingStatus?: string;
+  elapsedTime?: number;
   finalButtonText?: string;
   showProgress?: boolean;
   className?: string;
@@ -36,6 +39,9 @@ export default function MultiStepProcess({
   children,
   isStepComplete = () => true,
   isSubmitting = false,
+  publishingProgress = 0,
+  publishingStatus = '',
+  elapsedTime = 0,
   finalButtonText = 'Publish',
   showProgress = true,
   className = ''
@@ -192,7 +198,31 @@ export default function MultiStepProcess({
             </div>
 
             {isLastStep ? (
-              <button
+              <>
+                {isSubmitting && (
+                  <div className="mb-4 w-full max-w-md">
+                    <div className="flex justify-between items-center mb-2">
+                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                         {publishingStatus || 'Publishing...'}
+                       </span>
+                       <div className="flex items-center gap-3">
+                         <span className="text-xs text-gray-500 dark:text-gray-400">
+                           {Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
+                         </span>
+                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                           {publishingProgress}%
+                         </span>
+                       </div>
+                     </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                      <div 
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+                        style={{ width: `${publishingProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+                <button
                 onClick={onSubmit}
                 disabled={isSubmitting}
                 className={`flex items-center px-8 py-3 rounded-xl font-medium transition-all ${
@@ -204,7 +234,7 @@ export default function MultiStepProcess({
                 {isSubmitting ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Publishing...
+                    {publishingStatus || 'Publishing...'}
                   </>
                 ) : (
                   <>
@@ -213,6 +243,7 @@ export default function MultiStepProcess({
                   </>
                 )}
               </button>
+              </>
             ) : (
               <button
                 onClick={onNext}

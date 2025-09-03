@@ -171,6 +171,26 @@ function UnifiedProjectFormContent() {
   const [buyerInfo, setBuyerInfo] = useState<any[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
+  const [publishingProgress, setPublishingProgress] = useState(0);
+  const [publishingStatus, setPublishingStatus] = useState('');
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  
+  // Timer effect for tracking elapsed time during publishing
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (submitting && startTime) {
+      interval = setInterval(() => {
+        const now = new Date();
+        const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+        setElapsedTime(elapsed);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [submitting, startTime]);
+  
   const [isAIAssisted, setIsAIAssisted] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -770,6 +790,13 @@ function UnifiedProjectFormContent() {
     }
 
     setSubmitting(true);
+    setStartTime(new Date());
+    setElapsedTime(0);
+    setPublishingProgress(0);
+    setPublishingStatus('Starting project creation...');
+    
+    // Small delay to show initial status
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     try {
       const projectPayload = {
@@ -1198,35 +1225,70 @@ function UnifiedProjectFormContent() {
 
       if (!projectRes.ok) throw new Error('Failed to create project');
         projectResult = await projectRes.json();
+        
+        // Force React to update UI immediately
+        setTimeout(() => {
+          setPublishingProgress(10);
+          setPublishingStatus('Project created successfully. Adding units...');
+        }, 0);
+        await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add units
       for (const unit of units.filter(u => u.unitNumber?.trim())) {
-        const unitPayload = {
-          unitNumber: unit.unitNumber,
-          type: unit.type,
-          floor: unit.floor || 'N/A',
-          areaSqFt: unit.areaSqFt && unit.areaSqFt.trim() && unit.areaSqFt.toLowerCase() !== 'n/a' ? unit.areaSqFt.trim() : '0',
-        };
+        try {
+          const unitPayload = {
+            unitNumber: unit.unitNumber,
+            type: unit.type,
+            floor: unit.floor || 'N/A',
+            areaSqFt: unit.areaSqFt && unit.areaSqFt.trim() && unit.areaSqFt.toLowerCase() !== 'n/a' ? unit.areaSqFt.trim() : '0',
+          };
 
-          await fetch(`/api/projects/${projectResult.id}/units`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(unitPayload),
-        });
+          const response = await fetch(`/api/projects/${projectResult.slug}/units`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(unitPayload),
+          });
+          
+          if (!response.ok) {
+            console.error(`Failed to create unit ${unit.unitNumber}:`, await response.text());
+          }
+        } catch (error) {
+          console.error(`Error creating unit ${unit.unitNumber}:`, error);
+        }
       }
+      
+      setTimeout(() => {
+         setPublishingProgress(25);
+         setPublishingStatus('Units added. Creating highlights...');
+       }, 0);
+       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add highlights
       for (const highlight of highlights.filter(h => h.label)) {
-        await fetch('/api/projects/highlights', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-              projectId: projectResult.id,
-            label: highlight.label,
-            icon: highlight.icon || null,
-          }),
-        });
+        try {
+          const response = await fetch('/api/projects/highlights', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                projectId: projectResult.slug, // Use slug instead of id
+              label: highlight.label,
+              icon: highlight.icon || null,
+            }),
+          });
+          
+          if (!response.ok) {
+            console.error(`Failed to create highlight ${highlight.label}:`, await response.text());
+          }
+        } catch (error) {
+          console.error(`Error creating highlight ${highlight.label}:`, error);
+        }
       }
+      
+      setTimeout(() => {
+         setPublishingProgress(35);
+         setPublishingStatus('Highlights added. Creating amenities...');
+       }, 0);
+       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add amenities
       for (const amenity of amenities.filter(a => a.name)) {
@@ -1234,13 +1296,19 @@ function UnifiedProjectFormContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-              projectId: projectResult.id,
+              projectId: projectResult.slug, // Use slug instead of id
             category: amenity.category,
             name: amenity.name,
             details: amenity.details || null,
           }),
         });
       }
+      
+      setTimeout(() => {
+           setPublishingProgress(45);
+           setPublishingStatus('Amenities added. Creating anchor tenants...');
+         }, 0);
+         await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add anchors (for commercial projects)
       if (project.category !== 'RESIDENTIAL') {
@@ -1249,7 +1317,7 @@ function UnifiedProjectFormContent() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                projectId: projectResult.id,
+                projectId: projectResult.slug, // Use slug instead of id
               name: anchor.name,
               category: anchor.category,
               floor: anchor.floor,
@@ -1258,19 +1326,39 @@ function UnifiedProjectFormContent() {
           });
           }
         }
+        
+        setTimeout(() => {
+           setPublishingProgress(55);
+           setPublishingStatus('Anchor tenants added. Creating FAQs...');
+         }, 0);
+         await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add FAQs
       for (const faq of faqs.filter(f => f.question && f.answer)) {
-        await fetch('/api/projects/faqs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            projectId: projectResult.id,
-            question: faq.question,
-            answer: faq.answer,
-          }),
-        });
+        try {
+          const response = await fetch('/api/projects/faqs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              projectId: projectResult.slug, // Use slug instead of id
+              question: faq.question,
+              answer: faq.answer,
+            }),
+          });
+          
+          if (!response.ok) {
+            console.error(`Failed to create FAQ:`, await response.text());
+          }
+        } catch (error) {
+          console.error(`Error creating FAQ:`, error);
+        }
       }
+      
+      setTimeout(() => {
+         setPublishingProgress(65);
+         setPublishingStatus('FAQs added. Creating floor plans...');
+       }, 0);
+       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add floor plans
       for (const floorPlan of floorPlans.filter(fp => fp.level && fp.imageUrl)) {
@@ -1278,7 +1366,7 @@ function UnifiedProjectFormContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            projectId: projectResult.id,
+            projectId: projectResult.slug, // Use slug instead of id
             level: floorPlan.level,
             title: floorPlan.title || null,
             imageUrl: floorPlan.imageUrl,
@@ -1286,6 +1374,12 @@ function UnifiedProjectFormContent() {
           }),
         });
       }
+      
+      setTimeout(() => {
+         setPublishingProgress(75);
+         setPublishingStatus('Floor plans added. Creating pricing table...');
+       }, 0);
+       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add pricing table
       for (const pricingRow of pricingTable.filter(pr => pr.unitType)) {
@@ -1293,11 +1387,17 @@ function UnifiedProjectFormContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            projectId: projectResult.id,
+            projectId: projectResult.slug, // Use slug instead of id
             ...pricingRow,
           }),
         });
       }
+      
+      setTimeout(() => {
+         setPublishingProgress(85);
+         setPublishingStatus('Pricing table added. Creating location data...');
+       }, 0);
+       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Add location data (nearby points)
       const validNearbyPoints = (locationData.nearbyPoints || []).filter((np: any) => np.name?.trim() && np.type?.trim());
@@ -1306,14 +1406,21 @@ function UnifiedProjectFormContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            projectId: projectResult.id,
+            projectId: projectResult.slug, // Use slug instead of id
             ...nearbyPoint,
           }),
         });
       }
       }
-
-      router.push(`/projects/${projectResult.slug}`);
+      
+      setTimeout(() => {
+         setPublishingProgress(100);
+         setPublishingStatus('Project published successfully!');
+       }, 0);
+       
+       // Small delay to show completion before redirect
+       await new Promise(resolve => setTimeout(resolve, 1500));
+       router.push(`/projects/${projectResult.slug}`);
     } catch (err) {
       console.error(err);
       alert(editingProjectId ? 'Error updating project' : 'Error creating project');
@@ -2460,6 +2567,9 @@ function UnifiedProjectFormContent() {
           onSubmit={handleSubmit}
           isStepComplete={isStepComplete}
           isSubmitting={submitting}
+          publishingProgress={publishingProgress}
+          publishingStatus={publishingStatus}
+          elapsedTime={elapsedTime}
           finalButtonText={editingProjectId ? "Update Project" : "Create Project"}
         >
           {renderStepContent()}
