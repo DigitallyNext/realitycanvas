@@ -1,0 +1,144 @@
+'use client';
+
+import { useState } from 'react';
+
+type Unit = {
+  id: string;
+  unitNumber: string;
+  type: string;
+  floor: string;
+  areaSqFt: number;
+  ratePsf?: number | null;
+  priceTotal?: number | null;
+  availability: string;
+  notes?: string | null;
+};
+
+interface PropertyUnitsTableProps {
+  units: Unit[];
+  className?: string;
+}
+
+export default function PropertyUnitsTable({ units, className = '' }: PropertyUnitsTableProps) {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const unitsPerPage = 10;
+
+  const totalUnits = units?.length ?? 0;
+  const startIndex = (currentPage - 1) * unitsPerPage;
+  const endIndex = currentPage * unitsPerPage;
+  const currentUnits = units?.slice(startIndex, endIndex) ?? [];
+
+  return (
+    <div className={`bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg ${className}`}>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        Total Units
+      </h2>
+
+      {totalUnits > 0 ? (
+        <div className="overflow-x-auto max-w-full">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
+              <tr>
+                {["Unit", "Type", "Floor", "Area", "Price", "Status"].map((heading) => (
+                  <th
+                    key={heading}
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider break-words"
+                  >
+                    {heading}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {currentUnits.map((unit) => (
+                <tr 
+                  key={unit.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white break-words">
+                    {unit.unitNumber}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 break-words">
+                    {unit.type}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 break-words">
+                    {unit.floor}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 break-words">
+                    {unit.areaSqFt.toLocaleString()} sq ft
+                  </td>
+                  <td className="px-6 py-4 text-xs font-medium text-gray-900 dark:text-white break-words">
+                    {unit.priceTotal
+                      ? `₹${(unit.priceTotal / 100000).toFixed(1)}L`
+                      : unit.ratePsf
+                      ? `₹${unit.ratePsf}/sq ft`
+                      : "Price on Request"}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        unit.availability === "AVAILABLE"
+                          ? "bg-green-100 text-green-800"
+                          : unit.availability === "HOLD"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : unit.availability === "SOLD"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {unit.availability}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          No units available
+        </p>
+      )}
+
+      {/* Pagination Controls */}
+      {totalUnits > unitsPerPage && (
+        <div className="flex justify-between items-center mt-6">
+          <div className="text-sm text-gray-500">
+            Showing {Math.min(startIndex + 1, totalUnits)} to{" "}
+            {Math.min(endIndex, totalUnits)} of {totalUnits} units
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${
+                currentPage === 1
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+              }`}
+            >
+              Previous
+            </button>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(totalUnits / unitsPerPage))
+                )
+              }
+              disabled={currentPage >= Math.ceil(totalUnits / unitsPerPage)}
+              className={`px-3 py-1 rounded ${
+                currentPage >= Math.ceil(totalUnits / unitsPerPage)
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

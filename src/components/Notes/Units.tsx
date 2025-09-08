@@ -74,7 +74,7 @@ export default function UnitsSection({ project }: UnitsSectionProps) {
       </h2>
 
       {totalUnits > 0 ? (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto max-w-full">
           <div className="grid grid-cols-7 gap-4 min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             {/* Header Row */}
             <div className="col-span-7 grid grid-cols-6 bg-gray-50 dark:bg-gray-900">
@@ -82,7 +82,7 @@ export default function UnitsSection({ project }: UnitsSectionProps) {
                 (heading) => (
                   <div
                     key={heading}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider break-words"
                   >
                     {heading}
                   </div>
@@ -96,26 +96,26 @@ export default function UnitsSection({ project }: UnitsSectionProps) {
                 key={unit.id}
                 className="col-span-7 grid grid-cols-6 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800"
               >
-                <div className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                <div className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white break-words">
                   {unit.unitNumber}
                 </div>
-                <div className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <div className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 break-words">
                   {unit.type}
                 </div>
-                <div className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <div className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 break-words">
                   {unit.floor}
                 </div>
-                <div className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <div className="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 break-words">
                   {unit.areaSqFt.toLocaleString()} sq ft
                 </div>
-                <div className="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-900 dark:text-white">
+                <div className="px-6 py-4 text-xs font-medium text-gray-900 dark:text-white break-words">
                   {unit.priceTotal
                     ? `₹${(unit.priceTotal / 100000).toFixed(1)}L`
                     : unit.ratePsf
                     ? `₹${unit.ratePsf}/sq ft`
                     : "Price on Request"}
                 </div>
-                <div className="px-6 py-4 whitespace-nowrap">
+                <div className="px-6 py-4">
                   <span
                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       unit.availability === "AVAILABLE"
