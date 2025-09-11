@@ -317,16 +317,7 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
 
               {/* Action Buttons - Top Right */}
               <div className="absolute top-6 right-6 flex items-center space-x-3">
-                <button
-                  onClick={toggleLike}
-                  className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors"
-                >
-                  {isLiked ? (
-                    <HeartSolidIcon className="w-6 h-6 text-red-500" />
-                  ) : (
-                    <HeartIcon className="w-6 h-6 text-gray-700" />
-                  )}
-                </button>
+               
                 <button
                   onClick={handleShare}
                   className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors"
@@ -338,7 +329,7 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
               {/* View All Photos Button - Bottom Right */}
               <button
                 onClick={() => setViewAllPhotos(true)}
-                className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-white transition-colors"
+                className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg lg:flex items-center space-x-2 hover:bg-white transition-colors hidden "
               >
                 <PhotoIcon className="w-5 h-5 text-gray-700" />
                 <span className="text-gray-700 font-medium">
@@ -349,7 +340,7 @@ export default function ProjectDetailClient({ project, slug }: ProjectDetailClie
               {/* Gallery Preview - Bottom Left */}
               {project.galleryImages.length > 0 && (
                 <div className="absolute bottom-6 left-6 flex space-x-2">
-                  {project.galleryImages.slice(0, 4).map((image, index) => (
+                  {project.galleryImages.slice(0, 5).map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveImageIndex(index)}
