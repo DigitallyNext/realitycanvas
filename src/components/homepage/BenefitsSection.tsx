@@ -8,6 +8,7 @@ import {
   BoltIcon,
   CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
+import SmartImage from '../ui/SmartImage';
 
 export default function BenefitsSection() {
   return (
@@ -105,7 +106,7 @@ export default function BenefitsSection() {
           {/* Right side - Image */}
           <div className="relative flex-shrink-0">
             <div className="relative w-full max-w-md h-96 lg:h-[700px] rounded-3xl overflow-hidden bg-gray-200 dark:bg-gray-700">
-              <Image
+              <SmartImage
                 src="/bannernew.webp"
                 alt="Real Estate Benefits"
                 fill
