@@ -74,9 +74,9 @@ export async function GET(request: NextRequest) {
       const sampleProject = await prisma.project.findFirst({
         where: {
           OR: [
-            { featuredImage: { not: null } },
-            { galleryImages: { not: null } },
-            { sitePlanImage: { not: null } }
+            { featuredImage: { not: "" } },
+            { galleryImages: { not: "" } },
+            { sitePlanImage: { not: "" } }
           ]
         },
         select: {
@@ -89,6 +89,16 @@ export async function GET(request: NextRequest) {
       });
 
       if (sampleProject) {
+        let galleryCount = 0;
+        if (sampleProject.galleryImages) {
+          try {
+            const galleryArray = JSON.parse(sampleProject.galleryImages);
+            galleryCount = Array.isArray(galleryArray) ? galleryArray.length : 0;
+          } catch {
+            galleryCount = 0;
+          }
+        }
+
         debugInfo.tests.sample_project = {
           status: 'SUCCESS',
           project: {
@@ -98,7 +108,7 @@ export async function GET(request: NextRequest) {
             has_gallery_images: !!sampleProject.galleryImages,
             has_site_plan: !!sampleProject.sitePlanImage,
             featured_image_url: sampleProject.featuredImage,
-            gallery_count: sampleProject.galleryImages ? JSON.parse(sampleProject.galleryImages).length : 0
+            gallery_count: galleryCount
           }
         };
 
@@ -141,23 +151,23 @@ export async function GET(request: NextRequest) {
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
         );
         
-        // Try to list files in the property-images bucket
-        const { data, error } = await supabase.storage
-          .from('property-images')
-          .list('', { limit: 5 });
-        
-        if (error) {
-          debugInfo.tests.storage_bucket = {
-            status: 'ERROR',
-            error: error.message
-          };
-        } else {
-          debugInfo.tests.storage_bucket = {
-            status: 'SUCCESS',
-            file_count: data?.length || 0,
-            sample_files: data?.slice(0, 3).map(file => file.name) || []
-          };
-        }
+          // Sample files from storage bucket
+          const { data, error } = await supabase.storage
+            .from('property-images')
+            .list('', { limit: 5 });
+          
+          if (error) {
+            debugInfo.tests.storage_bucket = {
+              status: 'ERROR',
+              error: error.message
+            };
+          } else {
+            debugInfo.tests.storage_bucket = {
+              status: 'SUCCESS',
+              file_count: data?.length || 0,
+              sample_files: data?.slice(0, 3).map(file => file.name) || []
+            };
+          }
       }
     } catch (error: any) {
       debugInfo.tests.storage_bucket = {
