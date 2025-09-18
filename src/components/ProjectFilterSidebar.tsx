@@ -29,8 +29,6 @@ export default function ProjectFilterSidebar({
   const categories = [
     'ALL',
     'COMMERCIAL',
-    'RETAIL_ONLY',
-    'MIXED_USE',
     'RESIDENTIAL'
   ];
 

@@ -25,8 +25,7 @@ const projectCategories = [
   'All Categories',
   'COMMERCIAL',
   'RESIDENTIAL', 
-  'MIXED_USE',
-  'RETAIL_ONLY',
+
 ];
 
 const projectStatuses = [
@@ -40,8 +39,6 @@ const categoryDisplayNames: { [key: string]: string } = {
   'All Categories': 'All Categories',
   'COMMERCIAL': 'Commercial',
   'RESIDENTIAL': 'Residential',
-  'MIXED_USE': 'Mixed Use',
-  'RETAIL_ONLY': 'Retail Only',
 };
 
 const statusDisplayNames: { [key: string]: string } = {
