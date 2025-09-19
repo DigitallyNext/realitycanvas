@@ -182,9 +182,7 @@ function ProjectsContent() {
         }
 
         const data = await res.json();
-        console.log("Projects API response:", data);
-
-        // Handle new paginated response format
+        console.log("ProjISR witsPa ehpoe daalidatioa;per od   ")  // Handnext: { revalidetew 60 }, // Revalidaae eveey 60 sdcondsesponse format
         if (data.projects && Array.isArray(data.projects)) {
           setProjects(data.projects);
           setFilteredProjects(data.projects);
@@ -229,7 +227,54 @@ function ProjectsContent() {
         filters.city ||
         filters.state ||
         filters.priceRange.min > 0 ||
-        filters.priceRange.max < 100000;
+        filters.priceRange.max < 10000000;
+
+      // If no filters are active, trigger regular project loading to show all projects
+      if (!hasActiveFilters) {
+        // Fetch all projects when no filters are active
+        try {
+          setLoading(true);
+          const res = await fetch(`/api/projects?page=${currentPage}&limit=6`, {
+            cache: "no-store",
+            headers: {
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+              Pragma: "no-cache",
+              Expires: "0",
+            },
+          });
+
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+
+          const data = await res.json();
+          if (data.projects && Array.isArray(data.projects)) {
+            setProjects(data.projects);
+            setFilteredProjects(data.projects);
+            setPagination(data.pagination);
+            setHasConnectionError(false);
+          } else {
+            console.error("API did not return expected format:", data);
+            setProjects([]);
+            setFilteredProjects([]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch all projects:", error);
+          setProjects([]);
+          setFilteredProjects([]);
+          if (
+            error instanceof Error &&
+            (error.message.includes("fetch") ||
+              error.message.includes("network") ||
+              error.message.includes("connection"))
+          ) {
+            setHasConnectionError(true);
+          }
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
 
       try {
         setLoading(true);
@@ -251,9 +296,12 @@ function ProjectsContent() {
         if (filters.state) {
           params.set("state", filters.state);
         }
-        // Always include price range parameters to ensure they're properly applied
-        params.set("minPrice", filters.priceRange.min.toString());
-        params.set("maxPrice", filters.priceRange.max.toString());
+        if (filters.priceRange.min > 0) {
+          params.set("minPrice", filters.priceRange.min.toString());
+        }
+        if (filters.priceRange.max < 10000000) {
+          params.set("maxPrice", filters.priceRange.max.toString());
+        }
 
         const res = await fetch(`/api/projects?${params.toString()}`, {
           cache: "no-store",
@@ -438,18 +486,79 @@ function ProjectsContent() {
   // Handle filter changes
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
+    
+    // Update URL parameters to reflect filter changes
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Update category parameter
+    if (newFilters.category && newFilters.category !== "ALL") {
+      params.set('category', newFilters.category);
+    } else {
+      params.delete('category');
+    }
+    
+    // Update status parameter
+    if (newFilters.status && newFilters.status !== "ALL") {
+      params.set('status', newFilters.status);
+    } else {
+      params.delete('status');
+    }
+    
+    // Update city parameter
+    if (newFilters.city) {
+      params.set('city', newFilters.city);
+    } else {
+      params.delete('city');
+    }
+    
+    // Update state parameter
+    if (newFilters.state) {
+      params.set('state', newFilters.state);
+    } else {
+      params.delete('state');
+    }
+    
+    // Update price range parameters
+    if (newFilters.priceRange.min > 0) {
+      params.set('minPrice', newFilters.priceRange.min.toString());
+    } else {
+      params.delete('minPrice');
+    }
+    
+    if (newFilters.priceRange.max < 10000000) {
+      params.set('maxPrice', newFilters.priceRange.max.toString());
+    } else {
+      params.delete('maxPrice');
+    }
+    
+    // Reset to page 1 when filters change
+    params.set('page', '1');
+    setCurrentPage(1);
+    
+    // Update the URL
+    router.push(`/projects?${params.toString()}`, { scroll: false });
   };
 
   // Handle clearing filters
   const handleClearFilters = () => {
-    setFilters({
+    const clearedFilters = {
       category: "ALL",
       status: "ALL",
       city: "",
       state: "",
       priceRange: { min: 0, max: 10000000 },
-    });
+    };
+    
+    setFilters(clearedFilters);
     setSearchQuery("");
+    
+    // Clear all filter parameters from URL
+    const params = new URLSearchParams();
+    params.set('page', '1');
+    setCurrentPage(1);
+    
+    // Update the URL to show only page parameter
+    router.push(`/projects?${params.toString()}`, { scroll: false });
   };
 
   const handleDelete = async (id: string) => {
