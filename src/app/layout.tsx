@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 // Import client components directly (dynamic imports causing issues)
 import ScrollToTop from '@/components/ScrollToTop';
 import Chatbot from '@/components/Chatbot';
@@ -129,6 +130,7 @@ export default function RootLayout({
       <body
         className={`${geistSansVariable} ${geistMonoVariable} antialiased min-h-screen bg-gray-50 dark:bg-gray-900`}
       >
+        <SpeedInsights/>
         <ThemeProvider>
           <AuthProvider>
             <ClientLayout>
