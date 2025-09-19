@@ -34,10 +34,27 @@ type Project = {
 // Server-side data fetching with ISR
 async function getHomePageData() {
   try {
-    // Fetch featured projects (latest projects)
+    // Featured project titles to keep
+    const featuredProjectTitles = [
+      'Elan The Presidential',
+      'Elan The Emperor',
+      'DLF Privana North',
+      'DLF Privana South',
+      'DLF Privana West',
+      'Whiteland Westin Residences',
+      'Tarc Ishva Gurgaon',
+      'SPJ Vedatam',
+      'AIPL Joy District'
+    ];
+    
+    // Fetch specified featured projects first
+    console.log("Fetching featured projects:", featuredProjectTitles);
     const featuredProjectsRaw = await prisma.project.findMany({
-      orderBy: { updatedAt: 'desc' },
-      take: 12, // Get more for pagination
+      where: {
+        title: {
+          in: featuredProjectTitles
+        }
+      },
       select: {
         id: true,
         slug: true,

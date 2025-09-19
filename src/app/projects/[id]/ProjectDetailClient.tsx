@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import JsonImportExport from "@/components/ui/JsonImportExport";
 import {
   HeartIcon,
   ShareIcon,
@@ -163,6 +164,43 @@ export default function ProjectDetailClient({
 }: ProjectDetailClientProps) {
   const router = useRouter();
   const callNowButtonRef = useRef<HTMLAnchorElement | null>(null);
+
+  // Format project data for JSON export
+  const getFormattedExportData = () => {
+    return {
+      title: project.title,
+      subtitle: project.subtitle,
+      description: project.description,
+      category: project.category,
+      basePrice: project.basePrice,
+      priceRange: project.priceRange,
+      address: project.address,
+      locality: project.locality,
+      city: project.city,
+      state: project.state,
+      reraId: project.reraId,
+      developerName: project.developerName,
+      possessionDate: project.possessionDate,
+      featuredImage: project.featuredImage,
+      galleryImages: project.galleryImages,
+      videoUrl: project.videoUrl,
+      videoUrls: project.videoUrls,
+      landArea: project.landArea,
+      numberOfFloors: project.numberOfFloors,
+      features: project.features,
+      numberOfTowers: project.numberOfTowers,
+      numberOfApartments: project.numberOfApartments,
+      highlights: project.highlights,
+      amenities: project.amenities,
+      units: project.units,
+      floorPlans: project.floorPlans,
+      pricingTable: project.pricingTable,
+      locationData: project.locationData,
+      anchors: project.anchors,
+      buyerInfo: project.buyerInfo,
+      faqs: project.faqs
+    };
+  };
 
   // Handle back navigation to preserve pagination state
   const handleBackToProjects = () => {
@@ -820,7 +858,7 @@ export default function ProjectDetailClient({
                       // Commercial Project Stats - Land Area/No. of Floors/Category
                       <>
                         <div>
-                          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                          <div className="text-2xl font-bold text-red-500 dark:text-white">
                             {project.landArea || "N/A"}
                           </div>
                           <div className="text-sm text-gray-500">Land Area</div>
@@ -837,7 +875,7 @@ export default function ProjectDetailClient({
                           <div className="text-lg font-bold text-purple-600">
                             {project.features || "N/A"}
                           </div>
-                          <div className="text-sm text-gray-500">Features</div>
+                          <div className="text-sm text-gray-500">Category</div>
                         </div>
                       </>
                     )}
@@ -920,6 +958,14 @@ export default function ProjectDetailClient({
                     <ShareIcon className="w-4 h-4 mr-2" />
                     Share
                   </button>
+                  <div className="mt-2">
+                    <JsonImportExport 
+                      onImport={() => {}} 
+                      exportData={getFormattedExportData()} 
+                      className="w-full" 
+                      title="Project JSON Manager"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

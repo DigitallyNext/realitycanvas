@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { HeartIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
+// import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { BrandButton } from './ui/BrandButton';
 
 type Project = {
@@ -113,16 +113,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
 
           {/* Favorite Button */}
-          <button
-            onClick={handleFavoriteClick}
-            className="absolute top-3 right-3 p-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-gray-700 transition-colors duration-200 z-10"
-          >
-            {isFavorited ? (
-              <HeartIconSolid className="w-5 h-5 text-red-500" />
-            ) : (
-              <HeartIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            )}
-          </button>
+          
 
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
@@ -131,7 +122,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {/* Content Section */}
         <div className="p-4 flex flex-col flex-grow">
           {/* Title */}
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-brand-primary dark:group-hover:text-brand-primary transition-colors min-h-[3.5rem]">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-brand-primary dark:group-hover:text-brand-primary transition-colors ">
             {project.title}
           </h3>
           
@@ -151,11 +142,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
 
           {/* Price Range */}
-          <div className="mb-4 mt-auto">
+          {/* <div className="mb-4 mt-auto">
             <span className="text-lg font-bold text-brand-primary dark:text-brand-primary">
               {formatPriceRange()}
             </span>
-          </div>
+          </div> */}
 
           {/* View Details Button */}
           <BrandButton

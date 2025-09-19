@@ -231,9 +231,6 @@ function ProjectsContent() {
         filters.priceRange.min > 0 ||
         filters.priceRange.max < 100000;
 
-      // If no filters are active, use the regular project loading
-      if (!hasActiveFilters) return;
-
       try {
         setLoading(true);
 
@@ -254,12 +251,9 @@ function ProjectsContent() {
         if (filters.state) {
           params.set("state", filters.state);
         }
-        if (filters.priceRange.min > 0) {
-          params.set("minPrice", filters.priceRange.min.toString());
-        }
-        if (filters.priceRange.max < 100000) {
-          params.set("maxPrice", filters.priceRange.max.toString());
-        }
+        // Always include price range parameters to ensure they're properly applied
+        params.set("minPrice", filters.priceRange.min.toString());
+        params.set("maxPrice", filters.priceRange.max.toString());
 
         const res = await fetch(`/api/projects?${params.toString()}`, {
           cache: "no-store",
