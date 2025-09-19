@@ -175,7 +175,7 @@ export default function ProjectDetailClient({
       basePrice: project.basePrice,
       priceRange: project.priceRange,
       address: project.address,
-      locality: project.locality,
+      // locality: project.locality,
       city: project.city,
       state: project.state,
       reraId: project.reraId,
@@ -195,9 +195,9 @@ export default function ProjectDetailClient({
       units: project.units,
       floorPlans: project.floorPlans,
       pricingTable: project.pricingTable,
-      locationData: project.locationData,
+      // locationData: project.locationData,
       anchors: project.anchors,
-      buyerInfo: project.buyerInfo,
+      // buyerInfo: project.buyerInfo,
       faqs: project.faqs
     };
   };
