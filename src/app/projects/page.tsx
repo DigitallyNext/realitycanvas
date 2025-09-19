@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Squares2X2Icon,
@@ -484,7 +484,7 @@ function ProjectsContent() {
   };
 
   // Handle filter changes
-  const handleFiltersChange = (newFilters: any) => {
+  const handleFiltersChange = useCallback((newFilters: any) => {
     setFilters(newFilters);
     
     // Update URL parameters to reflect filter changes
@@ -537,10 +537,10 @@ function ProjectsContent() {
     
     // Update the URL
     router.push(`/projects?${params.toString()}`, { scroll: false });
-  };
+  }, [searchParams, router, setFilters, setCurrentPage]);
 
   // Handle clearing filters
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     const clearedFilters = {
       category: "ALL",
       status: "ALL",
@@ -559,7 +559,7 @@ function ProjectsContent() {
     
     // Update the URL to show only page parameter
     router.push(`/projects?${params.toString()}`, { scroll: false });
-  };
+  }, [router, setFilters, setSearchQuery, setCurrentPage]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this project? This action cannot be undone.")) return;
