@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import ProjectSearchBar from "@/components/ProjectSearchBar";
 import ProjectFilterSidebar from "@/components/ProjectFilterSidebar";
+import MobileProjectFilters from "@/components/MobileProjectFilters";
 import UnderMaintenanceLottie from "@/components/UnderMaintenanceLottie";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -609,7 +610,7 @@ function ProjectsContent() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 mt-16">
       <div className="flex w-full">
         {/* Left Sidebar - Filters */}
-        <Sidebar variant="inset" className="h-[calc(100vh-4rem)] sticky top-16">
+        <Sidebar variant="inset" className="h-[calc(100vh-4rem)] sticky top-16 hidden lg:block">
           <SidebarHeader>
             <div className="flex items-center justify-between gap-2 px-4 py-2">
               <h2 className="text-lg font-semibold">Filters</h2>
@@ -666,7 +667,7 @@ function ProjectsContent() {
         </Sidebar>
 
         {/* Main Content Area */}
-        <div className="flex-1 min-h-screen">
+        <div className="flex-1 min-h-screen w-full lg:w-auto">
           {/* Toast Notification */}
           {toast && (
             <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 animate-fade-in-out">
@@ -679,22 +680,31 @@ function ProjectsContent() {
             <div className="flex items-center gap-2 px-4">
               {/* <SidebarTrigger className="-ml-1" /> */}
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <h1 className="text-xl font-semibold">Projects Dashboard</h1>
+              <h1 className="text-xl font-semibold hidden sm:block">Projects Dashboard</h1>
+              <h1 className="text-lg font-semibold sm:hidden">Projects</h1>
             </div>
 
             {/* Search Bar in Header */}
             <div className="ml-auto flex items-center gap-2 px-4">
-              <div className="relative w-80">
+              {/* Mobile Filter Button */}
+              <MobileProjectFilters
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                onClearFilters={handleClearFilters}
+                filteredCount={filteredProjects.length}
+              />
+              
+              <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:w-80">
                 <input
                   type="text"
-                  placeholder="Search projects by title, location..."
+                  placeholder="Search projects..."
                   value={searchQuery}
                   onChange={(e) => handleSearchInput(e.target.value)}
                   onFocus={() => searchQuery && setShowSearchDropdown(true)}
                   onBlur={() =>
                     setTimeout(() => setShowSearchDropdown(false), 200)
                   }
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
                 />
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                   <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
@@ -724,7 +734,7 @@ function ProjectsContent() {
                               <img
                                 src={project.featuredImage}
                                 alt={project.title}
-                                className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                                className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg flex-shrink-0"
                               />
                               <div className="flex-1 min-w-0 overflow-hidden">
                                 <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -768,19 +778,20 @@ function ProjectsContent() {
                   variant="outline"
                   size="sm"
                   onClick={handleClearFilters}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs px-2 py-1 sm:px-3 sm:py-2"
                 >
-                  <XMarkIcon className="h-4 w-4" />
-                  Clear filters
+                  <XMarkIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Clear filters</span>
+                  <span className="sm:hidden">Clear</span>
                 </Button>
               )}
             </div>
           </header>
 
           {/* Main Content - Full Width */}
-          <main className="p-6 bg-white dark:bg-gray-900">
+          <main className="p-3 sm:p-4 md:p-6 bg-white dark:bg-gray-900 overflow-x-hidden">
             {loading ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div
                     key={i}
@@ -888,7 +899,7 @@ function ProjectsContent() {
             ) : (
               <>
                 {viewMode === "grid" ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                     {filteredProjects.map((project) => (
                       <div
                         key={project.id}
@@ -901,19 +912,19 @@ function ProjectsContent() {
                           <img
                             src={project.featuredImage}
                             alt={project.title}
-                            className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-48 sm:h-56 md:h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                          <div className="absolute top-4 left-4 flex gap-2">
+                          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 flex gap-1 sm:gap-2 flex-wrap">
                             <span
-                              className={`px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getCategoryColor(
+                              className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getCategoryColor(
                                 project.category
                               )} border border-white/20`}
                             >
                               {project.category.replace("_", " ")}
                             </span>
                             <span
-                              className={`px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getStatusColor(
+                              className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getStatusColor(
                                 project.status
                               )} border border-white/20`}
                             >
@@ -922,19 +933,19 @@ function ProjectsContent() {
                           </div>
                         </div>
 
-                        <div className="p-8">
-                          <h3 className="font-bold text-xl text-gray-900 dark:text-yellow-500 mb-2 group-hover:text-blue-600 transition-colors">
+                        <div className="p-4 sm:p-6 md:p-8">
+                          <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-yellow-500 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
                             {project.title}
                           </h3>
                           {project.subtitle && (
-                            <p className="text-gray-600 dark:text-gray-400 mb-4 text-xs leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-400 mb-4 text-xs leading-relaxed line-clamp-3">
                               {project.subtitle}
                             </p>
                           )}
 
                           <div className="flex items-start text-gray-600 dark:text-gray-400 mb-4">
-                            <span className="mr-2">📍</span>
-                            <span className="text-xs">
+                            <span className="mr-2 flex-shrink-0">📍</span>
+                            <span className="text-xs line-clamp-2">
                               {project.address}
                               {project.city && `, ${project.city}`}
                               {project.state && `, ${project.state}`}
@@ -942,8 +953,8 @@ function ProjectsContent() {
                           </div>
 
                           {(project.minRatePsf || project.maxRatePsf) && (
-                            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 mb-4">
-                              <div className="text-green-700 dark:text-green-400 font-bold text-lg">
+                            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 sm:p-4 mb-4">
+                              <div className="text-green-700 dark:text-green-400 font-bold text-base sm:text-lg">
                                 {project.minRatePsf || project.maxRatePsf}
                                 {project.minRatePsf &&
                                 project.maxRatePsf &&
@@ -963,19 +974,19 @@ function ProjectsContent() {
                                 {/* Created {new Date(project.createdAt).toLocaleDateString()} */}
                               </div>
                               <div
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-1 sm:gap-2 flex-wrap"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <Link
                                   href={`/projects/${project.slug}`}
-                                  className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+                                  className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   View
                                 </Link>
                                 <Link
                                   href={`/projects/new?edit=${project.slug}`}
-                                  className="px-3 py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
+                                  className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   Edit
@@ -985,7 +996,7 @@ function ProjectsContent() {
                                     e.stopPropagation();
                                     handleDelete(project.id);
                                   }}
-                                  className="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+                                  className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
                                   disabled={deletingId === project.id}
                                 >
                                   {deletingId === project.id
@@ -1000,100 +1011,99 @@ function ProjectsContent() {
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col space-y-4">
+                  <div className="space-y-4 sm:space-y-6">
                     {filteredProjects.map((project) => (
                       <div
                         key={project.id}
-                        className="group bg-card  border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
+                        className="group bg-card rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
                         onClick={() =>
                           (window.location.href = `/projects/${project.slug}`)
                         }
                       >
-                        <div className="flex flex-col md:flex-row">
-                          <div className="md:w-1/4 relative">
+                        <div className="flex flex-col sm:flex-row">
+                          <div className="relative overflow-hidden sm:w-80 sm:flex-shrink-0">
                             <img
                               src={project.featuredImage}
                               alt={project.title}
-                              className="w-full h-48 md:h-full object-cover"
+                              className="w-full h-48 sm:h-full sm:min-h-[200px] object-cover group-hover:scale-110 transition-transform duration-300"
                             />
-                            <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                            <div className="absolute top-2 sm:top-4 left-2 sm:left-4 flex gap-1 sm:gap-2 flex-wrap">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(
+                                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getCategoryColor(
                                   project.category
-                                )}`}
+                                )} border border-white/20`}
                               >
                                 {project.category.replace("_", " ")}
                               </span>
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm ${getStatusColor(
                                   project.status
-                                )}`}
+                                )} border border-white/20`}
                               >
                                 {project.status.replace("_", " ")}
                               </span>
                             </div>
                           </div>
-                          <div className="p-4 md:p-6 md:w-3/4 flex flex-col justify-between">
-                            <div>
-                              <div className="flex justify-between items-start">
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
+
+                          <div className="flex-1 p-4 sm:p-6 md:p-8">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                              <div className="flex-1">
+                                <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-yellow-500 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
                                   {project.title}
                                 </h3>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">
-                                  {new Date(
-                                    project.createdAt
-                                  ).toLocaleDateString()}
+                                {project.subtitle && (
+                                  <p className="text-gray-600 dark:text-gray-400 mb-4 text-xs leading-relaxed line-clamp-3">
+                                    {project.subtitle}
+                                  </p>
+                                )}
+
+                                <div className="flex items-start text-gray-600 dark:text-gray-400 mb-4">
+                                  <span className="mr-2 flex-shrink-0">📍</span>
+                                  <span className="text-xs line-clamp-2">
+                                    {project.address}
+                                    {project.city && `, ${project.city}`}
+                                    {project.state && `, ${project.state}`}
+                                  </span>
                                 </div>
                               </div>
 
-                              {project.subtitle && (
-                                <p className="text-gray-600 dark:text-gray-400 mt-1 text-xs">
-                                  {project.subtitle}
-                                </p>
-                              )}
-
-                              <div className="flex items-start text-gray-600 dark:text-gray-400 mt-2">
-                                <span className="mr-1">📍</span>
-                                <span className="text-xs">
-                                  {project.address}
-                                  {project.city && `, ${project.city}`}
-                                  {project.state && `, ${project.state}`}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-between mt-4">
                               {(project.minRatePsf || project.maxRatePsf) && (
-                                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-1">
-                                  <span className="text-green-700 dark:text-green-400 font-bold">
+                                <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 sm:p-4 sm:min-w-[160px] flex-shrink-0">
+                                  <div className="text-green-700 dark:text-green-400 font-bold text-base sm:text-lg">
                                     {project.minRatePsf || project.maxRatePsf}
                                     {project.minRatePsf &&
                                     project.maxRatePsf &&
                                     project.minRatePsf !== project.maxRatePsf
                                       ? ` - ${project.maxRatePsf}`
                                       : ""}
-                                    <span className="text-green-600 dark:text-green-500 text-xs font-medium ml-1">
-                                      per sq ft
-                                    </span>
-                                  </span>
+                                  </div>
+                                  <div className="text-green-600 dark:text-green-500 text-xs font-medium">
+                                    per sq ft
+                                  </div>
                                 </div>
                               )}
+                            </div>
 
-                              {isAdmin && (
+                            {isAdmin && (
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {/* Created {new Date(project.createdAt).toLocaleDateString()} */}
+                                </div>
                                 <div
-                                  className="flex items-center gap-2"
+                                  className="flex items-center gap-1 sm:gap-2 flex-wrap"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <Link
                                     href={`/projects/${project.slug}`}
-                                    className="px-3 py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+                                    className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     View
                                   </Link>
                                   <Link
                                     href={`/projects/new?edit=${project.slug}`}
-                                    className="px-3 py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
+                                    className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     Edit
@@ -1103,7 +1113,7 @@ function ProjectsContent() {
                                       e.stopPropagation();
                                       handleDelete(project.id);
                                     }}
-                                    className="px-3 py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+                                    className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
                                     disabled={deletingId === project.id}
                                   >
                                     {deletingId === project.id
@@ -1111,8 +1121,8 @@ function ProjectsContent() {
                                       : "Delete"}
                                   </button>
                                 </div>
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1124,18 +1134,18 @@ function ProjectsContent() {
 
             {/* Pagination Controls */}
             {!loading && filteredProjects.length > 0 && (
-              <div className="flex items-center justify-between mt-8 px-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 px-2 sm:px-4">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 order-2 sm:order-1">
                   Showing page {pagination.page} of {pagination.totalPages} (
                   {pagination.totalCount} total projects)
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 order-1 sm:order-2">
                   <button
                     onClick={() =>
                       updatePage(Math.max(1, currentPage - 1))
                     }
                     disabled={!pagination.hasPrevious || loading}
-                    className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Previous
                   </button>
@@ -1164,14 +1174,14 @@ function ProjectsContent() {
                             className="flex items-center gap-1"
                           >
                             {showEllipsis && (
-                              <span className="px-2 py-1 text-gray-500">
+                              <span className="px-1 sm:px-2 py-1 text-gray-500 text-xs sm:text-sm">
                                 ...
                               </span>
                             )}
                             <button
                               onClick={() => updatePage(pageNum)}
                               disabled={loading}
-                              className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                              className={`px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors ${
                                 pageNum === pagination.page
                                   ? "bg-blue-600 text-white"
                                   : "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -1189,7 +1199,7 @@ function ProjectsContent() {
                       updatePage(Math.min(pagination.totalPages, currentPage + 1))
                     }
                     disabled={!pagination.hasMore || loading}
-                    className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
                   </button>
