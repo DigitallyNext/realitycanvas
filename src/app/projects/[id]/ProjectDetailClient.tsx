@@ -579,10 +579,10 @@ export default function ProjectDetailClient({
                       Location Map
                     </h3>
                     <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 relative aspect-video">
-                      <SmartImage
+                      <img
                         src={project.sitePlanImage}
                         alt="Project Location Map"
-                        fill
+                        // fill
                         className="object-cover"
                         loading="lazy"
                         onLoad={() =>
