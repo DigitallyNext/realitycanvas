@@ -430,12 +430,14 @@ function ProjectsContent() {
       const searchParams = new URLSearchParams({
         page: "1",
         limit: "10", // Limit for dropdown results
-        search: query,
+        search: query.trim(), // Ensure we trim the query
       });
 
       const res = await fetch(`/api/projects?${searchParams.toString()}`, {
         headers: {
-          "Cache-Control": "no-cache",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0",
         },
       });
 
@@ -444,9 +446,12 @@ function ProjectsContent() {
       }
 
       const data = await res.json();
+      console.log(`Search results for "${query}":`, data); // Debug log
 
       if (data.projects && Array.isArray(data.projects)) {
         setSearchResults(data.projects);
+      } else {
+        setSearchResults([]);
       }
     } catch (error) {
       console.error("Failed to search projects:", error);

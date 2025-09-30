@@ -153,39 +153,47 @@ export async function GET(request: NextRequest) {
     
     // Build where clause for filtering
     const whereClause: any = {};
+    const andConditions: any[] = [];
     
     // Add search functionality
     if (search) {
-      whereClause.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { subtitle: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { address: { contains: search, mode: 'insensitive' } },
-        { locality: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
-        { state: { contains: search, mode: 'insensitive' } },
-        { developerName: { contains: search, mode: 'insensitive' } }
-      ];
+      andConditions.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { subtitle: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+          { address: { contains: search, mode: 'insensitive' } },
+          { locality: { contains: search, mode: 'insensitive' } },
+          { city: { contains: search, mode: 'insensitive' } },
+          { state: { contains: search, mode: 'insensitive' } },
+          { developerName: { contains: search, mode: 'insensitive' } }
+        ]
+      });
     }
     
     // Add category filter
     if (category && category !== 'ALL') {
-      whereClause.category = category;
+      andConditions.push({ category: category });
     }
     
     // Add status filter
     if (status && status !== 'ALL') {
-      whereClause.status = status;
+      andConditions.push({ status: status });
     }
     
     // Add city filter
     if (city) {
-      whereClause.city = { contains: city, mode: 'insensitive' };
+      andConditions.push({ city: { contains: city, mode: 'insensitive' } });
     }
     
     // Add state filter
     if (state) {
-      whereClause.state = { contains: state, mode: 'insensitive' };
+      andConditions.push({ state: { contains: state, mode: 'insensitive' } });
+    }
+    
+    // Combine all conditions with AND
+    if (andConditions.length > 0) {
+      whereClause.AND = andConditions;
     }
     
     // Add price range filter
