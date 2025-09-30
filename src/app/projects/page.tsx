@@ -177,6 +177,31 @@ function ProjectsContent() {
           params.set("search", searchQuery.trim());
         }
 
+        // Add filter parameters
+        if (filters.category && filters.category !== "ALL") {
+          params.set("category", filters.category);
+        }
+        
+        if (filters.status && filters.status !== "ALL") {
+          params.set("status", filters.status);
+        }
+        
+        if (filters.city && filters.city.trim()) {
+          params.set("city", filters.city.trim());
+        }
+        
+        if (filters.state && filters.state.trim()) {
+          params.set("state", filters.state.trim());
+        }
+        
+        if (filters.priceRange.min > 0) {
+          params.set("minPrice", filters.priceRange.min.toString());
+        }
+        
+        if (filters.priceRange.max < 10000000) {
+          params.set("maxPrice", filters.priceRange.max.toString());
+        }
+
         const res = await fetch(`/api/projects?${params.toString()}`, {
           cache: "no-store",
           headers: {
@@ -222,7 +247,7 @@ function ProjectsContent() {
     };
 
     fetchProjects();
-  }, [currentPage, searchQuery]);
+  }, [currentPage, searchQuery, filters]);
 
   // Fetch filtered projects from database when filters change
   useEffect(() => {
