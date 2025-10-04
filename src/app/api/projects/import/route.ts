@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, ensureDatabaseConnection } from '@/lib/prisma';
 
 function slugify(input: string) {
   return input
@@ -22,6 +22,16 @@ async function uniqueSlug(base: string) {
 }
 
 export async function POST(request: NextRequest) {
+  // Ensure database connection before processing
+  const isConnected = await ensureDatabaseConnection(3);
+  if (!isConnected) {
+    return NextResponse.json({
+      error: 'Database connection unavailable',
+      message: 'Unable to establish database connection. Please try again later.',
+      timestamp: new Date().toISOString(),
+    }, { status: 503 });
+  }
+
   try {
     const body = await request.json();
     const { project, highlights, amenities, faqs, media, floorPlans, documents, configurations, units, anchors, pricingPlans, construction, nearbyPoints } = body;

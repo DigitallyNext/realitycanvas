@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, ensureDatabaseConnection } from '@/lib/prisma';
+import { withDatabaseConnection } from '@/middleware/database';
 
 function slugify(input: string) {
   return input
@@ -22,6 +23,16 @@ async function uniqueSlug(base: string) {
 }
 
 export async function POST(request: NextRequest) {
+  // Ensure database connection before processing
+  const isConnected = await ensureDatabaseConnection(3);
+  if (!isConnected) {
+    return NextResponse.json({
+      error: 'Database connection unavailable',
+      message: 'Unable to establish database connection. Please try again later.',
+      timestamp: new Date().toISOString(),
+    }, { status: 503 });
+  }
+
   try {
     const body = await request.json();
     console.log('POST /api/projects request body:', JSON.stringify(body, null, 2));
@@ -128,6 +139,16 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  // Ensure database connection before processing
+  const isConnected = await ensureDatabaseConnection(3);
+  if (!isConnected) {
+    return NextResponse.json({
+      error: 'Database connection unavailable',
+      message: 'Unable to establish database connection. Please try again later.',
+      timestamp: new Date().toISOString(),
+    }, { status: 503 });
+  }
+
   try {
     // Log the request to help with debugging
     console.log('GET /api/projects request received', { 

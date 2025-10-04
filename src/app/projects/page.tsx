@@ -656,115 +656,213 @@ function ProjectsContent() {
           )}
 
           {/* Header with Search */}
-          <header className="sticky top-16 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-white dark:bg-gray-900">
-            <div className="flex items-center gap-2 px-4">
-              {/* <SidebarTrigger className="-ml-1" /> */}
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <h1 className="text-xl font-semibold hidden sm:block">Projects Dashboard</h1>
-              <h1 className="text-lg font-semibold sm:hidden">Projects</h1>
-            </div>
+          <header className="sticky top-16 z-40 border-b bg-white dark:bg-gray-900">
+            {/* Desktop Header */}
+            <div className="hidden sm:flex h-16 shrink-0 items-center gap-2">
+              <div className="flex items-center gap-2 px-4">
+                <Separator orientation="vertical" className="mr-2 h-4" />
+                <h1 className="text-xl font-semibold">Projects Dashboard</h1>
+              </div>
 
-            {/* Search Bar in Header */}
-            <div className="ml-auto flex items-center gap-2 px-4">
-              {/* Mobile Filter Button */}
-              <MobileProjectFilters
-                filters={filters}
-                onFiltersChange={handleFiltersChange}
-                onClearFilters={handleClearFilters}
-                filteredCount={filteredProjects.length}
-              />
-              
-              <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:w-80">
-                <input
-                  type="text"
-                  placeholder="Search projects..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearchInput(e.target.value)}
-                  onFocus={() => searchQuery && setShowSearchDropdown(true)}
-                  onBlur={() =>
-                    setTimeout(() => setShowSearchDropdown(false), 200)
-                  }
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-                />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-                </div>
+              {/* Desktop Search Bar */}
+              <div className="ml-auto flex items-center gap-2 px-4">
+                <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:w-80">
+                  <input
+                    type="text"
+                    placeholder="Search projects..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearchInput(e.target.value)}
+                    onFocus={() => searchQuery && setShowSearchDropdown(true)}
+                    onBlur={() =>
+                      setTimeout(() => setShowSearchDropdown(false), 200)
+                    }
+                    className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  />
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                    <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                  </div>
 
-                {/* Search Dropdown */}
-                {showSearchDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-80 overflow-y-auto overflow-x-hidden z-50">
-                    {searchLoading ? (
-                      <div className="p-4 text-center text-gray-500">
-                        <p className="text-sm">Searching...</p>
-                      </div>
-                    ) : searchResults.length > 0 ? (
-                      <div className="py-2">
-                        {searchResults.map((project) => (
-                          <div
-                            key={project.id}
-                            onClick={() =>
-                              handleSearchResultClick(
-                                project.slug,
-                                project.title
-                              )
-                            }
-                            className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
-                          >
-                            <div className="flex items-center space-x-3 min-w-0">
-                              <img
-                                src={project.featuredImage}
-                                alt={project.title}
-                                className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg flex-shrink-0"
-                              />
-                              <div className="flex-1 min-w-0 overflow-hidden">
-                                <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                  {project.title}
-                                </h4>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                  {project.address}
-                                </p>
-                                <div className="flex items-center space-x-2 mt-1 overflow-hidden">
-                                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full whitespace-nowrap">
-                                    {project.category}
-                                  </span>
-                                  <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full whitespace-nowrap">
-                                    {project.status}
-                                  </span>
+                  {/* Desktop Search Dropdown */}
+                  {showSearchDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-80 overflow-y-auto overflow-x-hidden z-50">
+                      {searchLoading ? (
+                        <div className="p-4 text-center text-gray-500">
+                          <p className="text-sm">Searching...</p>
+                        </div>
+                      ) : searchResults.length > 0 ? (
+                        <div className="py-2">
+                          {searchResults.map((project) => (
+                            <div
+                              key={project.id}
+                              onClick={() =>
+                                handleSearchResultClick(
+                                  project.slug,
+                                  project.title
+                                )
+                              }
+                              className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                            >
+                              <div className="flex items-center space-x-3 min-w-0">
+                                <img
+                                  src={project.featuredImage}
+                                  alt={project.title}
+                                  className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg flex-shrink-0"
+                                />
+                                <div className="flex-1 min-w-0 overflow-hidden">
+                                  <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {project.address}
+                                  </p>
+                                  <div className="flex items-center space-x-2 mt-1 overflow-hidden">
+                                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full whitespace-nowrap">
+                                      {project.category}
+                                    </span>
+                                    <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full whitespace-nowrap">
+                                      {project.status}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      searchQuery && (
-                        <div className="p-4 text-center text-gray-500">
-                          <p className="text-sm">
-                            No projects found for &quot;{searchQuery}&quot;
-                          </p>
+                          ))}
                         </div>
-                      )
-                    )}
-                  </div>
+                      ) : (
+                        searchQuery && (
+                          <div className="p-4 text-center text-gray-500">
+                            <p className="text-sm">
+                              No projects found for &quot;{searchQuery}&quot;
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {(searchQuery ||
+                  filters.category !== "ALL" ||
+                  filters.status !== "ALL" ||
+                  filters.city ||
+                  filters.state) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="flex items-center gap-1 text-xs px-3 py-2"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                    Clear filters
+                  </Button>
                 )}
               </div>
+            </div>
 
-              {(searchQuery ||
-                filters.category !== "ALL" ||
-                filters.status !== "ALL" ||
-                filters.city ||
-                filters.state) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClearFilters}
-                  className="flex items-center gap-1 text-xs px-2 py-1 sm:px-3 sm:py-2"
-                >
-                  <XMarkIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Clear filters</span>
-                  <span className="sm:hidden">Clear</span>
-                </Button>
-              )}
+            {/* Mobile Header */}
+            <div className="sm:hidden">
+              {/* Mobile Title Bar */}
+              <div className="flex h-12 items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
+                <h1 className="text-lg font-semibold">Projects</h1>
+                <MobileProjectFilters
+                  filters={filters}
+                  onFiltersChange={handleFiltersChange}
+                  onClearFilters={handleClearFilters}
+                  filteredCount={filteredProjects.length}
+                />
+              </div>
+
+              {/* Mobile Search Bar - Below Title */}
+              <div className="p-3 bg-gray-50 dark:bg-gray-800/50">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search projects..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearchInput(e.target.value)}
+                    onFocus={() => searchQuery && setShowSearchDropdown(true)}
+                    onBlur={() =>
+                      setTimeout(() => setShowSearchDropdown(false), 200)
+                    }
+                    className="w-full px-4 py-3 pl-10 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                  />
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                    <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  {/* Clear button for mobile */}
+                  {(searchQuery ||
+                    filters.category !== "ALL" ||
+                    filters.status !== "ALL" ||
+                    filters.city ||
+                    filters.state) && (
+                    <button
+                      onClick={handleClearFilters}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <XMarkIcon className="h-4 w-4 text-gray-400" />
+                    </button>
+                  )}
+
+                  {/* Mobile Search Dropdown */}
+                  {showSearchDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+                      {searchLoading ? (
+                        <div className="p-4 text-center text-gray-500">
+                          <p className="text-sm">Searching...</p>
+                        </div>
+                      ) : searchResults.length > 0 ? (
+                        <div className="py-2">
+                          {searchResults.map((project) => (
+                            <div
+                              key={project.id}
+                              onClick={() =>
+                                handleSearchResultClick(
+                                  project.slug,
+                                  project.title
+                                )
+                              }
+                              className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={project.featuredImage}
+                                  alt={project.title}
+                                  className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {project.address}
+                                  </p>
+                                  <div className="flex items-center space-x-2 mt-1 overflow-hidden">
+                                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full whitespace-nowrap">
+                                      {project.category}
+                                    </span>
+                                    <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full whitespace-nowrap">
+                                      {project.status}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        searchQuery && (
+                          <div className="p-4 text-center text-gray-500">
+                            <p className="text-sm">
+                              No projects found for &quot;{searchQuery}&quot;
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </header>
 
