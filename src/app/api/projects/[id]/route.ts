@@ -31,6 +31,7 @@ function setCachedProject(id: string, data: any, etag: string) {
     }
   }
 }
+
 async function getProjectHandler(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
