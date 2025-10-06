@@ -803,7 +803,6 @@ function ProjectsContent() {
                       <XMarkIcon className="h-4 w-4 text-gray-400" />
                     </button>
                   )}
-
                   {/* Mobile Search Dropdown */}
                   {showSearchDropdown && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
