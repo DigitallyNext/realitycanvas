@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { HeartIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, MapPinIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 // import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { BrandButton } from './ui/BrandButton';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Project = {
   id: string;
@@ -29,6 +30,7 @@ type ProjectCardProps = {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
+  const { isAdmin } = useAuth();
 
   const handleProjectClick = async () => {
     try {
@@ -49,6 +51,35 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     e.preventDefault();
     e.stopPropagation();
     setIsFavorited(!isFavorited);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = `/projects/new?edit=${project.slug}`;
+  };
+
+  const handleDeleteClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (confirm(`Are you sure you want to delete "${project.title}"? This action cannot be undone.`)) {
+      try {
+        const response = await fetch(`/api/projects/${project.id}`, {
+          method: 'DELETE',
+        });
+        
+        if (response.ok) {
+          // Refresh the page to update the project list
+          window.location.reload();
+        } else {
+          alert('Failed to delete project. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        alert('Failed to delete project. Please try again.');
+      }
+    }
   };
 
   const getCategoryColor = (category: string) => {
@@ -111,6 +142,26 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               {project.status.replace('_', ' ')}
             </span>
           </div>
+
+          {/* Admin Actions */}
+          {isAdmin && (
+            <div className="absolute top-3 right-3 flex flex-col gap-2 bg-white/80 p-1 rounded-md shadow-lg">
+              <button
+                onClick={handleEditClick}
+                className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors"
+                title="Edit Project"
+              >
+                <PencilIcon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleDeleteClick}
+                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-lg transition-colors"
+                title="Delete Project"
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
           {/* Favorite Button */}
           

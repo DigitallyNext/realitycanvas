@@ -1,14 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, ensureDatabaseConnection } from '@/lib/prisma';
+import { databaseWarmup } from '@/lib/database-warmup';
 
 export async function GET(request: NextRequest) {
   try {
-    // Ensure database connection is available
+    // Ensure database is warmed up and ready
+    const isReady = await databaseWarmup.ensureReady();
+    if (!isReady) {
+      console.error('❌ Database warmup failed for trending projects');
+      return NextResponse.json({
+        error: 'Database service is initializing. Please try again in a moment.',
+        projects: []
+      }, { status: 503 });
+    }
+
+    // Double-check with connection test
     const isConnected = await ensureDatabaseConnection(3);
     if (!isConnected) {
-      console.error('Database connection failed for trending projects');
-      // Return fallback data when database is unavailable
-      return NextResponse.json([]);
+      console.error('❌ Database connection failed for trending projects');
+      return NextResponse.json({
+        error: 'Database connection error. Please try again.',
+        projects: []
+      }, { status: 503 });
     }
 
     const { searchParams } = new URL(request.url);

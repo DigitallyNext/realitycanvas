@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, ensureDatabaseConnection } from '@/lib/prisma';
+import { databaseWarmup } from '@/lib/database-warmup';
 import { createHash } from 'crypto';
 
 // Simple in-memory cache for better performance
@@ -10,6 +11,17 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
+    // Ensure database is warmed up and ready
+    const isReady = await databaseWarmup.ensureReady();
+    if (!isReady) {
+      console.error('❌ Database warmup failed');
+      return NextResponse.json({
+        error: 'Database service is initializing. Please try again in a moment.',
+        projects: [],
+        pagination: { page: 1, limit: 6, totalCount: 0, totalPages: 0, hasMore: false }
+      }, { status: 503 });
+    }
+
     const { searchParams } = new URL(request.url);
     
     // Parse parameters with defaults optimized for 6 projects per page
@@ -204,8 +216,32 @@ export async function GET(request: NextRequest) {
 
 // POST method for creating projects (admin only)
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  
   try {
+    // Ensure database is warmed up and ready
+    const isReady = await databaseWarmup.ensureReady();
+    if (!isReady) {
+      console.error('❌ Database not ready for project creation');
+      return NextResponse.json({
+        error: 'Database service is initializing. Please try again in a moment.',
+        details: 'Service temporarily unavailable'
+      }, { status: 503 });
+    }
+
+    // Double-check with connection test
+    const isConnected = await ensureDatabaseConnection(2);
+    if (!isConnected) {
+      console.error('❌ Database connection failed for project creation');
+      return NextResponse.json({
+        error: 'Database connection error. Please try again.',
+        details: 'Connection could not be established'
+      }, { status: 503 });
+    }
+
     const body = await request.json();
+    
+    console.log('📝 Creating new project:', body.title || 'Untitled');
     
     const project = await prisma.project.create({
       data: {
@@ -217,10 +253,29 @@ export async function POST(request: NextRequest) {
 
     // Clear cache when new project is created
     cache.clear();
+    console.log(`✅ Project created successfully: ${project.id} (${Date.now() - startTime}ms)`);
     
     return NextResponse.json(project, { status: 201 });
+    
   } catch (error) {
     console.error('❌ Create project error:', error);
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
+    
+    // Check if it's a database connection error
+    if (error instanceof Error && (
+      error.message.includes('connection') ||
+      error.message.includes('timeout') ||
+      error.message.includes('ECONNREFUSED')
+    )) {
+      return NextResponse.json({
+        error: 'Database connection error. Please try again.',
+        details: 'Service temporarily unavailable'
+      }, { status: 503 });
+    }
+    
+    // Generic error for other issues
+    return NextResponse.json({
+      error: 'Failed to create project',
+      details: error instanceof Error ? error.message : 'Unknown error occurred'
+    }, { status: 500 });
   }
 }

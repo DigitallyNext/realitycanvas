@@ -520,7 +520,7 @@ export default function ProjectsPage() {
         <div className="flex items-center justify-between  flex-row-reverse   w-full">
 
           {/* Search and View Toggle */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-[-44px]">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-[-50px]">
             <form onSubmit={handleSearch} className="flex max-w-md ">
               <div className="relative">
                 <input
@@ -530,7 +530,7 @@ export default function ProjectsPage() {
                   placeholder="Search projects..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
-                <MagnifyingGlassIcon className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 bottom-4 w-4 h-4 text-gray-400" />
               </div>
             </form>
 
@@ -551,7 +551,7 @@ export default function ProjectsPage() {
           </div>
 
 
-          {isAdmin && (
+          {/* {isAdmin && (
             <Link
               href="/projects/new"
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -559,7 +559,7 @@ export default function ProjectsPage() {
               <PlusIcon className="w-4 h-4" />
               Add Project
             </Link>
-          )}
+          )} */}
 
 
 

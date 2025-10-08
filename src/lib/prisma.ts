@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-// Import connection monitor
+// Import connection monitor only
 import './connection-monitor';
 
 const globalForPrisma = globalThis as unknown as {
