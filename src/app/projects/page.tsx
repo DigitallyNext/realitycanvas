@@ -453,6 +453,7 @@ export default function ProjectsPage() {
   // Handle search
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    // Immediately trigger search without waiting for debounce
     setSearchLoading(true);
     setDebouncedSearchQuery(searchQuery);
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -467,13 +468,21 @@ export default function ProjectsPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery !== debouncedSearchQuery) {
-        setSearchLoading(true);
         setDebouncedSearchQuery(searchQuery);
         setPagination(prev => ({ ...prev, page: 1 }));
       }
     }, 500); // 500ms debounce delay
 
     return () => clearTimeout(timer);
+  }, [searchQuery, debouncedSearchQuery]);
+
+  // Set search loading when search query changes
+  useEffect(() => {
+    if (searchQuery.trim() !== debouncedSearchQuery.trim()) {
+      setSearchLoading(true);
+    } else {
+      setSearchLoading(false);
+    }
   }, [searchQuery, debouncedSearchQuery]);
 
   useEffect(() => {
