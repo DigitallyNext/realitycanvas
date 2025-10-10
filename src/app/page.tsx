@@ -57,14 +57,22 @@ async function getHomePageData() {
       'AIPL Joy District'
     ];
     
-    // Fetch specified featured projects first
+    // Fetch specified featured projects first by title OR fallback flags
     console.log("Fetching featured projects:", featuredProjectTitles);
-    const featuredProjectsRaw = await prisma.project.findMany({
+    let featuredProjectsRaw = await prisma.project.findMany({
       where: {
-        title: {
-          in: featuredProjectTitles
-        }
+        OR: [
+          { title: { in: featuredProjectTitles } },
+          // Fallback: projects marked trending or with recent updates
+          { isTrending: true },
+        ],
       },
+      orderBy: [
+        // Prioritize explicit titles, then trending, then recent updates
+        { isTrending: 'desc' },
+        { updatedAt: 'desc' },
+      ],
+      take: 8,
       select: {
         id: true,
         slug: true,
@@ -83,6 +91,31 @@ async function getHomePageData() {
         totalClicks: true,
       },
     });
+
+    // If still empty (titles mismatch), hard fallback to latest projects
+    if (featuredProjectsRaw.length === 0) {
+      featuredProjectsRaw = await prisma.project.findMany({
+        orderBy: [{ updatedAt: 'desc' }],
+        take: 8,
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          subtitle: true,
+          category: true,
+          status: true,
+          address: true,
+          city: true,
+          state: true,
+          featuredImage: true,
+          createdAt: true,
+          minRatePsf: true,
+          maxRatePsf: true,
+          isTrending: true,
+          totalClicks: true,
+        },
+      });
+    }
 
     // Convert Date to string for client compatibility
     const featuredProjects = featuredProjectsRaw.map(project => ({
