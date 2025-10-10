@@ -11,17 +11,6 @@ export async function GET(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Ensure database is warmed up and ready
-    const isReady = await databaseWarmup.ensureReady();
-    if (!isReady) {
-      console.error('❌ Database warmup failed');
-      return NextResponse.json({
-        error: 'Database service is initializing. Please try again in a moment.',
-        projects: [],
-        pagination: { page: 1, limit: 6, totalCount: 0, totalPages: 0, hasMore: false }
-      }, { status: 503 });
-    }
-
     const { searchParams } = new URL(request.url);
     
     // Parse parameters with defaults optimized for 6 projects per page
@@ -36,10 +25,33 @@ export async function GET(request: NextRequest) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     
-    // Create cache key
+    // Create cache key (must be available before warmup/connection checks)
     const cacheKey = createHash('md5')
       .update(`projects:${page}:${search}:${category}:${status}:${city}:${state}:${minPrice}:${maxPrice}`)
       .digest('hex');
+    
+    // Ensure database is warmed up and ready; if not, serve warm cache if available
+    const isReady = await databaseWarmup.ensureReady();
+    if (!isReady) {
+      console.error('❌ Database warmup failed');
+      const cachedWarm = cache.get(cacheKey);
+      if (cachedWarm && (Date.now() - cachedWarm.timestamp) < CACHE_TTL) {
+        const etag = createHash('md5').update(JSON.stringify(cachedWarm.data)).digest('hex');
+        return NextResponse.json(cachedWarm.data, {
+          headers: {
+            'Cache-Control': 'public, max-age=30, stale-while-revalidate=180',
+            'ETag': etag,
+            'X-Cache': 'HIT',
+            'X-Fallback': 'warmup'
+          }
+        });
+      }
+      return NextResponse.json({
+        error: 'Database service is initializing. Please try again in a moment.',
+        projects: [],
+        pagination: { page, limit, totalCount: 0, totalPages: 0, hasMore: false }
+      }, { status: 503 });
+    }
     
     // Check cache with ETag support
     const cached = cache.get(cacheKey);
@@ -68,6 +80,18 @@ export async function GET(request: NextRequest) {
     // Ensure database connection
     const isConnected = await ensureDatabaseConnection(2);
     if (!isConnected) {
+      const cachedConn = cache.get(cacheKey);
+      if (cachedConn && (Date.now() - cachedConn.timestamp) < CACHE_TTL) {
+        const etag = createHash('md5').update(JSON.stringify(cachedConn.data)).digest('hex');
+        return NextResponse.json(cachedConn.data, {
+          headers: {
+            'Cache-Control': 'public, max-age=30, stale-while-revalidate=180',
+            'ETag': etag,
+            'X-Cache': 'HIT',
+            'X-Fallback': 'connection'
+          }
+        });
+      }
       return NextResponse.json({
         error: 'Database unavailable',
         projects: [],
@@ -228,6 +252,34 @@ export async function GET(request: NextRequest) {
     
   } catch (error) {
     console.error('❌ Projects API error:', error);
+    // Attempt to serve any cached response for this query on error
+    try {
+      const { searchParams } = new URL(request.url);
+      const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+      const limit = 6;
+      const search = searchParams.get('search')?.trim() || '';
+      const category = searchParams.get('category') || '';
+      const status = searchParams.get('status') || '';
+      const city = searchParams.get('city')?.trim() || '';
+      const state = searchParams.get('state')?.trim() || '';
+      const minPrice = searchParams.get('minPrice');
+      const maxPrice = searchParams.get('maxPrice');
+      const cacheKey = createHash('md5')
+        .update(`projects:${page}:${search}:${category}:${status}:${city}:${state}:${minPrice}:${maxPrice}`)
+        .digest('hex');
+      const cachedErr = cache.get(cacheKey);
+      if (cachedErr && (Date.now() - cachedErr.timestamp) < CACHE_TTL) {
+        const etag = createHash('md5').update(JSON.stringify(cachedErr.data)).digest('hex');
+        return NextResponse.json(cachedErr.data, {
+          headers: {
+            'Cache-Control': 'public, max-age=30, stale-while-revalidate=180',
+            'ETag': etag,
+            'X-Cache': 'HIT',
+            'X-Fallback': 'error'
+          }
+        });
+      }
+    } catch {}
     
     return NextResponse.json({
       error: 'Failed to fetch projects',
