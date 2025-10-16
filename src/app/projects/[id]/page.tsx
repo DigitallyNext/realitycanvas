@@ -34,51 +34,42 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in';
     const projectUrl = `${baseUrl}/projects/${project.slug}`;
-    
-    // Attempt to fetch optional SEO overrides via raw query to avoid breaking pre-migration DBs
-    let seoTitle: string | null = null;
-    let seoDescription: string | null = null;
-    let seoKeywords: string[] | null = null;
-    try {
-      const rows: Array<{ seoTitle: string | null; seoDescription: string | null; seoKeywords: string[] | null }> = await prisma.$queryRaw`
-        SELECT "seoTitle", "seoDescription", "seoKeywords"
-        FROM "Project"
-        WHERE slug = ${project.slug}
-        LIMIT 1
-      `;
-      if (rows && rows.length > 0) {
-        const r = rows[0];
-        seoTitle = r.seoTitle ?? null;
-        seoDescription = r.seoDescription ?? null;
-        seoKeywords = r.seoKeywords ?? null;
-      }
-    } catch (e) {
-      // Silently ignore if columns don't exist yet or any error occurs
-    }
 
-    const fallbackDescription =
-      project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`;
+    // Prefer per-project SEO overrides with sensible fallbacks
+    const title =
+      (project as any).seoTitle ||
+      `${project.title} | ${(project as any).locality || project.city || 'Gurgaon'} | Realty Canvas`;
 
-    const title = seoTitle ?? `${project.title} - Realty Canvas`;
-    const description = seoDescription ?? fallbackDescription;
-    const keywords = seoKeywords && seoKeywords.length
-      ? seoKeywords
-      : [
-          'Gurgaon real estate',
-          project.category.toLowerCase(),
-          project.city || 'Gurgaon',
-          project.developerName || 'developer',
-          'Delhi NCR',
-        ];
+    const description =
+      (project as any).seoDescription ||
+      (project.description ||
+        `${project.title} - ${project.category} project by ${project.developerName || 'Leading Developer'} in ${(project as any).locality || project.city || 'Gurgaon'}. ${project.priceRange ? `Prices starting from ${project.priceRange}.` : ''} Contact Realty Canvas for site visit and best offers.`);
 
-    const ogImage = project.featuredImage?.startsWith('http')
-      ? project.featuredImage
-      : `${baseUrl}${project.featuredImage?.startsWith('/') ? project.featuredImage : `/${project.featuredImage}`}`;
+    const keywordsArr: string[] =
+      (project as any).seoKeywords && (project as any).seoKeywords.length
+        ? (project as any).seoKeywords
+        : [
+            project.title,
+            project.developerName || '',
+            (project as any).locality || '',
+            project.city || '',
+            project.category.toLowerCase(),
+            'property',
+            'real estate',
+            'gurgaon',
+            'delhi ncr',
+          ].filter(Boolean);
+
+    // Ensure absolute OG/Twitter image URLs
+    const ogImage =
+      project.featuredImage?.startsWith('http')
+        ? project.featuredImage
+        : `${baseUrl}${project.featuredImage?.startsWith('/') ? project.featuredImage : `/${project.featuredImage}`}`;
 
     return {
       title,
       description,
-      keywords,
+      keywords: keywordsArr,
       alternates: { canonical: projectUrl },
       openGraph: {
         title,
@@ -90,7 +81,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
             url: ogImage,
             width: 1200,
             height: 630,
-            alt: `${project.title} - Featured Image`,
+            alt: project.title,
           },
         ],
         locale: 'en_US',
@@ -189,6 +180,7 @@ type Project = {
   category: string;
   status: string;
   address: string;
+  locality?: string | null;
   city?: string | null;
   state?: string | null;
   featuredImage: string;
@@ -220,6 +212,10 @@ type Project = {
   numberOfApartments?: number | null;
   numberOfFloors?: number | null;
   features?: string | null;
+  // Optional SEO overrides used in metadata
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  seoKeywords?: string[];
 };
 
 // Server component that fetches data and renders the client component
@@ -237,42 +233,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 }
 
 // Server-side data fetching function with optimized queries
-async function getProjectData(slug: string) {
+async function getProjectData(slug: string): Promise<Project | null> {
   try {
     const project = await prisma.project.findUnique({
       where: { slug },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        subtitle: true,
-        description: true,
-        category: true,
-        status: true,
-        address: true,
-        city: true,
-        state: true,
-        featuredImage: true,
-        galleryImages: true,
-        reraId: true,
-        developerName: true,
-        possessionDate: true,
-        basePrice: true,
-        priceRange: true,
-        minRatePsf: true,
-        maxRatePsf: true,
-        latitude: true,
-        longitude: true,
-        sitePlanImage: true,
-        videoUrl: true,
-        videoUrls: true,
-        landArea: true,
-        numberOfTowers: true,
-        numberOfApartments: true,
-        numberOfFloors: true,
-        features: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         units: {
           select: {
             id: true,
@@ -283,37 +248,21 @@ async function getProjectData(slug: string) {
             ratePsf: true,
             priceTotal: true,
             availability: true,
-            notes: true
+            notes: true,
           },
-          orderBy: [
-            { floor: 'asc' },
-            { unitNumber: 'asc' }
-          ],
+          orderBy: [{ floor: 'asc' }, { unitNumber: 'asc' }],
         },
         highlights: {
-          select: {
-            id: true,
-            label: true,
-            icon: true
-          },
-          orderBy: { id: 'asc' }
+          select: { id: true, label: true, icon: true },
+          orderBy: { id: 'asc' },
         },
         amenities: {
-          select: {
-            id: true,
-            category: true,
-            name: true,
-            details: true
-          },
-          orderBy: [{ category: 'asc' }, { name: 'asc' }]
+          select: { id: true, category: true, name: true, details: true },
+          orderBy: [{ category: 'asc' }, { name: 'asc' }],
         },
         faqs: {
-          select: {
-            id: true,
-            question: true,
-            answer: true
-          },
-          orderBy: { id: 'asc' }
+          select: { id: true, question: true, answer: true },
+          orderBy: { id: 'asc' },
         },
         floorPlans: {
           select: {
@@ -322,9 +271,9 @@ async function getProjectData(slug: string) {
             title: true,
             imageUrl: true,
             details: true,
-            sortOrder: true
+            sortOrder: true,
           },
-          orderBy: [{ sortOrder: 'asc' }, { level: 'asc' }]
+          orderBy: [{ sortOrder: 'asc' }, { level: 'asc' }],
         },
         anchors: {
           select: {
@@ -333,9 +282,9 @@ async function getProjectData(slug: string) {
             category: true,
             floor: true,
             areaSqFt: true,
-            status: true
+            status: true,
           },
-          orderBy: [{ status: 'asc' }, { name: 'asc' }]
+          orderBy: [{ status: 'asc' }, { name: 'asc' }],
         },
         pricingPlans: {
           select: {
@@ -345,9 +294,9 @@ async function getProjectData(slug: string) {
             schedule: true,
             taxes: true,
             charges: true,
-            notes: true
+            notes: true,
           },
-          orderBy: { id: 'asc' }
+          orderBy: { id: 'asc' },
         },
         pricingTable: {
           select: {
@@ -358,9 +307,9 @@ async function getProjectData(slug: string) {
             pricePerSqft: true,
             availableUnits: true,
             floorNumbers: true,
-            features: true
+            features: true,
           },
-          orderBy: { id: 'asc' }
+          orderBy: { id: 'asc' },
         },
         nearbyPoints: {
           select: {
@@ -368,30 +317,68 @@ async function getProjectData(slug: string) {
             type: true,
             name: true,
             distanceKm: true,
-            travelTimeMin: true
+            travelTimeMin: true,
           },
-          orderBy: [{ type: 'asc' }, { distanceKm: 'asc' }]
-        }
+          orderBy: [{ type: 'asc' }, { distanceKm: 'asc' }],
+        },
       },
     });
     
     // Convert Date and string fields for client component compatibility
-    if (project) {
-      return {
-        ...project,
-        possessionDate: project.possessionDate ? project.possessionDate.toISOString() : null,
-        units: project.units.map(unit => ({
-          ...unit,
-          areaSqFt: typeof unit.areaSqFt === 'string' ? parseFloat(unit.areaSqFt) : unit.areaSqFt
-        })),
-        anchors: project.anchors.map(anchor => ({
-          ...anchor,
-          areaSqFt: anchor.areaSqFt ? (typeof anchor.areaSqFt === 'string' ? parseFloat(anchor.areaSqFt) : anchor.areaSqFt) : null
-        }))
-      };
-    }
-    
-    return project;
+    if (!project) return null;
+
+    const normalized: Project = {
+      id: project.id,
+      slug: project.slug,
+      title: project.title,
+      subtitle: project.subtitle ?? null,
+      description: project.description,
+      category: project.category as any,
+      status: project.status as any,
+      address: project.address,
+      locality: (project as any).locality ?? null,
+      city: project.city ?? null,
+      state: project.state ?? null,
+      featuredImage: project.featuredImage,
+      galleryImages: project.galleryImages ?? [],
+      reraId: project.reraId ?? null,
+      developerName: project.developerName ?? null,
+      possessionDate: project.possessionDate ? project.possessionDate.toISOString() : null,
+      basePrice: (project as any).basePrice ?? null,
+      priceRange: project.priceRange ?? null,
+      minRatePsf: (project as any).minRatePsf ?? null,
+      maxRatePsf: (project as any).maxRatePsf ?? null,
+      latitude: project.latitude ?? null,
+      longitude: project.longitude ?? null,
+      sitePlanImage: project.sitePlanImage ?? null,
+      units: (project.units ?? []).map((unit: any) => ({
+        ...unit,
+        areaSqFt: typeof unit.areaSqFt === 'string' ? parseFloat(unit.areaSqFt) : unit.areaSqFt,
+      })),
+      highlights: project.highlights ?? [],
+      amenities: project.amenities ?? [],
+      anchors: (project.anchors ?? []).map((anchor: any) => ({
+        ...anchor,
+        areaSqFt: anchor.areaSqFt ? (typeof anchor.areaSqFt === 'string' ? parseFloat(anchor.areaSqFt) : anchor.areaSqFt) : null,
+      })),
+      floorPlans: project.floorPlans ?? [],
+      pricingPlans: project.pricingPlans ?? [],
+      pricingTable: project.pricingTable ?? [],
+      faqs: project.faqs ?? [],
+      nearbyPoints: project.nearbyPoints ?? [],
+      videoUrl: project.videoUrl ?? null,
+      videoUrls: project.videoUrls ?? [],
+      landArea: project.landArea ?? null,
+      numberOfTowers: project.numberOfTowers ?? null,
+      numberOfApartments: project.numberOfApartments ?? null,
+      numberOfFloors: (project as any).numberOfFloors ?? null,
+      features: project.features ?? null,
+      seoTitle: (project as any).seoTitle ?? null,
+      seoDescription: (project as any).seoDescription ?? null,
+      seoKeywords: (project as any).seoKeywords ?? [],
+    };
+
+    return normalized;
   } catch (error) {
     console.error('Error fetching project:', error);
     return null;
