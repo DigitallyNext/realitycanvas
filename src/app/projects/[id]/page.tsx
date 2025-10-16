@@ -35,17 +35,59 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in';
     const projectUrl = `${baseUrl}/projects/${project.slug}`;
     
+    // Attempt to fetch optional SEO overrides via raw query to avoid breaking pre-migration DBs
+    let seoTitle: string | null = null;
+    let seoDescription: string | null = null;
+    let seoKeywords: string[] | null = null;
+    try {
+      const rows: Array<{ seoTitle: string | null; seoDescription: string | null; seoKeywords: string[] | null }> = await prisma.$queryRaw`
+        SELECT "seoTitle", "seoDescription", "seoKeywords"
+        FROM "Project"
+        WHERE slug = ${project.slug}
+        LIMIT 1
+      `;
+      if (rows && rows.length > 0) {
+        const r = rows[0];
+        seoTitle = r.seoTitle ?? null;
+        seoDescription = r.seoDescription ?? null;
+        seoKeywords = r.seoKeywords ?? null;
+      }
+    } catch (e) {
+      // Silently ignore if columns don't exist yet or any error occurs
+    }
+
+    const fallbackDescription =
+      project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`;
+
+    const title = seoTitle ?? `${project.title} - Realty Canvas`;
+    const description = seoDescription ?? fallbackDescription;
+    const keywords = seoKeywords && seoKeywords.length
+      ? seoKeywords
+      : [
+          'Gurgaon real estate',
+          project.category.toLowerCase(),
+          project.city || 'Gurgaon',
+          project.developerName || 'developer',
+          'Delhi NCR',
+        ];
+
+    const ogImage = project.featuredImage?.startsWith('http')
+      ? project.featuredImage
+      : `${baseUrl}${project.featuredImage?.startsWith('/') ? project.featuredImage : `/${project.featuredImage}`}`;
+
     return {
-      title: `${project.title} - Realty Canvas`,
-      description: project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`,
+      title,
+      description,
+      keywords,
+      alternates: { canonical: projectUrl },
       openGraph: {
-        title: `${project.title} - Realty Canvas`,
-        description: project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`,
+        title,
+        description,
         url: projectUrl,
         siteName: 'Realty Canvas',
         images: [
           {
-            url: project.featuredImage,
+            url: ogImage,
             width: 1200,
             height: 630,
             alt: `${project.title} - Featured Image`,
@@ -56,9 +98,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${project.title} - Realty Canvas`,
-        description: project.description || `${project.title} - Premium ${project.category.toLowerCase()} project in ${project.city || project.address}`,
-        images: [project.featuredImage],
+        title,
+        description,
+        images: [ogImage],
       },
     };
   } catch (error) {

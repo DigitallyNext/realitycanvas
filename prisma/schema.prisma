@@ -86,6 +86,10 @@ model Project {
   totalUnits          Int?
   soldUnits           Int?
   availableUnits      Int?
+  // Optional SEO overrides
+  seoTitle            String?
+  seoDescription      String?
+  seoKeywords         String[]               @default([])
   isTrending          Boolean                 @default(false)
   totalClicks         Int                     @default(0)
   landArea            String?
