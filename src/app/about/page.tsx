@@ -8,12 +8,19 @@ import AboutStats from '@/components/about/AboutStats';
 import AboutContact from '@/components/about/AboutContact';
 
 export const metadata: Metadata = {
-  title: 'About Us - RealityCanvas',
-  description: 'Learn about RealityCanvas, our mission to transform the real estate industry, and meet our dedicated team of professionals.',
-  keywords: 'about realitycanvas, real estate company, property development, team, mission, vision',
+  title: 'About Realty Canvas | Trusted Real Estate Channel Partner in Gurgaon',
+  description: 'Learn how Realty Canvas combines market knowledge, verified listings, and clear processes to help buyers and investors find the best properties and growth potential in Gurgaon and Delhi NCR.',
+  keywords: [
+    'Realty Canvas Gurgaon',
+    'real estate channel partner',
+    'verified listings',
+    'transparency',
+    'innovation',
+    'community building',
+  ],
   openGraph: {
-    title: 'About Us - RealityCanvas',
-    description: 'Learn about RealityCanvas, our mission to transform the real estate industry, and meet our dedicated team of professionals.',
+    title: 'About Realty Canvas | Trusted Real Estate Channel Partner in Gurgaon',
+    description: 'Learn how Realty Canvas combines market knowledge, verified listings, and clear processes to help buyers and investors find the best properties and growth potential in Gurgaon and Delhi NCR.',
     type: 'website',
     url: (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in') + '/about',
     siteName: 'Realty Canvas',
@@ -21,8 +28,8 @@ export const metadata: Metadata = {
   alternates: { canonical: (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in') + '/about' },
   twitter: {
     card: 'summary_large_image',
-    title: 'About Us - Realty Canvas',
-    description: 'Learn about Realty Canvas, our mission, vision, and team.',
+    title: 'About Realty Canvas | Trusted Real Estate Channel Partner in Gurgaon',
+    description: 'Learn about Realty Canvas, our mission, vision, and values in Gurgaon and Delhi NCR.',
   },
   robots: { index: true, follow: true },
 };

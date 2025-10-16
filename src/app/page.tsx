@@ -41,12 +41,21 @@ type FeaturedDiagnosticsData = {
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in';
 
 export const metadata: Metadata = {
-  title: 'Realty Canvas | Premium Real Estate Projects in Gurgaon',
-  description: 'Discover premium residential and commercial projects across Gurgaon. Verified properties, quick process, transparent pricing, and post-purchase support for maximum ROI.',
+  title: 'Realty Canvas | Verified Properties in Gurgaon | Residential & Commercial | Best Prices',
+  description: 'Discover verified residential and commercial properties in Gurgaon with clear pricing, quick paperwork, and full support from Realty Canvas, your trusted partner for high-ROI areas in Delhi NCR.',
+  keywords: [
+    'real estate Gurgaon',
+    'Delhi NCR properties',
+    'verified listings',
+    'premium residential',
+    'commercial projects',
+    'best prices',
+    'ROI focus',
+  ],
   alternates: { canonical: `${baseUrl}/` },
   openGraph: {
-    title: 'Realty Canvas | Premium Real Estate Projects in Gurgaon',
-    description: 'Discover premium residential and commercial projects across Gurgaon. Verified properties, quick process, transparent pricing, and post-purchase support for maximum ROI.',
+    title: 'Realty Canvas | Verified Properties in Gurgaon | Residential & Commercial | Best Prices',
+    description: 'Discover verified residential and commercial properties in Gurgaon with clear pricing, quick paperwork, and full support from Realty Canvas, your trusted partner for high-ROI areas in Delhi NCR.',
     url: `${baseUrl}/`,
     siteName: 'Realty Canvas',
     images: [
@@ -62,8 +71,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Realty Canvas | Premium Real Estate Projects in Gurgaon',
-    description: 'Discover premium residential and commercial projects across Gurgaon.',
+    title: 'Realty Canvas | Verified Properties in Gurgaon | Residential & Commercial | Best Prices',
+    description: 'Discover verified residential and commercial properties in Gurgaon with clear pricing and full support.',
     images: [`${baseUrl}/logo.webp`]
   },
   robots: {
