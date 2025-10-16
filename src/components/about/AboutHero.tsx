@@ -23,18 +23,17 @@ export default function AboutHero() {
           >
             {/* Badge */}
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-brand-primary/10 border border-brand-primary/20">
-              <span className="text-brand-primary font-medium text-sm">About RealityCanvas</span>
+              <span className="text-brand-primary font-medium text-sm">About Realty Canvas</span>
             </div>
 
             {/* Main Heading */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              Transforming Real Estate
-              <span className="block text-brand-primary">Dreams into Reality</span>
+              Paint Your Own Paradise
             </h1>
 
             {/* Description */}
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              We are passionate about creating exceptional real estate experiences, connecting people with their perfect properties, and building communities that thrive.
+              Realty Canvas is your trusted real estate marketplace in Delhi NCR, helping homebuyers, business owners, and investors discover properties they'll truly love—backed by local insights, personalized recommendations, and transparent guidance every step of the way.
             </p>
 
 

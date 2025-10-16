@@ -23,55 +23,28 @@ export default function AboutStory() {
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-brand-primary/10 border border-brand-primary/20">
                 <span className="text-brand-primary font-medium text-sm">Our Story</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                Building Dreams Since 2014
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white uppercase">
+                Building Dreams Since [YEAR]
               </h2>
             </div>
 
             <div className="space-y-6 text-gray-600 dark:text-gray-300 leading-relaxed">
               <p>
-                RealityCanvas was founded with a simple yet powerful vision: to revolutionize the real estate industry by putting people first. What started as a small team of passionate real estate professionals has grown into a trusted name in property development and sales.
+                Realty Canvas began with a clear purpose: to bridge the gap between what clients need and what traditional real estate offers. We're not just here to list properties—we're here to help you find a home that feels like home.
               </p>
               <p>
-                Our journey began when we recognized the gap between traditional real estate practices and what modern clients truly needed. We set out to create a company that would not just sell properties, but build lasting relationships and create communities where people thrive.
+                What started as a commitment to integrity and transparency has grown into a comprehensive real estate solution serving Delhi NCR. We specialize in residential and commercial property acquisition and investment, guided by three core principles: Fidelity, Integrity, and Solidity.
               </p>
               <p>
-                Today, we continue to innovate and push boundaries, leveraging cutting-edge technology and maintaining our commitment to exceptional service. Every project we undertake is a testament to our dedication to quality, transparency, and client satisfaction.
+                Today, we continue to uncover the finest opportunities for our clients, helping them make sensible and prudent decisions with complete confidence. Every recommendation we make is rooted in accurate information, local expertise, and a genuine commitment to your goals.
               </p>
             </div>
 
             {/* Timeline */}
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Key Milestones</h3>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-3 h-3 bg-brand-primary rounded-full mt-2"></div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">2014 - Company Founded</div>
-                    <div className="text-gray-600 dark:text-gray-300 text-sm">Started with a vision to transform real estate</div>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-3 h-3 bg-brand-primary rounded-full mt-2"></div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">2018 - First Major Project</div>
-                    <div className="text-gray-600 dark:text-gray-300 text-sm">Completed our landmark residential complex</div>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-3 h-3 bg-brand-primary rounded-full mt-2"></div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">2022 - Digital Innovation</div>
-                    <div className="text-gray-600 dark:text-gray-300 text-sm">Launched our digital platform for seamless property experience</div>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-3 h-3 bg-brand-primary rounded-full mt-2"></div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">2024 - Expansion</div>
-                    <div className="text-gray-600 dark:text-gray-300 text-sm">Expanded operations to multiple cities</div>
-                  </div>
-                </div>
+              <div className="space-y-4 text-gray-600 dark:text-gray-300">
+                <p className="text-sm">[You can add specific milestones here based on your company history]</p>
               </div>
             </div>
           </motion.div>
@@ -86,7 +59,7 @@ export default function AboutStory() {
             <div className="relative rounded-2xl overflow-hidden">
               <img
                 src="/building.png"
-                alt="RealityCanvas Building"
+                alt="Realty Canvas Building"
                 className="w-full h-[600px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-secondary/20 to-transparent"></div>

@@ -5,6 +5,7 @@ import AboutStory from '@/components/about/AboutStory';
 import AboutMission from '@/components/about/AboutMission';
 import AboutTeam from '@/components/about/AboutTeam';
 import AboutStats from '@/components/about/AboutStats';
+import AboutContact from '@/components/about/AboutContact';
 
 export const metadata: Metadata = {
   title: 'About Us - RealityCanvas',
@@ -53,6 +54,7 @@ export default function AboutPage() {
       <AboutMission />
       {/* <AboutStats /> */}
       {/* <AboutTeam /> */}
+      <AboutContact />
     </main>
   );
 }

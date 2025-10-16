@@ -16,7 +16,7 @@ export default function AboutMission() {
         </svg>
       ),
       title: "Integrity",
-      description: "We conduct business with the highest ethical standards, ensuring transparency and honesty in every interaction."
+      description: "We conduct every transaction with complete transparency and honesty, providing accurate information about projects, payment plans, and future benefits—no surprises, no hidden details."
     },
     {
       icon: (
@@ -25,7 +25,7 @@ export default function AboutMission() {
         </svg>
       ),
       title: "Innovation",
-      description: "We embrace cutting-edge technology and creative solutions to deliver exceptional real estate experiences."
+      description: "We leverage technology, local insights, and map overlays showing commute times, schools, restaurants, and businesses to give you a deeper understanding of properties and neighborhoods across Delhi NCR."
     },
     {
       icon: (
@@ -34,7 +34,7 @@ export default function AboutMission() {
         </svg>
       ),
       title: "Community",
-      description: "We believe in building strong communities and creating spaces where people can connect and thrive."
+      description: "We believe in building connections, not just closing deals. Our platform brings together insights sourced directly from locals, helping you understand the community before you commit."
     },
     {
       icon: (
@@ -43,7 +43,7 @@ export default function AboutMission() {
         </svg>
       ),
       title: "Excellence",
-      description: "We strive for excellence in every project, delivering quality that exceeds expectations and stands the test of time."
+      description: "We follow the 3 O's philosophy-Observe what you need, Operate in ways that add value to your time, and maintain our Objective of serving you through closing and beyond."
     }
   ];
 
@@ -59,10 +59,10 @@ export default function AboutMission() {
             className="space-y-6"
           >
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-brand-primary/10 border border-brand-primary/20">
-              <span className="text-brand-primary font-medium text-sm">Mission & Vision</span>
+              <span className="text-brand-primary font-medium text-sm">Driven by Purpose</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-              Driven by Purpose
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white uppercase">
+              DRIVEN BY PURPOSE
             </h2>
           </motion.div>
 
@@ -82,7 +82,7 @@ export default function AboutMission() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Our Mission</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                To transform the real estate experience by connecting people with their perfect properties through innovative solutions, exceptional service, and unwavering commitment to client satisfaction. We strive to make property ownership accessible, transparent, and rewarding for everyone.
+                To transform real estate decisions by connecting people with properties that match their vision—through personalized insights, transparent information, and unwavering support. We make property ownership accessible, clear, and rewarding for homebuyers, investors, and businesses across Delhi NCR.
               </p>
             </motion.div>
 
@@ -102,7 +102,7 @@ export default function AboutMission() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Our Vision</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                To be the leading real estate company that sets new standards for innovation, sustainability, and community development. We envision a future where every individual and family can find their ideal home in thriving, well-designed communities that enhance quality of life.
+                To be the leading real estate partner in Delhi NCR, setting new standards for client-first service, community-focused development, and data-driven property solutions. We envision a future where every client finds not just a property, but a place where life truly unfolds.
               </p>
             </motion.div>
           </div>
