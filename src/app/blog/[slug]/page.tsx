@@ -307,6 +307,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </div>
 
+
       {/* Related Posts */}
       {relatedPosts && relatedPosts.length > 0 && (
         <div className="bg-[#F9FAFB] border-t border-gray-200 dark:border-gray-700">
