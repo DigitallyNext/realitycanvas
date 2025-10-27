@@ -193,7 +193,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <span>{post.readTime} min read</span>
               </div>
             )}
-
             {post.author && (
               <div className="flex items-center gap-2">
                 {post.author.image ? (
