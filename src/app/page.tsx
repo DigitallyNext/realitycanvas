@@ -42,20 +42,28 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in
 
 export const metadata: Metadata = {
   title: 'Realty Canvas | Verified Properties in Gurgaon | Residential & Commercial | Best Prices',
-  description: 'Discover verified residential and commercial properties in Gurgaon with clear pricing, quick paperwork, and full support from Realty Canvas, your trusted partner for high-ROI areas in Delhi NCR.',
+  description: 'Discover verified residential commercial and residential homes in Gurgaon through Realty Canvas. Benefit from the most competitive prices and transparent deals, speedy paperwork, RERA compliance, and the best ROI with expert post-purchase assistance.',
   keywords: [
-    'real estate Gurgaon',
-    'Delhi NCR properties',
-    'verified listings',
-    'premium residential',
-    'commercial projects',
-    'best prices',
-    'ROI focus',
+    'Gurgaon properties',
+    'verified real estate Gurgaon',
+    'residential projects Gurgaon',
+    'commercial spaces Gurgaon',
+    'best property prices',
+    'RERA verified properties',
+    'Realty Canvas',
+    'luxury homes Gurgaon',
+    'investment properties Gurgaon',
+    'property consultants Gurgaon',
+    'quick property registration',
+    'post-purchase support real estate',
+    'high ROI properties',
+    'premium projects Gurgaon',
+    "real estate in Gurgaon"
   ],
   alternates: { canonical: `${baseUrl}/` },
   openGraph: {
-    title: 'Realty Canvas | Verified Properties in Gurgaon | Residential & Commercial | Best Prices',
-    description: 'Discover verified residential and commercial properties in Gurgaon with clear pricing, quick paperwork, and full support from Realty Canvas, your trusted partner for high-ROI areas in Delhi NCR.',
+    title: 'Realty Canvas | Verified Residential Commercial and Residential Homes in Gurgaon | Best Prices',
+    description: 'Discover verified residential commercial and residential homes in Gurgaon through Realty Canvas. Benefit from the most competitive prices and transparent deals, speedy paperwork, RERA compliance, and the best ROI with expert post-purchase assistance.',
     url: `${baseUrl}/`,
     siteName: 'Realty Canvas',
     images: [
@@ -71,8 +79,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Realty Canvas | Verified Properties in Gurgaon | Residential & Commercial | Best Prices',
-    description: 'Discover verified residential and commercial properties in Gurgaon with clear pricing and full support.',
+    title: 'Realty Canvas | Verified Residential Commercial and Residential Homes in Gurgaon | Best Prices',
+    description: 'Discover verified residential commercial and residential homes in Gurgaon through Realty Canvas. Benefit from the most competitive prices and transparent deals, speedy paperwork, RERA compliance, and the best ROI with expert post-purchase assistance.',
     images: [`${baseUrl}/logo.webp`]
   },
   robots: {
