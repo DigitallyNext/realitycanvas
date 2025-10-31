@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import ProjectCard from '@/components/ProjectCard';
 import { BrandButton } from '../ui/BrandButton';
@@ -25,41 +25,16 @@ type Project = {
 };
 
 interface TrendingProjectsSectionProps {
-  projects?: Project[]; // Make optional since we'll fetch trending data
-  loading?: boolean;
+  projects?: Project[];
+  loading?: boolean; // Controls initial skeleton; defaults to false
 }
 
 export default function TrendingProjectsSection({ projects = [], loading = false }: TrendingProjectsSectionProps) {
-  const [trendingProjects, setTrendingProjects] = useState<Project[]>([]);
-  const [trendingLoading, setTrendingLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTrendingProjects = async () => {
-      try {
-        const response = await fetch('/api/projects/trending?limit=6&days=7');
-        if (response.ok) {
-          const data = await response.json();
-          setTrendingProjects(data);
-        } else {
-          // Fallback to regular projects if trending API fails
-          const fallbackProjects = projects
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            .slice(0, 6);
-          setTrendingProjects(fallbackProjects);
-        }
-      } catch (error) {
-        console.error('Error fetching trending projects:', error);
-        // Fallback to regular projects
-        const fallbackProjects = projects
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 6);
-        setTrendingProjects(fallbackProjects);
-      } finally {
-        setTrendingLoading(false);
-      }
-    };
-
-    fetchTrendingProjects();
+  // Use the projects provided by the server and avoid client refetches
+  const trendingProjects = useMemo(() => {
+    if (!projects || projects.length === 0) return [];
+    // Keep order from server, cap to 6
+    return projects.slice(0, 6);
   }, [projects]);
 
   return (
@@ -81,7 +56,7 @@ export default function TrendingProjectsSection({ projects = [], loading = false
           </p>
         </div>
 
-        {(loading || trendingLoading) ? (
+        {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
