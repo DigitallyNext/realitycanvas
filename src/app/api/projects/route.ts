@@ -316,12 +316,37 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+
+    // Helper to normalize slugs similar to import route
+    const slugify = (input: string) => input
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+
+    const ensureUniqueSlug = async (base: string) => {
+      let candidate = base || 'project';
+      for (let i = 0; i < 5; i++) {
+        const exists = await prisma.project.findFirst({ where: { slug: candidate }, select: { id: true } });
+        if (!exists) return candidate;
+        const suffix = Math.random().toString(36).slice(2, 6);
+        candidate = `${base}-${suffix}`;
+      }
+      return `${base}-${Date.now().toString(36)}`;
+    };
+
     console.log('📝 Creating new project:', body.title || 'Untitled');
-    
+
+    const baseTitle = (body.title || '').toString();
+    const providedSlug = (body.slug || baseTitle).toString();
+    const normalizedSlug = slugify(providedSlug);
+    const finalSlug = await ensureUniqueSlug(normalizedSlug);
+
     const project = await prisma.project.create({
       data: {
         ...body,
+        slug: finalSlug,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -330,7 +355,19 @@ export async function POST(request: NextRequest) {
     // Clear cache when new project is created
     cache.clear();
     console.log(`✅ Project created successfully: ${project.id} (${Date.now() - startTime}ms)`);
-    
+
+    // Trigger revalidation so the new project page is immediately available
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/revalidate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: `/projects/${project.slug}` })
+      });
+      console.log(`Triggered revalidation for /projects/${project.slug}`);
+    } catch (revalidateError) {
+      console.warn('Failed to trigger revalidation for new project:', revalidateError);
+    }
+
     return NextResponse.json(project, { status: 201 });
     
   } catch (error) {

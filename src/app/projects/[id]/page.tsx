@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { unstable_noStore as noStore } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import ProjectDetailClient from '@/app/projects/[id]/ProjectDetailClient';
 
@@ -21,9 +22,16 @@ type Unit = {
 // Generate dynamic metadata for Open Graph sharing
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
+  const slug = decodeURIComponent(id).trim().toLowerCase();
   
   try {
-    const project = await getProjectData(id);
+    // Static attempt
+    let project = await getProjectData(slug);
+    // Fallback dynamic attempt to avoid caching false 404 metadata
+    if (!project) {
+      noStore();
+      project = await getProjectData(slug);
+    }
     
     if (!project) {
       return {
@@ -220,11 +228,18 @@ type Project = {
 
 // Server component that fetches data and renders the client component
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: slug } = await params;
-  
-  // Fetch project data on the server
-  const project = await getProjectData(slug);
-  
+  const { id: raw } = await params;
+  const slug = decodeURIComponent(raw).trim().toLowerCase();
+
+  // Static attempt
+  let project = await getProjectData(slug);
+
+  // Avoid caching false 404 due to transient DB errors
+  if (!project) {
+    noStore();
+    project = await getProjectData(slug);
+  }
+
   if (!project) {
     notFound();
   }
