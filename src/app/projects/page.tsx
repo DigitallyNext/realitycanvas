@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Squares2X2Icon,
@@ -15,6 +15,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import LazyImage from "@/components/ui/LazyImage";
 import JsonLd from "@/components/SEO/JsonLd";
+import ProjectCard from "@/components/ProjectCard";
 
 // Types
 type Project = {
@@ -63,8 +64,8 @@ function ProjectSkeleton({ viewMode }: { viewMode: "grid" | "list" }) {
   );
 }
 
-// Project card component
-function ProjectCard({ project, viewMode }: { project: Project; viewMode: "grid" | "list" }) {
+// Inline list-mode card (kept for list view layout)
+function InlineProjectCard({ project, viewMode }: { project: Project; viewMode: "grid" | "list" }) {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "COMMERCIAL": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
@@ -295,6 +296,8 @@ export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
+  const [visibleCount, setVisibleCount] = useState(1);
 
   // Initialize filters from URL
   const [filters, setFilters] = useState<Filters>(() => ({
@@ -324,6 +327,13 @@ export default function ProjectsPage() {
     setError(null);
 
     try {
+      // Abort any in-flight request to prevent race conditions
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       const params = new URLSearchParams();
       params.set("page", pagination.page.toString());
       params.set("limit", "6");
@@ -357,7 +367,9 @@ export default function ProjectsPage() {
       }
 
       const response = await fetch(`/api/projects?${params.toString()}`, {
-        cache: "no-store"
+        // Allow the browser to use server-provided Cache-Control for faster reloads
+        cache: "default",
+        signal: controller.signal
       });
 
       if (!response.ok) {
@@ -380,6 +392,22 @@ export default function ProjectsPage() {
         hasPrevious: false
       });
 
+      // Background prefetch for next page to make pagination snappy
+      try {
+        const nextPage = (data?.pagination?.page || 1) + 1;
+        const totalPages = data?.pagination?.totalPages || 1;
+        if (nextPage <= totalPages) {
+          const nextParams = new URLSearchParams(params);
+          nextParams.set("page", nextPage.toString());
+          const prefetch = () => fetch(`/api/projects?${nextParams.toString()}`, { cache: "default" }).catch(() => {});
+          if (typeof (window as any).requestIdleCallback === 'function') {
+            (window as any).requestIdleCallback(prefetch, { timeout: 1500 });
+          } else {
+            setTimeout(prefetch, 500);
+          }
+        }
+      } catch {}
+
     } catch (err) {
       console.error("Failed to fetch projects:", err);
       setError(err instanceof Error ? err.message : "Failed to fetch projects");
@@ -389,6 +417,29 @@ export default function ProjectsPage() {
       setSearchLoading(false);
     }
   }, [pagination.page, debouncedSearchQuery, filters]);
+
+  // Progressive mount for perceived speed: render first card immediately, then others
+  useEffect(() => {
+    setVisibleCount(1);
+    if (projects.length > 1) {
+      let mounted = true;
+      let count = 1;
+      const step = () => {
+        if (!mounted) return;
+        count = Math.min(count + 1, projects.length);
+        setVisibleCount(count);
+        if (count < projects.length) {
+          if (typeof (window as any).requestIdleCallback === 'function') {
+            (window as any).requestIdleCallback(step, { timeout: 500 });
+          } else {
+            setTimeout(step, 100);
+          }
+        }
+      };
+      setTimeout(step, 50);
+      return () => { mounted = false; };
+    }
+  }, [projects]);
 
   // Update URL when filters change
   const updateURL = useCallback(() => {
@@ -682,8 +733,10 @@ export default function ProjectsPage() {
           <>
             {/* Projects Grid/List */}
             <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-2"}>
-              {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} viewMode={viewMode} />
+              {projects.slice(0, visibleCount).map((project, idx) => (
+                viewMode === "grid"
+                  ? <ProjectCard key={project.id} project={project} priority={idx === 0} viewMode={viewMode} />
+                  : <InlineProjectCard key={project.id} project={project} viewMode={viewMode} />
               ))}
             </div>
 

@@ -26,9 +26,11 @@ type Project = {
 
 type ProjectCardProps = {
   project: Project;
+  priority?: boolean;
+  viewMode?: "grid" | "list";
 };
 
-function ProjectCardComponent({ project }: ProjectCardProps) {
+function ProjectCardComponent({ project, priority = false }: ProjectCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
   const { isAdmin } = useAuth();
 
@@ -131,7 +133,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
             alt={project.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
+            priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           
@@ -215,5 +217,5 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
   );
 }
 
-const ProjectCard = memo(ProjectCardComponent);
+const ProjectCard = memo<ProjectCardProps>(ProjectCardComponent);
 export default ProjectCard;
