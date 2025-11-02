@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { prisma, ensureDatabaseConnection } from '@/lib/prisma';
 import { FeaturedDiagnostics } from '@/components/homepage';
+import { AdminFallbackBanner } from '@/components/homepage';
 // Homepage Components
 import {
   HeroSection,
@@ -36,6 +37,15 @@ type Project = {
 type FeaturedDiagnosticsData = {
   missingSlugs: string[];
   mismatchedTitles: { slug: string; title: string }[];
+};
+
+type Source = 'db' | 'api' | 'fallback';
+type DataSources = { featuredSource: Source; trendingSource: Source };
+type HomePageData = {
+  featuredProjects: Project[];
+  trendingProjects: Project[];
+  diagnostics: FeaturedDiagnosticsData;
+  dataSources: DataSources;
 };
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in';
@@ -90,8 +100,9 @@ export const metadata: Metadata = {
 };
 
 // Server-side data fetching with ISR
-async function getHomePageData() {
+async function getHomePageData(): Promise<HomePageData> {
   try {
+    let dataSources: DataSources = { featuredSource: 'db', trendingSource: 'db' };
     // Check database connection first
     const isConnected = await ensureDatabaseConnection(3);
     if (!isConnected) {
@@ -105,19 +116,23 @@ async function getHomePageData() {
             ...p,
             createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date(p.createdAt).toISOString(),
           }));
+          dataSources = { featuredSource: 'api', trendingSource: 'api' };
           return {
             featuredProjects: projects.slice(0, 9),
             trendingProjects: projects.slice(0, 6),
             diagnostics: { missingSlugs: [], mismatchedTitles: [] },
+            dataSources,
           };
         }
       } catch (e) {
         console.error('API fallback failed for homepage data:', e);
       }
+      dataSources = { featuredSource: 'fallback', trendingSource: 'fallback' };
       return {
         featuredProjects: [],
         trendingProjects: [],
         diagnostics: { missingSlugs: [], mismatchedTitles: [] },
+        dataSources,
       };
     }
 
@@ -322,17 +337,21 @@ async function getHomePageData() {
         : featuredProjectsRaw.slice(0, 6).map(p => ({ ...p, createdAt: p.createdAt.toISOString() }));
 
     const diagnostics: FeaturedDiagnosticsData = { missingSlugs, mismatchedTitles };
+    dataSources = { featuredSource: 'db', trendingSource: 'db' };
     return {
       featuredProjects,
       trendingProjects: finalTrendingProjects,
       diagnostics,
+      dataSources,
     };
   } catch (error) {
     console.error('Error fetching homepage data:', error);
+    const dataSources: DataSources = { featuredSource: 'fallback', trendingSource: 'fallback' };
     return {
       featuredProjects: [],
       trendingProjects: [],
       diagnostics: { missingSlugs: [], mismatchedTitles: [] },
+      dataSources,
     };
   }
 }
@@ -340,7 +359,7 @@ async function getHomePageData() {
 // Server component with ISR
 export default async function Home() {
   // Fetch data on the server with ISR
-  const { featuredProjects, trendingProjects, diagnostics } = await getHomePageData();
+  const { featuredProjects, trendingProjects, diagnostics, dataSources } = await getHomePageData();
 
   return (
     <main className="flex min-h-screen flex-col pt-16 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -350,7 +369,8 @@ export default async function Home() {
       {/* Benefits Section */}
       <BenefitsSection />
 
-      {/* Admin-only diagnostics banner */}
+      {/* Admin-only diagnostics & fallback source banner */}
+      <AdminFallbackBanner dataSources={dataSources} counts={{ featured: featuredProjects.length, trending: trendingProjects.length }} />
       <FeaturedDiagnostics diagnostics={diagnostics} />
 
       {/* Featured Projects Section - Server-side rendered with ISR */}

@@ -1,4 +1,5 @@
 export { default as FeaturedDiagnostics } from './FeaturedDiagnostics';
+export { default as AdminFallbackBanner } from './AdminFallbackBanner';
 export { default as FeaturedProjectsSection } from './FeaturedProjectsSection';
 export { default as HeroSection } from './HeroSection';
 export { default as PropertySearchSection } from './PropertySearchSection';
