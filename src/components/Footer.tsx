@@ -74,7 +74,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link
-                    href="/coming-soon"
+                    href="/about"
                     className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                   >
                     About
@@ -90,7 +90,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link
-                    href="/coming-soon"
+                    href="/blog"
                     className="text-gray-300 hover:text-white hover:translate-x-2 transition-all duration-200 block"
                   >
                     Blog

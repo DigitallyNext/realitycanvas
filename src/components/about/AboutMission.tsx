@@ -25,7 +25,7 @@ export default function AboutMission() {
         </svg>
       ),
       title: "Innovation",
-      description: "We leverage technology, local insights, and map overlays showing commute times, schools, restaurants, and businesses to give you a deeper understanding of properties and neighborhoods across Delhi NCR."
+      description: "We leverage technology, local insights, and map overlays showing commute times, schools, restaurants, and businesses to give you a deeper understanding of properties and neighborhoods across Gurgaon"
     },
     {
       icon: (
@@ -82,7 +82,7 @@ export default function AboutMission() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Our Mission</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                To transform real estate decisions by connecting people with properties that match their vision—through personalized insights, transparent information, and unwavering support. We make property ownership accessible, clear, and rewarding for homebuyers, investors, and businesses across Delhi NCR.
+                To transform real estate decisions by connecting people with properties that match their vision—through personalized insights, transparent information, and unwavering support. We make property ownership accessible, clear, and rewarding for homebuyers, investors, and businesses across Gurgaon
               </p>
             </motion.div>
 
@@ -102,7 +102,7 @@ export default function AboutMission() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Our Vision</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                To be the leading real estate partner in Delhi NCR, setting new standards for client-first service, community-focused development, and data-driven property solutions. We envision a future where every client finds not just a property, but a place where life truly unfolds.
+                To be the leading real estate partner in Gurgaon, setting new standards for client-first service, community-focused development, and data-driven property solutions. We envision a future where every client finds not just a property, but a place where life truly unfolds.
               </p>
             </motion.div>
           </div>

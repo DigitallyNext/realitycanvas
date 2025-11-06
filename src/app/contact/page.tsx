@@ -100,7 +100,7 @@ export default function ContactPage() {
           <h1 className="text-5xl font-bold mb-4 text-gray-900 dark:text-white">Get In Touch</h1>
           {/* <p className="text-xl text-blue-700 max-w-3xl mx-auto">
             Ready to find your dream property? Our expert team is here to help you navigate 
-            the real estate market in Delhi NCR with <span className="text-yellow-500">personalized recommendations</span> and <span className="text-blue-600">local insights</span>.
+            the real estate market in Gurgaon with <span className="text-yellow-500">personalized recommendations</span> and <span className="text-blue-600">local insights</span>.
           </p> */}
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
               <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                 An online real estate marketplace based in India, specializing in finding you a more 
                 neighbourly place by assisting you in finding a home you&apos;ll love. We provide personalized 
-                recommendations and insights sourced directly from locals across Delhi NCR.
+                recommendations and insights sourced directly from locals across Gurgaon
               </p>
               
               {/* Contact Details */}
@@ -446,7 +446,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What areas do you cover?</h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  We specialize in Delhi NCR region including Gurugram, Noida, Faridabad, Ghaziabad, and New Delhi.
+                  We specialize in Gurgaon region including Gurugram, Noida, Faridabad, Ghaziabad, and New Delhi.
                 </p>
               </div>
               <div>

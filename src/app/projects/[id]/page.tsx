@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
             'property',
             'real estate',
             'gurgaon',
-            'delhi ncr',
+            'Gurgaon',
           ].filter(Boolean);
 
     // Ensure absolute OG/Twitter image URLs

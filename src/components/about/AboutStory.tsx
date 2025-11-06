@@ -24,7 +24,7 @@ export default function AboutStory() {
                 <span className="text-brand-primary font-medium text-sm">Our Story</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white uppercase">
-                Building Dreams Since [YEAR]
+                Building Dreams Since 2017
               </h2>
             </div>
 
@@ -33,7 +33,7 @@ export default function AboutStory() {
                 Realty Canvas began with a clear purpose: to bridge the gap between what clients need and what traditional real estate offers. We're not just here to list properties—we're here to help you find a home that feels like home.
               </p>
               <p>
-                What started as a commitment to integrity and transparency has grown into a comprehensive real estate solution serving Delhi NCR. We specialize in residential and commercial property acquisition and investment, guided by three core principles: Fidelity, Integrity, and Solidity.
+                What started as a commitment to integrity and transparency has grown into a comprehensive real estate solution serving Gurgaon We specialize in residential and commercial property acquisition and investment, guided by three core principles: Fidelity, Integrity, and Solidity.
               </p>
               <p>
                 Today, we continue to uncover the finest opportunities for our clients, helping them make sensible and prudent decisions with complete confidence. Every recommendation we make is rooted in accurate information, local expertise, and a genuine commitment to your goals.

@@ -2,8 +2,8 @@ export default function Head() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in';
   const url = `${baseUrl}/contact`;
   const title = 'Contact Realty Canvas | Property Consultations in Gurgaon | Site Visits & Support';
-  const description = 'Visit Realty Canvas at Landmark Cyber Park, Sector 67, Gurugram or call 9910007801 for personalized property recommendations, site visits, and complete document support across Delhi NCR.';
-  const keywords = 'Realty Canvas contact, Gurgaon real estate consultant, property consultation, site visit, Delhi NCR office';
+  const description = 'Visit Realty Canvas at Landmark Cyber Park, Sector 67, Gurugram or call 9910007801 for personalized property recommendations, site visits, and complete document support across Gurgaon';
+  const keywords = 'Realty Canvas contact, Gurgaon real estate consultant, property consultation, site visit, Gurgaon office';
 
   return (
     <>

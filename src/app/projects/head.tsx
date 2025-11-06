@@ -3,7 +3,7 @@ export default function Head() {
   const url = `${baseUrl}/projects`;
   const title = 'Gurgaon Real Estate Projects | Residential & Commercial Listings | Realty Canvas';
   const description = 'Explore selected residential and commercial projects in Gurgaon with filters by status and budget. Book site visits, compare amenities, and receive verified legal support with Realty Canvas.';
-  const keywords = 'Gurgaon real estate projects, residential projects, commercial projects, under construction, ready to move, Delhi NCR';
+  const keywords = 'Gurgaon real estate projects, residential projects, commercial projects, under construction, ready to move, Gurgaon';
 
   return (
     <>

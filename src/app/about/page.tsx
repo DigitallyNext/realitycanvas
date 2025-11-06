@@ -9,7 +9,7 @@ import AboutContact from '@/components/about/AboutContact';
 
 export const metadata: Metadata = {
   title: 'About Realty Canvas | Trusted Real Estate Channel Partner in Gurgaon',
-  description: 'Learn how Realty Canvas combines market knowledge, verified listings, and clear processes to help buyers and investors find the best properties and growth potential in Gurgaon and Delhi NCR.',
+  description: 'Learn how Realty Canvas combines market knowledge, verified listings, and clear processes to help buyers and investors find the best properties and growth potential in Gurgaon and Gurgaon',
   keywords: [
     'Realty Canvas Gurgaon',
     'real estate channel partner',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'About Realty Canvas | Trusted Real Estate Channel Partner in Gurgaon',
-    description: 'Learn how Realty Canvas combines market knowledge, verified listings, and clear processes to help buyers and investors find the best properties and growth potential in Gurgaon and Delhi NCR.',
+    description: 'Learn how Realty Canvas combines market knowledge, verified listings, and clear processes to help buyers and investors find the best properties and growth potential in Gurgaon and Gurgaon',
     type: 'website',
     url: (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.realtycanvas.in') + '/about',
     siteName: 'Realty Canvas',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'About Realty Canvas | Trusted Real Estate Channel Partner in Gurgaon',
-    description: 'Learn about Realty Canvas, our mission, vision, and values in Gurgaon and Delhi NCR.',
+    description: 'Learn about Realty Canvas, our mission, vision, and values in Gurgaon and Gurgaon',
   },
   robots: { index: true, follow: true },
 };

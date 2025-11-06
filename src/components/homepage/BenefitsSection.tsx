@@ -105,11 +105,11 @@ export default function BenefitsSection() {
 
           {/* Right side - Image */}
           <div className="flex items-end border-2 border-gray-500 overflow-hidden rounded-tl-[200px] rounded-br-[200px]">
-            <div className="relative h-[550px] overflow-hidden ">
+            <div className="relative w-full h-[550px] overflow-hidden ">
               <SmartImage
                 src="/bannernew.webp"
                 alt="Real Estate Benefits"
-                width={800}
+                width={1200}
                 height={100}
                 className="object-cover w-full h-full"
                 // priority

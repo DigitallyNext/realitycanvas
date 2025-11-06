@@ -35,7 +35,7 @@ export default function AboutContact() {
               </div>
               <div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">Email</div>
-                <div className="text-lg font-semibold text-gray-900 dark:text-white">info@realtycanvas.in</div>
+                <div className="text-lg font-semibold text-gray-900 dark:text-white">sales@realtycanvas.in</div>
               </div>
             </div>
           </div>
