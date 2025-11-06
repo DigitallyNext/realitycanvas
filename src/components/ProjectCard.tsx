@@ -126,7 +126,7 @@ function ProjectCardComponent({ project, priority = false }: ProjectCardProps) {
 
   return (
     <Link href={`/projects/${project.slug}`} prefetch className="block h-full no-underline hover:no-underline focus:no-underline" onClick={handleProjectClick}>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 h-full group cursor-pointer flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 h-full group cursor-pointer flex flex-col">
         {/* Image Section */}
         <div className="relative h-48 overflow-hidden flex-shrink-0">
           <Image
@@ -185,13 +185,14 @@ function ProjectCardComponent({ project, priority = false }: ProjectCardProps) {
           {/* Subtitle */}
           {project.subtitle && (
             <p className="text-gray-600 dark:text-gray-400 text-sm mb-2 line-clamp-1">
+              <PencilIcon className="w-4 h-4 inline-block mr-1 text-gray-950" />
               {project.subtitle}
             </p>
           )}
           
           {/* Address */}
           <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-3">
-            <MapPinIcon className="w-4 h-4 mr-1 flex-shrink-0" />
+            <MapPinIcon className="w-4 h-4 mr-1 flex-shrink-0 text-gray-950" />
             <span className="line-clamp-1">
               {project.address}{project.city && `, ${project.city}`}{project.state && `, ${project.state}`}
             </span>
@@ -200,16 +201,16 @@ function ProjectCardComponent({ project, priority = false }: ProjectCardProps) {
         {/* Price Range */}
           {project.basePrice && (
             <div className="mb-2 mt-auto">
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                Base Price: {project.basePrice}
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                Base Price:<span className="text-blue-600 text-xl py-10"> ₹{project.basePrice}</span>
               </span>
             </div>
           )}
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {formatPriceRange()}
             </span>
-          </div>
+          </div> */}
 
           {/* View Details Button */}
           <BrandButton
