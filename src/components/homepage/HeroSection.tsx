@@ -85,17 +85,23 @@ export default function HeroSection() {
             <ProjectSearchBar
               onSearch={(filters) => {
                 // Navigate to projects page with filters
-                const params = new URLSearchParams({
-                  category: filters.category,
-                  status: filters.status,
-                });
-                // Only include budget when user selects a specific range (not default "Any Price")
-                const isAnyPrice = filters.priceRange.min === 0 && filters.priceRange.max === 100000000;
-                if (!isAnyPrice) {
+                const params = new URLSearchParams();
+                // Only include category/status if user selected a specific option
+                if (filters.category && filters.category !== 'All Categories') {
+                  params.set('category', filters.category);
+                }
+                if (filters.status && filters.status !== 'All Status') {
+                  params.set('status', filters.status);
+                }
+                // Include budget only when a range is chosen (not default Any Price)
+                if (filters.priceRange.min > 0) {
                   params.set('minPrice', filters.priceRange.min.toString());
+                }
+                if (filters.priceRange.max > 0) {
                   params.set('maxPrice', filters.priceRange.max.toString());
                 }
-                window.location.href = `/projects?${params.toString()}`;
+                const query = params.toString();
+                window.location.href = query ? `/projects?${query}` : '/projects';
               }}
             />
           </div>

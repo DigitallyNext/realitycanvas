@@ -60,7 +60,14 @@ export default function MobileProjectFilters({
     setIsOpen(false);
   };
 
-  const hasActiveFilters = filters.category !== 'ALL' || filters.status !== 'ALL';
+  const hasActiveFilters = (
+    filters.category !== 'ALL' ||
+    filters.status !== 'ALL' ||
+    (filters.city && filters.city.trim().length > 0) ||
+    (filters.state && filters.state.trim().length > 0) ||
+    filters.priceRange.min > 0 ||
+    filters.priceRange.max < 10000000
+  );
 
   return (
     <>
@@ -145,9 +152,9 @@ export default function MobileProjectFilters({
                   </div>
                 </div>
 
-                {/* Price Range Filter */}
-                {/* <div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Price Range</h3>
+                {/* Budget Filter */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Budget</h3>
                   <div className="space-y-2">
                     {priceRanges.map((range) => (
                       <label key={range.label} className="flex items-center">
@@ -165,7 +172,7 @@ export default function MobileProjectFilters({
                       </label>
                     ))}
                   </div>
-                </div> */}
+                </div>
 
                 {/* Location Filters */}
                 {/* <div>

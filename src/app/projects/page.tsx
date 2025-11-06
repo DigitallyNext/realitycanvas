@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import LazyImage from "@/components/ui/LazyImage";
 import JsonLd from "@/components/SEO/JsonLd";
 import ProjectCard from "@/components/ProjectCard";
+import MobileProjectFilters from "@/components/MobileProjectFilters";
 
 // Types
 type Project = {
@@ -217,7 +218,7 @@ function ProjectFilters({
     filters.priceRange.min > 0 || filters.priceRange.max < 10000000;
 
   return (
-    <div className=" mb-6 lg:w-[60%] w-full">
+    <div className=" mb-6 w-full">
       <div className="flex items-center justify-between mb-4 ">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters</h3>
         {hasActiveFilters && (
@@ -231,7 +232,7 @@ function ProjectFilters({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Category Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -375,7 +376,8 @@ export default function ProjectsPage() {
         params.set("minPrice", filters.priceRange.min.toString());
       }
 
-      if (filters.priceRange.max > 0) {
+      // Only include maxPrice when user narrows below default ceiling
+      if (filters.priceRange.max < 10000000) {
         params.set("maxPrice", filters.priceRange.max.toString());
       }
 
@@ -489,7 +491,8 @@ export default function ProjectsPage() {
       params.set('minPrice', filters.priceRange.min.toString());
     }
 
-    if (filters.priceRange.max > 0) {
+    // Only include maxPrice when user narrows below default ceiling
+    if (filters.priceRange.max < 10000000) {
       params.set('maxPrice', filters.priceRange.max.toString());
     }
 
@@ -564,12 +567,34 @@ export default function ProjectsPage() {
 
   // Render pagination
   const renderPagination = () => {
-    if (pagination.totalPages <= 1) return null;
+    const totalPages = Math.max(1, pagination.totalPages || 0);
 
-    const pages = [];
+    // Show a compact, disabled pager when only one page exists
+    if (totalPages <= 1) {
+      return (
+        <div className="flex items-center justify-center gap-2 mt-8">
+          <button
+            disabled
+            className="p-2 rounded-md border border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
+          >
+            <ChevronLeftIcon className="w-4 h-4" />
+          </button>
+          <span className="text-sm">Page {Math.min(pagination.page, totalPages)} of {totalPages}</span>
+          <button
+            disabled
+            className="p-2 rounded-md border border-gray-300 dark:border-gray-600 opacity-50 cursor-not-allowed"
+          >
+            <ChevronRightIcon className="w-4 h-4" />
+          </button>
+        </div>
+      );
+    }
+
+    // Multi-page: numbered buttons with prev/next
+    const pages = [] as number[];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, pagination.page - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -632,10 +657,10 @@ export default function ProjectsPage() {
           ]
         }} />
         {/* Header */}
-        <div className="flex items-center justify-between  flex-row-reverse   w-full">
+        <div className="flex flex-col gap-4 w-full mt-[-10vw] lg:mt-0">
 
-          {/* Search and View Toggle */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-[-50px]">
+          {/* Search */}
+          <div className="flex items-center gap-3 my-6 lg:my-2">
             <form onSubmit={handleSearch} className="flex max-w-md ">
               <div className="relative">
                 <input
@@ -645,7 +670,7 @@ export default function ProjectsPage() {
                   placeholder="Search projects..."
                   className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
-                <MagnifyingGlassIcon className="absolute left-3 bottom-4 w-4 h-4 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 {searchLoading && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
@@ -654,7 +679,15 @@ export default function ProjectsPage() {
               </div>
             </form>
 
-            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
+            {/* Mobile Filters Trigger */}
+            <MobileProjectFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+              filteredCount={pagination.totalCount || projects.length}
+            />
+
+            {/* <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-2 rounded-md ${viewMode === "grid" ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
@@ -667,7 +700,7 @@ export default function ProjectsPage() {
               >
                 <ListBulletIcon className="w-4 h-4" />
               </button>
-            </div>
+            </div> */}
           </div>
 
 
@@ -685,11 +718,13 @@ export default function ProjectsPage() {
 
 
           {/* Filters */}
-          <ProjectFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-          />
+          <div className="hidden md:block w-full">
+            <ProjectFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+            />
+          </div>
         </div>
 
 
