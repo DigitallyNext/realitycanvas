@@ -234,7 +234,7 @@ function ProjectFilters({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Category Filter */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Category
           </label>
@@ -247,10 +247,10 @@ function ProjectFilters({
               <option key={cat.value} value={cat.value}>{cat.label}</option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* Status Filter */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Status
           </label>
@@ -263,10 +263,10 @@ function ProjectFilters({
               <option key={status.value} value={status.value}>{status.label}</option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* Price Range Filter */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Budget
           </label>
@@ -286,7 +286,7 @@ function ProjectFilters({
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         
       </div>
@@ -661,7 +661,7 @@ export default function ProjectsPage() {
         <div className="flex flex-col gap-4 w-full mt-[-10vw] lg:mt-0">
 
           {/* Search */}
-          <div className="flex items-center gap-3 my-6 lg:my-2">
+          {/* <div className="flex items-center gap-3 my-6 lg:my-2">
             <form onSubmit={handleSearch} className="flex max-w-md ">
               <div className="relative">
                 <input
@@ -680,7 +680,7 @@ export default function ProjectsPage() {
               </div>
             </form>
 
-            {/* Mobile Filters Trigger */}
+            
             <MobileProjectFilters
               filters={filters}
               onFiltersChange={handleFiltersChange}
@@ -688,21 +688,8 @@ export default function ProjectsPage() {
               filteredCount={pagination.totalCount || projects.length}
             />
 
-            {/* <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-md ${viewMode === "grid" ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
-              >
-                <Squares2X2Icon className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded-md ${viewMode === "list" ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"}`}
-              >
-                <ListBulletIcon className="w-4 h-4" />
-              </button>
-            </div> */}
-          </div>
+        
+          </div> */}
 
 
           {/* {isAdmin && (
