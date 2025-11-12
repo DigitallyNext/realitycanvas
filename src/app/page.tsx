@@ -365,23 +365,17 @@ export default async function Home() {
     <main className="flex min-h-screen flex-col pt-16 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Hero Section */}
       <HeroSection />
-
       {/* Benefits Section */}
       <BenefitsSection />
-
       {/* Admin-only diagnostics & fallback source banner */}
       <AdminFallbackBanner dataSources={dataSources} counts={{ featured: featuredProjects.length, trending: trendingProjects.length }} />
       <FeaturedDiagnostics diagnostics={diagnostics} />
-
       {/* Featured Projects Section - Server-side rendered with ISR */}
       <FeaturedProjectsSection projects={featuredProjects} loading={false} />
-
       {/* Services Section */}
       <ServicesSection />
-
       {/* Newsletter Section */}
       <NewsletterSection />
-
       {/* Trending Projects Section - Server-side rendered with ISR */}
       <Sections projects={trendingProjects} loading={false} />
     </main>
