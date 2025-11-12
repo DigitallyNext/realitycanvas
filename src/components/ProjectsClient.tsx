@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Squares2X2Icon, ListBulletIcon, XMarkIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
@@ -44,6 +44,7 @@ type Filters = {
 export default function ProjectsClient({ initialProjects, initialPagination }: { initialProjects: Project[]; initialPagination: Pagination }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const abortRef = useRef<AbortController | null>(null);
 
   const [projects, setProjects] = useState<Project[]>(() => initialProjects);
   const [loading, setLoading] = useState(false);
@@ -66,37 +67,58 @@ export default function ProjectsClient({ initialProjects, initialPagination }: {
     },
   }));
 
+  // Debounced filters to avoid firing a request for every single change
+  const [debouncedFilters, setDebouncedFilters] = useState<Filters>(() => ({
+    category: searchParams.get("category") || "ALL",
+    status: searchParams.get("status") || "ALL",
+    city: searchParams.get("city") || "",
+    state: searchParams.get("state") || "",
+    priceRange: {
+      min: parseInt(searchParams.get("minPrice") || "0"),
+      max: parseInt(searchParams.get("maxPrice") || "0"),
+    },
+  }));
+
   const hasActiveFilters = useMemo(
     () =>
-      filters.category !== "ALL" ||
-      filters.status !== "ALL" ||
-      filters.city.trim() ||
-      filters.state.trim() ||
-      filters.priceRange.min > 0 ||
-      filters.priceRange.max > 0,
-    [filters]
+      debouncedFilters.category !== "ALL" ||
+      debouncedFilters.status !== "ALL" ||
+      debouncedFilters.city.trim() ||
+      debouncedFilters.state.trim() ||
+      debouncedFilters.priceRange.min > 0 ||
+      debouncedFilters.priceRange.max > 0,
+    [debouncedFilters]
   );
 
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      // Cancel any in-flight request
+      if (abortRef.current) {
+        try { abortRef.current.abort(); } catch {}
+      }
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       const params = new URLSearchParams();
       params.set("page", pagination.page.toString());
       params.set("limit", "6");
 
       if (debouncedSearchQuery.trim()) params.set("search", debouncedSearchQuery.trim());
-      if (filters.category !== "ALL") params.set("category", filters.category);
-      if (filters.status !== "ALL") params.set("status", filters.status);
-      if (filters.city.trim()) params.set("city", filters.city.trim());
-      if (filters.state.trim()) params.set("state", filters.state.trim());
-      if (filters.priceRange.min > 0) params.set("minPrice", filters.priceRange.min.toString());
+      if (debouncedFilters.category !== "ALL") params.set("category", debouncedFilters.category);
+      if (debouncedFilters.status !== "ALL") params.set("status", debouncedFilters.status);
+      if (debouncedFilters.city.trim()) params.set("city", debouncedFilters.city.trim());
+      if (debouncedFilters.state.trim()) params.set("state", debouncedFilters.state.trim());
+      if (debouncedFilters.priceRange.min > 0) params.set("minPrice", debouncedFilters.priceRange.min.toString());
       // Include maxPrice only when user selected a bounded upper limit
-      if (filters.priceRange.max > 0) params.set("maxPrice", filters.priceRange.max.toString());
+      if (debouncedFilters.priceRange.max > 0) params.set("maxPrice", debouncedFilters.priceRange.max.toString());
 
       const response = await fetch(`/api/projects?${params.toString()}`, {
         headers: { "Accept": "application/json" },
-        cache: "no-store",
+        // Let server caching/ETag work
+        cache: "default",
+        signal: controller.signal,
       });
 
       if (response.status === 304) {
@@ -130,20 +152,20 @@ export default function ProjectsClient({ initialProjects, initialPagination }: {
       setLoading(false);
       setSearchLoading(false);
     }
-  }, [pagination.page, debouncedSearchQuery, filters]);
+  }, [pagination.page, debouncedSearchQuery, debouncedFilters]);
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
     if (pagination.page > 1) params.set("page", pagination.page.toString());
-    if (filters.category !== "ALL") params.set("category", filters.category);
-    if (filters.status !== "ALL") params.set("status", filters.status);
-    if (filters.city) params.set("city", filters.city);
-    if (filters.state) params.set("state", filters.state);
-    if (filters.priceRange.min > 0) params.set("minPrice", filters.priceRange.min.toString());
-    if (filters.priceRange.max > 0) params.set("maxPrice", filters.priceRange.max.toString());
+    if (debouncedFilters.category !== "ALL") params.set("category", debouncedFilters.category);
+    if (debouncedFilters.status !== "ALL") params.set("status", debouncedFilters.status);
+    if (debouncedFilters.city) params.set("city", debouncedFilters.city);
+    if (debouncedFilters.state) params.set("state", debouncedFilters.state);
+    if (debouncedFilters.priceRange.min > 0) params.set("minPrice", debouncedFilters.priceRange.min.toString());
+    if (debouncedFilters.priceRange.max > 0) params.set("maxPrice", debouncedFilters.priceRange.max.toString());
     const newURL = params.toString() ? `/projects?${params.toString()}` : "/projects";
     router.push(newURL, { scroll: false });
-  }, [pagination.page, filters, router]);
+  }, [pagination.page, debouncedFilters, router]);
 
   const handleFiltersChange = useCallback((newFilters: Filters) => {
     setFilters(newFilters);
@@ -155,6 +177,7 @@ export default function ProjectsClient({ initialProjects, initialPagination }: {
     setSearchQuery("");
     setDebouncedSearchQuery("");
     setPagination((prev) => ({ ...prev, page: 1 }));
+    setDebouncedFilters({ category: "ALL", status: "ALL", city: "", state: "", priceRange: { min: 0, max: 0 } });
   }, []);
 
   const handlePageChange = useCallback((newPage: number) => {
@@ -189,9 +212,27 @@ export default function ProjectsClient({ initialProjects, initialPagination }: {
     return () => clearTimeout(timer);
   }, [searchQuery, debouncedSearchQuery]);
 
+  // Debounce filters as the user changes dropdowns/sliders
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedFilters((prev) => {
+        // Only update if something actually changed to avoid extra renders/history entries
+        const changed =
+          prev.category !== filters.category ||
+          prev.status !== filters.status ||
+          prev.city !== filters.city ||
+          prev.state !== filters.state ||
+          prev.priceRange.min !== filters.priceRange.min ||
+          prev.priceRange.max !== filters.priceRange.max;
+        return changed ? { ...filters } : prev;
+      });
+    }, 500);
+    return () => clearTimeout(t);
+  }, [filters]);
+
   useEffect(() => {
     updateURL();
-  }, [filters, pagination.page, updateURL]);
+  }, [debouncedFilters, pagination.page, updateURL]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">

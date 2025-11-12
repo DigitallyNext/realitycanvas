@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, ensureDatabaseConnection, enableQueryTiming } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { databaseWarmup } from '@/lib/database-warmup';
 import { createHash } from 'crypto';
 import { parseIndianPriceToNumber, isPriceWithinRange } from '@/lib/price';
@@ -156,66 +157,180 @@ export async function GET(request: NextRequest) {
     if (isBudgetFilterActive) {
       // Fetch a larger set then filter by parsed basePrice in memory.
       // Cap to a safe upper bound to avoid heavy queries.
-      const MAX_SCAN = 1000;
-      const scanStart = Date.now();
-      const allCandidates = await prisma.project.findMany({
-        where: whereClause,
-        orderBy: [
-          { status: 'asc' },
-          { updatedAt: 'desc' }
-        ],
-        take: MAX_SCAN,
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          subtitle: true,
-          category: true,
-          status: true,
-          address: true,
-          city: true,
-          state: true,
-          featuredImage: true,
-          createdAt: true,
-          updatedAt: true,
-          basePrice: true,
-          minRatePsf: true,
-          maxRatePsf: true,
-          developerName: true,
-          locality: true,
-        },
-      });
-      const scanMs = Date.now() - scanStart;
+      // Prefer DB-side filtering when numeric price columns exist (priceMin/priceMax)
+      // Try DB-side filtering with raw SQL if priceMin/priceMax exist
+      try {
+        const cols = await prisma.$queryRaw<{ column_name: string }[]>`
+          SELECT column_name FROM information_schema.columns
+          WHERE table_name = 'Project' AND column_name IN ('priceMin', 'priceMax')
+        `;
+        const hasMin = cols.some(c => c.column_name === 'priceMin');
+        const hasMax = cols.some(c => c.column_name === 'priceMax');
 
-      const filterStart = Date.now();
-      const filtered = allCandidates.filter(p =>
-        isPriceWithinRange(parseIndianPriceToNumber((p as any).basePrice), minBudget, maxBudget)
-      );
-      const filterMs = Date.now() - filterStart;
+        if (hasMin) {
+          const conditions: Prisma.Sql[] = [];
+          // Map whereClause conditions into raw SQL
+          if (search && search.length >= 2) {
+            conditions.push(Prisma.sql`(
+              LOWER("title") LIKE LOWER(${`%${search}%`}) OR
+              LOWER("subtitle") LIKE LOWER(${`%${search}%`}) OR
+              LOWER("address") LIKE LOWER(${`%${search}%`}) OR
+              LOWER("city") LIKE LOWER(${`%${search}%`}) OR
+              LOWER("state") LIKE LOWER(${`%${search}%`})
+            )`);
+          }
+          if (category && category !== 'ALL' && category !== 'All Categories') {
+            conditions.push(Prisma.sql`"category" = ${category}`);
+          }
+          if (status && status !== 'ALL' && status !== 'All Status') {
+            conditions.push(Prisma.sql`"status" = ${status}`);
+          }
+          if (city) {
+            conditions.push(Prisma.sql`LOWER("city") = LOWER(${city})`);
+          }
+          if (state) {
+            conditions.push(Prisma.sql`LOWER("state") = LOWER(${state})`);
+          }
 
-      const totalCount = filtered.length;
-      const totalPages = Math.ceil(totalCount / limit);
-      const hasMore = page < totalPages;
-      const paged = filtered.slice(skip, skip + limit);
+          // Budget overlap conditions
+          if (minBudget !== null && !isNaN(minBudget) && maxBudget !== null && !isNaN(maxBudget)) {
+            // overlap: priceMin <= max && (priceMax is null OR priceMax >= min)
+            conditions.push(
+              hasMax
+                ? Prisma.sql`("priceMin" <= ${maxBudget} AND ("priceMax" IS NULL OR "priceMax" >= ${minBudget}))`
+                : Prisma.sql`("priceMin" <= ${maxBudget})`
+            );
+          } else if (minBudget !== null && !isNaN(minBudget)) {
+            conditions.push(
+              hasMax
+                ? Prisma.sql`("priceMax" IS NULL OR "priceMax" >= ${minBudget})`
+                : Prisma.sql`("priceMin" >= ${minBudget})`
+            );
+          } else if (maxBudget !== null && !isNaN(maxBudget)) {
+            conditions.push(Prisma.sql`"priceMin" <= ${maxBudget}`);
+          }
 
-      responseData = {
-        projects: paged,
-        pagination: {
-          page,
-          limit,
-          totalCount,
-          totalPages,
-          hasMore,
-          hasPrevious: page > 1,
-        },
-        meta: {
-          queryTime: Date.now() - startTime,
-          cached: false,
-          budgetFilterApplied: true,
-          dbScanMs: scanMs,
-          filterMs,
-        },
-      };
+          // Build WHERE clause without Prisma.join to satisfy TS type constraints
+          let whereSql = Prisma.sql``;
+          if (conditions.length) {
+            whereSql = Prisma.sql`WHERE `;
+            for (let i = 0; i < conditions.length; i++) {
+              whereSql = i === 0
+                ? Prisma.sql`${whereSql}${conditions[i]}`
+                : Prisma.sql`${whereSql} AND ${conditions[i]}`;
+            }
+          }
+
+          const dbStart = Date.now();
+          const listQuery = Prisma.sql`
+            SELECT id, slug, title, subtitle, category, status, address, city, state,
+                   "featuredImage", "createdAt", "updatedAt", basePrice,
+                   "minRatePsf", "maxRatePsf", "developerName", locality
+            FROM "Project"
+            ${whereSql}
+            ORDER BY status ASC, "updatedAt" DESC
+            LIMIT ${limit} OFFSET ${skip}
+          `;
+          const countQuery = Prisma.sql`
+            SELECT COUNT(*)::int AS count
+            FROM "Project"
+            ${whereSql}
+          `;
+
+          const projects = await prisma.$queryRaw<any[]>(listQuery);
+          const countRows = await prisma.$queryRaw<{ count: number }[]>(countQuery);
+          const totalCount = countRows[0]?.count || 0;
+          const dbMs = Date.now() - dbStart;
+
+          const totalPages = Math.ceil(totalCount / limit);
+          const hasMore = page < totalPages;
+
+          responseData = {
+            projects,
+            pagination: {
+              page,
+              limit,
+              totalCount,
+              totalPages,
+              hasMore,
+              hasPrevious: page > 1,
+            },
+            meta: {
+              queryTime: Date.now() - startTime,
+              cached: false,
+              budgetFilterApplied: true,
+              dbScanMs: dbMs,
+              filterMs: 0,
+            },
+          };
+        } else {
+          // Columns missing -> fallback to scan
+          throw new Error('priceMin column missing');
+        }
+      } catch (e) {
+        // Fallback to in-memory scan if DB columns are missing or any error occurs
+        console.warn('Budget DB filter unavailable; falling back to scan:', e);
+        const MAX_SCAN = 1000;
+        const scanStart = Date.now();
+        const allCandidates = await prisma.project.findMany({
+          where: whereClause,
+          orderBy: [
+            { status: 'asc' },
+            { updatedAt: 'desc' },
+          ],
+          take: MAX_SCAN,
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            subtitle: true,
+            category: true,
+            status: true,
+            address: true,
+            city: true,
+            state: true,
+            featuredImage: true,
+            createdAt: true,
+            updatedAt: true,
+            basePrice: true,
+            minRatePsf: true,
+            maxRatePsf: true,
+            developerName: true,
+            locality: true,
+          },
+        });
+        const scanMs = Date.now() - scanStart;
+
+        const filterStart = Date.now();
+        const filtered = allCandidates.filter((p) =>
+          isPriceWithinRange(parseIndianPriceToNumber((p as any).basePrice), minBudget, maxBudget)
+        );
+        const filterMs = Date.now() - filterStart;
+
+        const totalCount = filtered.length;
+        const totalPages = Math.ceil(totalCount / limit);
+        const hasMore = page < totalPages;
+        const paged = filtered.slice(skip, skip + limit);
+
+        responseData = {
+          projects: paged,
+          pagination: {
+            page,
+            limit,
+            totalCount,
+            totalPages,
+            hasMore,
+            hasPrevious: page > 1,
+          },
+          meta: {
+            queryTime: Date.now() - startTime,
+            cached: false,
+            budgetFilterApplied: true,
+            dbScanMs: scanMs,
+            filterMs,
+          },
+        };
+      }
     } else {
       // Existing path: normal DB pagination without budget filter
       const listStart = Date.now();

@@ -71,6 +71,8 @@ model Project {
   updatedAt           DateTime                @updatedAt
   basePrice           String?
   priceRange          String?
+  priceMin            Int?
+  priceMax            Int?
   bannerTitle         String?
   bannerSubtitle      String?
   bannerDescription   String?
@@ -118,6 +120,8 @@ model Project {
   @@index([status], map: "idx_project_status_prisma")
   @@index([category], map: "idx_project_category_prisma")
   @@index([status, updatedAt], map: "idx_project_status_updated_prisma")
+  @@index([priceMin], map: "idx_project_price_min_prisma")
+  @@index([priceMax], map: "idx_project_price_max_prisma")
 }
 
 model Highlight {

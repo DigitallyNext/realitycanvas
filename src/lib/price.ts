@@ -106,3 +106,31 @@ export function isPriceWithinRange(parsedPrice: number | null, min?: number | nu
   if (typeof max === 'number' && !isNaN(max) && parsedPrice > max) return false;
   return true;
 }
+
+/**
+ * Parse Indian price ranges such as "50 lakh - 1 crore", "₹75L–₹1.5Cr", or "2 cr to 2.5 cr".
+ * Returns { min, max } in rupees, or nulls if parsing fails.
+ */
+export function parseIndianPriceRangeToMinMax(input?: string | null): { min: number | null; max: number | null } {
+  if (!input) return { min: null, max: null };
+  const s = normalize(input);
+  if (!s) return { min: null, max: null };
+
+  // Split on common range separators: hyphen variants and "to"
+  const parts = s.split(/\s*(?:-|–|—|to)\s*/);
+  if (parts.length >= 2) {
+    const left = parseIndianPriceToNumber(parts[0]);
+    const right = parseIndianPriceToNumber(parts[1]);
+    const min = left !== null && right !== null ? Math.min(left, right) : left;
+    const max = left !== null && right !== null ? Math.max(left, right) : right;
+    return { min: min ?? null, max: max ?? null };
+  }
+
+  // Fallback: single value becomes both min and max
+  const single = parseIndianPriceToNumber(s);
+  if (single !== null) {
+    return { min: single, max: single };
+  }
+
+  return { min: null, max: null };
+}

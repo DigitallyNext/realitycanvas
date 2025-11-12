@@ -324,6 +324,18 @@ export default function ProjectsPage() {
     }
   }));
 
+  // Debounced filters to prevent multiple rapid API calls
+  const [debouncedFilters, setDebouncedFilters] = useState<Filters>(() => ({
+    category: searchParams.get('category') || "ALL",
+    status: searchParams.get('status') || "ALL",
+    city: searchParams.get('city') || "",
+    state: searchParams.get('state') || "",
+    priceRange: {
+      min: parseInt(searchParams.get('minPrice') || '0'),
+      max: parseInt(searchParams.get('maxPrice') || '0')
+    }
+  }));
+
   // Initialize pagination
   const [pagination, setPagination] = useState<Pagination>({
     page: parseInt(searchParams.get('page') || '1'),
@@ -356,29 +368,29 @@ export default function ProjectsPage() {
         params.set("search", debouncedSearchQuery.trim());
       }
 
-      if (filters.category !== "ALL") {
-        params.set("category", filters.category);
+      if (debouncedFilters.category !== "ALL") {
+        params.set("category", debouncedFilters.category);
       }
 
-      if (filters.status !== "ALL") {
-        params.set("status", filters.status);
+      if (debouncedFilters.status !== "ALL") {
+        params.set("status", debouncedFilters.status);
       }
 
-      if (filters.city.trim()) {
-        params.set("city", filters.city.trim());
+      if (debouncedFilters.city.trim()) {
+        params.set("city", debouncedFilters.city.trim());
       }
 
-      if (filters.state.trim()) {
-        params.set("state", filters.state.trim());
+      if (debouncedFilters.state.trim()) {
+        params.set("state", debouncedFilters.state.trim());
       }
 
-      if (filters.priceRange.min > 0) {
-        params.set("minPrice", filters.priceRange.min.toString());
+      if (debouncedFilters.priceRange.min > 0) {
+        params.set("minPrice", debouncedFilters.priceRange.min.toString());
       }
 
       // Include maxPrice only when user selected a bounded upper limit
-      if (filters.priceRange.max > 0) {
-        params.set("maxPrice", filters.priceRange.max.toString());
+      if (debouncedFilters.priceRange.max > 0) {
+        params.set("maxPrice", debouncedFilters.priceRange.max.toString());
       }
 
       const response = await fetch(`/api/projects?${params.toString()}`, {
@@ -438,7 +450,7 @@ export default function ProjectsPage() {
       setLoading(false);
       setSearchLoading(false);
     }
-  }, [pagination.page, debouncedSearchQuery, filters]);
+  }, [pagination.page, debouncedSearchQuery, debouncedFilters]);
 
   // Progressive mount for perceived speed: render first card immediately, then others
   useEffect(() => {
@@ -471,34 +483,34 @@ export default function ProjectsPage() {
       params.set('page', pagination.page.toString());
     }
 
-    if (filters.category !== "ALL") {
-      params.set('category', filters.category);
+    if (debouncedFilters.category !== "ALL") {
+      params.set('category', debouncedFilters.category);
     }
 
-    if (filters.status !== "ALL") {
-      params.set('status', filters.status);
+    if (debouncedFilters.status !== "ALL") {
+      params.set('status', debouncedFilters.status);
     }
 
-    if (filters.city) {
-      params.set('city', filters.city);
+    if (debouncedFilters.city) {
+      params.set('city', debouncedFilters.city);
     }
 
-    if (filters.state) {
-      params.set('state', filters.state);
+    if (debouncedFilters.state) {
+      params.set('state', debouncedFilters.state);
     }
 
-    if (filters.priceRange.min > 0) {
-      params.set('minPrice', filters.priceRange.min.toString());
+    if (debouncedFilters.priceRange.min > 0) {
+      params.set('minPrice', debouncedFilters.priceRange.min.toString());
     }
 
     // Include maxPrice only when user selected a bounded upper limit
-    if (filters.priceRange.max > 0) {
-      params.set('maxPrice', filters.priceRange.max.toString());
+    if (debouncedFilters.priceRange.max > 0) {
+      params.set('maxPrice', debouncedFilters.priceRange.max.toString());
     }
 
     const newURL = params.toString() ? `/projects?${params.toString()}` : '/projects';
     router.push(newURL, { scroll: false });
-  }, [pagination.page, filters, router]);
+  }, [pagination.page, debouncedFilters, router]);
 
   // Handle filter changes
   const handleFiltersChange = useCallback((newFilters: Filters) => {
@@ -552,6 +564,23 @@ export default function ProjectsPage() {
     return () => clearTimeout(timer);
   }, [searchQuery, debouncedSearchQuery]);
 
+  // Debounce filters to avoid firing multiple requests while user is selecting
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedFilters(prev => {
+        const changed =
+          prev.category !== filters.category ||
+          prev.status !== filters.status ||
+          prev.city !== filters.city ||
+          prev.state !== filters.state ||
+          prev.priceRange.min !== filters.priceRange.min ||
+          prev.priceRange.max !== filters.priceRange.max;
+        return changed ? { ...filters } : prev;
+      });
+    }, 500);
+    return () => clearTimeout(t);
+  }, [filters]);
+
   // Set search loading when search query changes
   useEffect(() => {
     if (searchQuery.trim() !== debouncedSearchQuery.trim()) {
@@ -563,7 +592,7 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     updateURL();
-  }, [updateURL]);
+  }, [debouncedFilters, pagination.page, updateURL]);
 
   // Render pagination
   const renderPagination = () => {
