@@ -648,6 +648,7 @@ export default function ProjectsPage() {
           "name": "Projects",
           "isPartOf": {"@type": "WebSite", "url": baseUrl}
         }} />
+        
         <JsonLd data={{
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
