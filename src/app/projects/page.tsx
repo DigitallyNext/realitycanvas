@@ -234,7 +234,7 @@ function ProjectFilters({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Category Filter */}
-        {/* <div>
+        <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Category
           </label>
@@ -247,10 +247,10 @@ function ProjectFilters({
               <option key={cat.value} value={cat.value}>{cat.label}</option>
             ))}
           </select>
-        </div> */}
+        </div>
 
         {/* Status Filter */}
-        {/* <div>
+        <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Status
           </label>
@@ -263,10 +263,10 @@ function ProjectFilters({
               <option key={status.value} value={status.value}>{status.label}</option>
             ))}
           </select>
-        </div> */}
+        </div>
 
         {/* Price Range Filter */}
-        {/* <div>
+        <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Budget
           </label>
@@ -286,7 +286,7 @@ function ProjectFilters({
               </option>
             ))}
           </select>
-        </div> */}
+        </div>
 
         
       </div>
@@ -648,7 +648,7 @@ export default function ProjectsPage() {
           "name": "Projects",
           "isPartOf": {"@type": "WebSite", "url": baseUrl}
         }} />
-        
+
         <JsonLd data={{
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
@@ -662,7 +662,7 @@ export default function ProjectsPage() {
         <div className="flex flex-col gap-4 w-full mt-[-10vw] lg:mt-0">
 
           {/* Search */}
-          {/* <div className="flex items-center gap-3 my-6 lg:my-2">
+          <div className="flex items-center gap-3 my-6 lg:my-2">
             <form onSubmit={handleSearch} className="flex max-w-md ">
               <div className="relative">
                 <input
@@ -690,7 +690,7 @@ export default function ProjectsPage() {
             />
 
         
-          </div> */}
+          </div>
 
 
           {/* {isAdmin && (
