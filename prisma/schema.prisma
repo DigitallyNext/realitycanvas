@@ -122,6 +122,7 @@ model Project {
   @@index([status, updatedAt], map: "idx_project_status_updated_prisma")
   @@index([priceMin], map: "idx_project_price_min_prisma")
   @@index([priceMax], map: "idx_project_price_max_prisma")
+  @@index([priceMin, priceMax], map: "idx_project_price_range_prisma")
 }
 
 model Highlight {

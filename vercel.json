@@ -4,10 +4,11 @@
   "framework": "nextjs",
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "regions": ["bom1"]
     }
   },
   "env": {
     "PRISMA_GENERATE_DATAPROXY": "true"
   }
-} 
+}

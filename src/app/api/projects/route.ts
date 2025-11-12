@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Ensure database connection
-    const isConnected = await ensureDatabaseConnection(2);
+    const isConnected = await ensureDatabaseConnection(1);
     if (!isConnected) {
       const cachedConn = cache.get(cacheKey);
       if (cachedConn && (Date.now() - cachedConn.timestamp) < CACHE_TTL) {
