@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     // Revalidate by tag (for tagged data)
     if (tag) {
-      revalidateTag(tag, 'max');
+      revalidateTag(tag,);
       console.log(`Revalidated tag: ${tag}`);
     }
 
