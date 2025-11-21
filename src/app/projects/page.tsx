@@ -437,7 +437,16 @@ export default function ProjectsPage() {
 
     } catch (err: any) {
       // Swallow intentional aborts from previous requests
-      const isAbort = err?.name === 'AbortError' || err?.code === 'ABORT_ERR' || (typeof err?.message === 'string' && err.message.toLowerCase().includes('abort'));
+      const isAbort = (
+        err === 'superseded-by-new-request' ||
+        err?.name === 'AbortError' ||
+        err?.code === 'ABORT_ERR' ||
+        err?.cause?.name === 'AbortError' ||
+        (typeof err?.message === 'string' && (
+          err.message.toLowerCase().includes('abort') ||
+          err.message.toLowerCase().includes('superseded-by-new-request')
+        ))
+      );
       if (isAbort) {
         // Do not surface abort as an error to the user
         // Just exit; finally block will handle loading state cleanup

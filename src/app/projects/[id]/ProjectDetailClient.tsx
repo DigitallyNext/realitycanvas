@@ -27,6 +27,9 @@ import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import UnitsSection from "@/components/Notes/Units";
 import LazySection from "@/components/LazySection";
 import PropertyFAQ from "@/components/PropertyFAQ";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { submitLeadCapture } from "@/lib/leadCapture";
 
 type Unit = {
   id: string;
@@ -245,6 +248,53 @@ export default function ProjectDetailClient({
   const videoRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
 
+  type LeadFormData = {
+    name: string;
+    phone: string;
+    email: string;
+    timeline: string;
+    propertyType: "COMMERCIAL" | "RESIDENTIAL";
+    city: string;
+    state: string;
+  };
+
+  const [leadForm, setLeadForm] = useState<LeadFormData>({
+    name: "",
+    phone: "",
+    email: "",
+    timeline: "",
+    propertyType: project.category?.toUpperCase() === "RESIDENTIAL" ? "RESIDENTIAL" : "COMMERCIAL",
+    city: project.city || "",
+    state: project.state || "",
+  });
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+
+  const onLeadInput = (field: keyof LeadFormData, value: string) => {
+    setLeadForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const submitLeadInline = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLeadSubmitting(true);
+    try {
+      await submitLeadCapture(leadForm);
+      showToast("Thanks! We will contact you shortly.");
+      setLeadForm({
+        name: "",
+        phone: "",
+        email: "",
+        timeline: "",
+        propertyType: project.category?.toUpperCase() === "RESIDENTIAL" ? "RESIDENTIAL" : "COMMERCIAL",
+        city: project.city || "",
+        state: project.state || "",
+      });
+    } catch (err) {
+      showToast("Submission failed. Please try again.");
+    } finally {
+      setLeadSubmitting(false);
+    }
+  };
+
   // Initialize like state from localStorage on client side
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -401,11 +451,10 @@ export default function ProjectDetailClient({
                     <button
                       key={index}
                       onClick={() => setActiveImageIndex(index)}
-                      className={`rounded-lg border-2 ${
-                        activeImageIndex === index
+                      className={`rounded-lg border-2 ${activeImageIndex === index
                           ? "border-blue-500"
                           : "border-white/50"
-                      }`}
+                        }`}
                       aria-label={`Show image ${index + 1}`}
                     >
                       <SmartImage
@@ -466,8 +515,8 @@ export default function ProjectDetailClient({
                     {project.category === "COMMERCIAL"
                       ? "Commercial"
                       : project.category === "RESIDENTIAL"
-                      ? "Residential"
-                      : project.category.replace("_", " ")}
+                        ? "Residential"
+                        : project.category.replace("_", " ")}
                   </div>
                 </div>
               </div>
@@ -618,7 +667,7 @@ export default function ProjectDetailClient({
                             <img
                               src={plan.imageUrl}
                               alt={`${plan.level} floor plan`}
-                             
+
                               className="object-cover"
                               loading="lazy"
                               onLoad={() =>
@@ -691,7 +740,7 @@ export default function ProjectDetailClient({
                 </h2>
 
                 {project.videoUrl ||
-                (project.videoUrls && project.videoUrls.length > 0) ? (
+                  (project.videoUrls && project.videoUrls.length > 0) ? (
                   <div className="space-y-6">
                     {/* Main Video */}
                     {project.videoUrl && (
@@ -778,10 +827,10 @@ export default function ProjectDetailClient({
 
           {/* Right Column - Contact & Details */}
           <div className="lg:col-span-1">
-            <div className="sticky top-14 space-y-6">
+            <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto space-y-6 pr-2">
               {/* Property Summary */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                <h3 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-4">
+                <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-4">
                   {project.title}
                 </h3>
 
@@ -790,12 +839,12 @@ export default function ProjectDetailClient({
                   <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                     {project.basePrice ? (
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-blue-600 mb-1">
+                        <div className="text-2xl font-bold text-blue-600 mb-1">
                           ₹{project.basePrice}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        {/* <div className="text-sm text-gray-500">
                           Starting Price
-                        </div>
+                        </div> */}
                       </div>
                     ) : project.priceRange ? (
                       <div className="text-center">
@@ -872,7 +921,7 @@ export default function ProjectDetailClient({
                           </div>
                         </div>
                         <div>
-                          <div className="text-lg font-bold text-purple-600">
+                          <div className="text-base font-bold text-purple-600">
                             {project.features || "N/A"}
                           </div>
                           <div className="text-sm text-gray-500">Category</div>
@@ -884,13 +933,12 @@ export default function ProjectDetailClient({
                   {/* Status Badge */}
                   <div className="flex justify-center">
                     <span
-                      className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                        project.status === "READY"
+                      className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${project.status === "READY"
                           ? "bg-green-100 text-green-800"
                           : project.status === "UNDER_CONSTRUCTION"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
                     >
                       {project.status.replace("_", " ")}
                     </span>
@@ -926,48 +974,128 @@ export default function ProjectDetailClient({
                 </div>
               </div>
 
-              {/* Contact Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                  Interested in this property?
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Get in touch for more details and viewing
-                </p>
 
-                <div className="space-y-3">
-                  <Link
-                    href="tel:9910007801"
-                    ref={callNowButtonRef}
-                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+
+              {/* Inline Lead Capture Form */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg max-h-[80vh] overflow-y-auto">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Request a Callback</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">Fill in your details and we’ll reach out.</p>
+                <form onSubmit={submitLeadInline} className="space-y-3">
+                  {/* Property Type */}
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-gray-700">Property Type *</label>
+                    <div className="flex bg-gray-100 rounded-lg p-1">
+                      <button
+                        type="button"
+                        onClick={() => onLeadInput("propertyType", "COMMERCIAL")}
+                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all ${leadForm.propertyType === "COMMERCIAL" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"
+                          }`}
+                      >
+                        🏢 Commercial
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onLeadInput("propertyType", "RESIDENTIAL")}
+                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-medium transition-all ${leadForm.propertyType === "RESIDENTIAL" ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-800"
+                          }`}
+                      >
+                        🏠 Residential
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-gray-700" htmlFor="lead-name">Name *</label>
+                    <Input id="lead-name" value={leadForm.name} onChange={(e) => onLeadInput("name", e.target.value)} required className="h-8 text-sm" />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-gray-700" htmlFor="lead-phone">Phone Number *</label>
+                    <Input id="lead-phone" type="tel" value={leadForm.phone} onChange={(e) => onLeadInput("phone", e.target.value)} required className="h-8 text-sm" />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-gray-700" htmlFor="lead-email">Email ID *</label>
+                    <Input id="lead-email" type="email" value={leadForm.email} onChange={(e) => onLeadInput("email", e.target.value)} required className="h-8 text-sm" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-medium text-gray-700" htmlFor="lead-city">City *</label>
+                      <Input id="lead-city" value={leadForm.city} onChange={(e) => onLeadInput("city", e.target.value)} required className="h-8 text-sm" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-medium text-gray-700" htmlFor="lead-state">State *</label>
+                      <select
+                        id="lead-state"
+                        value={leadForm.state}
+                        onChange={(e) => onLeadInput("state", e.target.value)}
+                        required
+                        className="w-full h-8 px-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      >
+                        <option value="">Select state</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Puducherry">Puducherry</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-gray-700" htmlFor="lead-timeline">Purchase Timeline *</label>
+                    <select
+                      id="lead-timeline"
+                      value={leadForm.timeline}
+                      onChange={(e) => onLeadInput("timeline", e.target.value)}
+                      required
+                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                     >
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                    Call Now
-                  </Link>
-                  <button
-                    onClick={handleShare}
-                    className="w-full text-gray-600 dark:text-gray-400 py-2 flex items-center justify-center"
-                  >
-                    <ShareIcon className="w-4 h-4 mr-2" />
-                    Share
-                  </button>
-                  {/* <div className="mt-2">
-                    <JsonImportExport 
-                      onImport={() => {}} 
-                      exportData={getFormattedExportData()} 
-                      className="w-full" 
-                      title="Project JSON Manager"
-                    />
-                  </div> */}
-                </div>
+                      <option value="">Select your timeline</option>
+                      <option value="1-month">1 Month</option>
+                      <option value="3-months">3 Months</option>
+                      <option value="6-months">6 Months</option>
+                      <option value="more-than-6-months">More than 6 Months</option>
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button type="submit" disabled={leadSubmitting} className="flex-1 h-9 text-sm bg-blue-600 hover:bg-blue-700 text-white">
+                      {leadSubmitting ? "Submitting..." : "Submit"}
+                    </Button>
+                  </div>
+                </form>
+                <p className="text-xs text-gray-500 text-center mt-3">We respect your privacy. Your information will be used only to provide you with property recommendations.</p>
               </div>
+
+
             </div>
           </div>
         </div>
@@ -1007,7 +1135,7 @@ export default function ProjectDetailClient({
                     onClick={() => {
                       setActiveImageIndex(
                         (activeImageIndex - 1 + project.galleryImages.length) %
-                          project.galleryImages.length
+                        project.galleryImages.length
                       );
                     }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center"
@@ -1034,11 +1162,10 @@ export default function ProjectDetailClient({
                       <button
                         key={i}
                         onClick={() => setActiveImageIndex(i)}
-                        className={`rounded-lg border ${
-                          i === activeImageIndex
+                        className={`rounded-lg border ${i === activeImageIndex
                             ? "border-blue-500"
                             : "border-gray-200 dark:border-gray-700"
-                        }`}
+                          }`}
                       >
                         <SmartImage
                           src={img}

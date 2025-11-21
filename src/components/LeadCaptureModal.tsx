@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X } from 'lucide-react';
@@ -17,6 +18,8 @@ interface FormData {
 
 export default function LeadCaptureModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const timerRef = useRef<number | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: '',
     phone: '',
@@ -31,20 +34,32 @@ export default function LeadCaptureModal() {
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return;
-    
-    // Check if modal has been shown before
+
+    // If already scheduled, clear previous timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // Check if modal has been shown before (persist across the site)
     const hasShownModal = localStorage.getItem('leadCaptureModalShown');
-    
+
     if (!hasShownModal) {
-      // Show modal after 5 seconds
-      const timer = setTimeout(() => {
+      // Show modal after 3 seconds on current page
+      timerRef.current = window.setTimeout(() => {
         setIsOpen(true);
         localStorage.setItem('leadCaptureModalShown', 'true');
-      }, 5000);
-
-      return () => clearTimeout(timer);
+        timerRef.current = null;
+      }, 3000);
     }
-  }, []);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [pathname]);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -110,7 +125,7 @@ export default function LeadCaptureModal() {
       />
       
       {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-2xl max-w-sm w-full mx-4 p-4">
+      <div className="relative bg-white rounded-xl shadow-2xl max-w-sm w-full mx-4 p-4 max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="text-lg font-bold text-gray-900">

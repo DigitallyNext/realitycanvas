@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import SmartImage from '@/components/ui/SmartImage';
 import { useState, useEffect, useRef } from 'react';
-import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import type { MouseEvent as ReactMouseEvent } from 'react';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, UserIcon, ArrowRightOnRectangleIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 // Import the auth context
@@ -26,7 +27,7 @@ export default function Navbar() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAdmin, signOut } = useAuth();
-  
+
   const callNowButtonRef = useRef<HTMLAnchorElement | null>(null);
   const hotlineButtonRef = useRef<HTMLAnchorElement | null>(null);
   const mobileCallNowButtonRef = useRef<HTMLAnchorElement | null>(null);
@@ -85,25 +86,25 @@ export default function Navbar() {
         ease: "power1.inOut"
       });
     };
-    
+
     // Setup hover animations for desktop buttons
     if (callNowButtonRef.current) {
       callNowButtonRef.current.addEventListener('mouseenter', handleCallNowButtonHover);
     }
-    
+
     if (hotlineButtonRef.current) {
       hotlineButtonRef.current.addEventListener('mouseenter', handleHotlineButtonHover);
     }
-    
+
     // Setup hover animations for mobile buttons
     if (mobileCallNowButtonRef.current) {
       mobileCallNowButtonRef.current.addEventListener('mouseenter', handleMobileCallNowButtonHover);
     }
-    
+
     if (mobileHotlineButtonRef.current) {
       mobileHotlineButtonRef.current.addEventListener('mouseenter', handleMobileHotlineButtonHover);
     }
-    
+
     // Cleanup event listeners on component unmount
     return () => {
       if (callNowButtonRef.current) {
@@ -120,7 +121,28 @@ export default function Navbar() {
       }
     };
   }, []);
-  
+
+  function handleShare(event: ReactMouseEvent<HTMLButtonElement>): void {
+    event.preventDefault();
+    const shareData = {
+      title: 'Realty Canvas',
+      text: 'Check out this page from Realty Canvas',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+    };
+
+    try {
+      if (navigator.share) {
+        void navigator.share(shareData);
+      } else if (navigator.clipboard && shareData.url) {
+        void navigator.clipboard.writeText(shareData.url);
+        // Optionally show a small feedback; keeping it silent to avoid intrusive alerts.
+        console.log('Link copied to clipboard');
+      }
+    } catch (err) {
+      console.error('Share action failed:', err);
+    }
+  }
+
   return (
     <nav className={`${isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'} backdrop-blur-sm fixed w-full z-50 transition-all duration-300`}>
       <div className={`max-w-6xl mx-auto px-2 sm:px-4  ${isScrolled ? 'bg-transparent' : 'bg-white/10'} rounded-lg mx-4 mt-2`}>
@@ -129,11 +151,11 @@ export default function Navbar() {
           <div className="">
             <Link href="/" className="flex items-center no-underline hover:no-underline focus:no-underline">
               {/* Logo - Light version only */}
-              <SmartImage 
-                src="/logo1.webp" 
-                alt="Reality Canvas" 
-                width={1200} 
-                height={100} 
+              <SmartImage
+                src="/logo1.webp"
+                alt="Reality Canvas"
+                width={1200}
+                height={100}
                 className="w-40 h-10"
                 priority
               />
@@ -157,7 +179,7 @@ export default function Navbar() {
           {/* Right side items */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             {/* Theme toggle removed - using light mode only */}
-            <Link 
+            <Link
               href="tel:9910007801"
               ref={callNowButtonRef}
               className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-3 py-2 rounded-full transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none whitespace-nowrap"
@@ -167,7 +189,7 @@ export default function Navbar() {
               </svg>
               Call Now
             </Link>
-            <Link 
+            <Link
               href="tel:9910007801"
               ref={hotlineButtonRef}
               className="flex items-center gap-2 bg-[#112D48] hover:bg-[#091a30] text-white font-medium px-3 py-2 rounded-full transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
@@ -177,6 +199,13 @@ export default function Navbar() {
               </svg>
               9910007801
             </Link>
+            <button
+              onClick={handleShare}
+              className="w-full text-gray-600 bg-[#F0F0F0] hover:bg-[#E0E0E0] p-3 flex items-center justify-center rounded-full"
+            >
+              <ShareIcon className="w-4 h-4 mr-2" />
+              Share
+            </button>
             {/* Admin-only Add Project Button */}
             {isAdmin && (
               <Link href="/projects/new">
@@ -189,7 +218,7 @@ export default function Navbar() {
                 </BrandButton>
               </Link>
             )}
-            
+
             {/* Admin Authentication - Only show if already logged in as admin */}
             {user && isAdmin && (
               <Menu as="div" className="relative">
@@ -200,7 +229,7 @@ export default function Navbar() {
                   <span className="text-sm font-medium">Admin</span>
                   <ChevronDownIcon className="w-4 h-4" />
                 </Menu.Button>
-                
+
                 <Transition
                   as={Fragment}
                   enter="transition ease-out duration-100"
@@ -216,9 +245,8 @@ export default function Navbar() {
                         {({ active }) => (
                           <button
                             onClick={signOut}
-                            className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                            } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
+                            className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                              } flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300`}
                           >
                             <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
                             Sign Out
@@ -271,41 +299,41 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                  <Link
-                    href="tel:9910007801"
-                    ref={mobileCallNowButtonRef}
-                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                    Call Now: 9910007801
+                <Link
+                  href="tel:9910007801"
+                  ref={mobileCallNowButtonRef}
+                  className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
+                  Call Now: 9910007801
+                </Link>
+                <Link
+                  href="tel:9910007801"
+                  ref={mobileHotlineButtonRef}
+                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                  </svg>
+                  9910007801
+                </Link>
+                {/* Admin-only Add Project Button */}
+                {isAdmin && (
+                  <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
+                    <BrandButton
+                      variant="primary"
+                      size="sm"
+                      className="w-full rounded-full"
+                    >
+                      Add Project
+                    </BrandButton>
                   </Link>
-                  <Link 
-                    href="tel:9910007801"
-                    ref={mobileHotlineButtonRef}
-                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg text-center w-full mb-2 transition-all duration-300 transform hover:scale-105"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    9910007801
-                  </Link>
-                  {/* Admin-only Add Project Button */}
-                  {isAdmin && (
-                    <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
-                      <BrandButton
-                        variant="primary"
-                        size="sm"
-                        className="w-full rounded-full"
-                      >
-                        Add Project
-                      </BrandButton>
-                    </Link>
-                  )}
-                </div>
+                )}
+              </div>
               {/* Admin Authentication for Mobile - Only show if already logged in as admin */}
               {user && isAdmin && (
                 <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
@@ -325,7 +353,7 @@ export default function Navbar() {
           </div>
         </Transition>
       </div>
-      
+
       {/* Admin Login Modal */}
       {showAdminLogin && (
         <AdminLogin onClose={() => setShowAdminLogin(false)} />
