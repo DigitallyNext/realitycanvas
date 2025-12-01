@@ -27,6 +27,7 @@ import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import UnitsSection from "@/components/Notes/Units";
 import LazySection from "@/components/LazySection";
 import PropertyFAQ from "@/components/PropertyFAQ";
+import RelatedProjects from "@/components/RelatedProjects";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { submitLeadCapture } from "@/lib/leadCapture";
@@ -845,6 +846,15 @@ export default function ProjectDetailClient({
                 />
               </div>
             </LazySection>
+
+            
+      {/* Related Projects */}
+      <RelatedProjects
+        currentSlug={project.slug}
+        city={project.city || ""}
+        category={project.category}
+        limit={3}
+      />
           </div>
 
           {/* Right Column - Contact & Details */}
@@ -1087,6 +1097,7 @@ export default function ProjectDetailClient({
           </div>
         </div>
       </div>
+
 
       {/* Gallery Modal */}
       {viewAllPhotos &&
