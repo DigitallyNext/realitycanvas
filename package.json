@@ -34,6 +34,8 @@
     "@sanity/image-url": "^1.2.0",
     "@supabase/supabase-js": "^2.53.0",
     "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/react": "^3.0.0",
     "@types/nodemailer": "^7.0.1",
     "@types/uuid": "^10.0.0",
     "@vercel/speed-insights": "^1.2.0",
@@ -58,6 +60,7 @@
     "tailwind-merge": "^3.3.1",
     "tailwind-scrollbar-hide": "^4.0.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsparticles": "^3.9.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

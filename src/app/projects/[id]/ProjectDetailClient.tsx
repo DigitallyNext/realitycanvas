@@ -22,7 +22,10 @@ import {
   VideoCameraIcon,
   ArrowPathIcon,
   ArrowLeftIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { SparkleButton } from "@/components/ui/button-8";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import UnitsSection from "@/components/Notes/Units";
 import LazySection from "@/components/LazySection";
@@ -226,6 +229,7 @@ export default function ProjectDetailClient({
   const [contactOpen, setContactOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
+  const [leadModalOpen, setLeadModalOpen] = useState(false);
 
   // Simple toast state
   const [toast, setToast] = useState("");
@@ -309,6 +313,7 @@ export default function ProjectDetailClient({
         city: project.city || "",
         state: project.state || "",
       });
+      setLeadModalOpen(false);
     } catch (err) {
       showToast("Submission failed. Please try again.");
     } finally {
@@ -473,8 +478,8 @@ export default function ProjectDetailClient({
                       key={index}
                       onClick={() => setActiveImageIndex(index)}
                       className={`rounded-lg border-2 ${activeImageIndex === index
-                          ? "border-blue-500"
-                          : "border-white/50"
+                        ? "border-blue-500"
+                        : "border-white/50"
                         }`}
                       aria-label={`Show image ${index + 1}`}
                     >
@@ -847,14 +852,14 @@ export default function ProjectDetailClient({
               </div>
             </LazySection>
 
-            
-      {/* Related Projects */}
-      <RelatedProjects
-        currentSlug={project.slug}
-        city={project.city || ""}
-        category={project.category}
-        limit={3}
-      />
+
+            {/* Related Projects */}
+            <RelatedProjects
+              currentSlug={project.slug}
+              city={project.city || ""}
+              category={project.category}
+              limit={3}
+            />
           </div>
 
           {/* Right Column - Contact & Details */}
@@ -966,10 +971,10 @@ export default function ProjectDetailClient({
                   <div className="flex justify-center">
                     <span
                       className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${project.status === "READY"
-                          ? "bg-green-100 text-green-800"
-                          : project.status === "UNDER_CONSTRUCTION"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-blue-100 text-blue-800"
+                        ? "bg-green-100 text-green-800"
+                        : project.status === "UNDER_CONSTRUCTION"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-blue-100 text-blue-800"
                         }`}
                     >
                       {project.status.replace("_", " ")}
@@ -1007,90 +1012,29 @@ export default function ProjectDetailClient({
               </div>
 
               {/* Inline Lead Capture Form - replaced with property-context version */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg max-h-[80vh] overflow-y-auto">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Request Info for {project.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">Tell us how to reach you. We’ll share details about this property.</p>
-                <form onSubmit={submitLeadInline} className="space-y-3">
-                  <fieldset className="space-y-1.5">
-                    <legend className="block text-xs font-medium text-gray-700">Property Type *</legend>
-                    <div className="flex items-center gap-4">
-                      <label className="inline-flex items-center gap-2 text-xs text-gray-700">
-                        <input
-                          type="radio"
-                          name="propertyType"
-                          value="COMMERCIAL"
-                          checked={leadForm.propertyType === "COMMERCIAL"}
-                          onChange={() => onLeadInput("propertyType", "COMMERCIAL")}
-                          required
-                          className="accent-blue-600"
-                        />
-                        <span>Commercial</span>
-                      </label>
-                      <label className="inline-flex items-center gap-2 text-xs text-gray-700">
-                        <input
-                          type="radio"
-                          name="propertyType"
-                          value="RESIDENTIAL"
-                          checked={leadForm.propertyType === "RESIDENTIAL"}
-                          onChange={() => onLeadInput("propertyType", "RESIDENTIAL")}
-                          required
-                          className="accent-blue-600"
-                        />
-                        <span>Residential</span>
-                      </label>
-                    </div>
-                  </fieldset>
+              {/* Inline Lead Capture - replaced with Lottie CTA */}
+              <div
+                className=" cursor-pointer hover:shadow-xl transition-shadow group "
+                onClick={() => setLeadModalOpen(true)}
+              >
+                <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
+                  Want to know more about this property?
+                </h3>
+                <div className="w-full h-32 relative mt-[-0.6vw] ">
+                  <DotLottieReact
+                    src="https://lottie.host/53fc9757-0216-495e-a320-de9f2a7c4458/yZcMBxHQHh.lottie"
+                    loop
+                    autoplay
+                    className="w-full h-full"
+                  />
+                </div>
 
-                  <div>
-                    <label htmlFor="lead-name-sidebar" className="block text-xs font-medium text-gray-700 dark:text-gray-300">Name</label>
-                    <Input id="lead-name-sidebar" value={leadForm.name} onChange={(e) => onLeadInput("name", e.target.value)} required className="h-8 text-sm" />
-                  </div>
-                  <div>
-                    <label htmlFor="lead-phone-sidebar" className="block text-xs font-medium text-gray-700 dark:text-gray-300">Phone</label>
-                    <Input id="lead-phone-sidebar" type="tel" value={leadForm.phone} onChange={(e) => onLeadInput("phone", e.target.value)} required className="h-8 text-sm" />
-                  </div>
-                  <div>
-                    <label htmlFor="lead-email-sidebar" className="block text-xs font-medium text-gray-700 dark:text-gray-300">Email</label>
-                    <Input id="lead-email-sidebar" type="email" value={leadForm.email} onChange={(e) => onLeadInput("email", e.target.value)} required className="h-8 text-sm" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label htmlFor="lead-city-sidebar" className="block text-xs font-medium text-gray-700 dark:text-gray-300">City</label>
-                      <Input id="lead-city-sidebar" value={leadForm.city} onChange={(e) => onLeadInput("city", e.target.value)} required className="h-8 text-sm" />
-                    </div>
-                    <div>
-                      <label htmlFor="lead-state-sidebar" className="block text-xs font-medium text-gray-700 dark:text-gray-300">State</label>
-                      <select id="lead-state-sidebar" className="w-full h-8 text-sm border rounded-md bg-white dark:bg-gray-700 dark:text-white" value={leadForm.state} onChange={(e) => onLeadInput("state", e.target.value)}>
-                        <option value="">Select State</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Haryana">Haryana</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="Punjab">Punjab</option>
-                        <option value="Rajasthan">Rajasthan</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Telangana">Telangana</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="lead-timeline-sidebar" className="block text-xs font-medium text-gray-700 dark:text-gray-300">Purchase timeline</label>
-                    <select id="lead-timeline-sidebar" className="w-full h-8 text-sm border rounded-md bg-white dark:bg-gray-700 dark:text-white" value={leadForm.timeline} onChange={(e) => onLeadInput("timeline", e.target.value)}>
-                      <option value="">Select timeline</option>
-                      <option value="1-2 Weeks">1-2 Weeks</option>
-                      <option value="1 Month">1 Month</option>
-                      <option value="2-3 Months">2-3 Months</option>
-                      <option value="3-6 Months">3-6 Months</option>
-                      <option value="> 6 Months">More than 6 months</option>
-                    </select>
-                  </div>
-
-                  <div className="text-xs text-gray-500">Property context will be attached automatically.</div>
-                  <Button type="submit" disabled={leadSubmitting} className="w-full">
-                    {leadSubmitting ? "Submitting..." : "Request Info"}
-                  </Button>
-                </form>
+                <div className="flex justify-center mt-[-1vw]">
+                  <SparkleButton text="Click here to fill the form" onClick={(e) => {
+                    e.stopPropagation();
+                    setLeadModalOpen(true);
+                  }} />
+                </div>
               </div>
 
             </div>
@@ -1161,8 +1105,8 @@ export default function ProjectDetailClient({
                         key={i}
                         onClick={() => setActiveImageIndex(i)}
                         className={`rounded-lg border ${i === activeImageIndex
-                            ? "border-blue-500"
-                            : "border-gray-200 dark:border-gray-700"
+                          ? "border-blue-500"
+                          : "border-gray-200 dark:border-gray-700"
                           }`}
                       >
                         <SmartImage
@@ -1247,7 +1191,158 @@ export default function ProjectDetailClient({
         </div>
       )}
 
-      {/* All Features Modal */}
+      {/* Lead Capture Modal */}
+      {leadModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Request Info for {project.title}
+              </h3>
+              <button
+                onClick={() => setLeadModalOpen(false)}
+                className="text-gray-500 hover:text-gray-800 dark:hover:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+
+
+              <form onSubmit={submitLeadInline} className="space-y-4">
+                <fieldset className="space-y-2">
+                  <legend className="block text-sm font-medium text-gray-700 dark:text-gray-300">Property Type *</legend>
+                  <div className="flex items-center gap-6">
+                    <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="propertyType"
+                        value="COMMERCIAL"
+                        checked={leadForm.propertyType === "COMMERCIAL"}
+                        onChange={() => onLeadInput("propertyType", "COMMERCIAL")}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span>Commercial</span>
+                    </label>
+                    <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="propertyType"
+                        value="RESIDENTIAL"
+                        checked={leadForm.propertyType === "RESIDENTIAL"}
+                        onChange={() => onLeadInput("propertyType", "RESIDENTIAL")}
+                        required
+                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                      />
+                      <span>Residential</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <div>
+                  <label htmlFor="lead-name-modal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                  <Input
+                    id="lead-name-modal"
+                    value={leadForm.name}
+                    onChange={(e) => onLeadInput("name", e.target.value)}
+                    required
+                    className="w-full"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="lead-phone-modal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                  <Input
+                    id="lead-phone-modal"
+                    type="tel"
+                    value={leadForm.phone}
+                    onChange={(e) => onLeadInput("phone", e.target.value)}
+                    required
+                    className="w-full"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="lead-email-modal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                  <Input
+                    id="lead-email-modal"
+                    type="email"
+                    value={leadForm.email}
+                    onChange={(e) => onLeadInput("email", e.target.value)}
+                    required
+                    className="w-full"
+                    placeholder="Enter your email address"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="lead-city-modal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                    <Input
+                      id="lead-city-modal"
+                      value={leadForm.city}
+                      onChange={(e) => onLeadInput("city", e.target.value)}
+                      required
+                      className="w-full"
+                      placeholder="City"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="lead-state-modal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                    <select
+                      id="lead-state-modal"
+                      className="w-full h-10 px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={leadForm.state}
+                      onChange={(e) => onLeadInput("state", e.target.value)}
+                    >
+                      <option value="">Select State</option>
+                      <option value="Delhi">Delhi</option>
+                      <option value="Haryana">Haryana</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh</option>
+                      <option value="Punjab">Punjab</option>
+                      <option value="Rajasthan">Rajasthan</option>
+                      <option value="Maharashtra">Maharashtra</option>
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Telangana">Telangana</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="lead-timeline-modal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Purchase timeline</label>
+                  <select
+                    id="lead-timeline-modal"
+                    className="w-full h-10 px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={leadForm.timeline}
+                    onChange={(e) => onLeadInput("timeline", e.target.value)}
+                  >
+                    <option value="">Select timeline</option>
+                    <option value="1-2 Weeks">1-2 Weeks</option>
+                    <option value="1 Month">1 Month</option>
+                    <option value="2-3 Months">2-3 Months</option>
+                    <option value="3-6 Months">3-6 Months</option>
+                    <option value="> 6 Months">More than 6 months</option>
+                  </select>
+                </div>
+
+                <div className="pt-2">
+                  <Button type="submit" disabled={leadSubmitting} className="w-full h-11 text-base">
+                    {leadSubmitting ? "Submitting..." : "Request Information"}
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    By submitting, you agree to our terms and privacy policy.
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
       {showAllFeatures && project && project.highlights && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
