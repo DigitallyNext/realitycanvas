@@ -11,7 +11,7 @@ export default function AboutStory() {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const instagramPosts: string[] = [
     "https://www.instagram.com/p/C_kQ1vyBPZM/",
-    "https://www.instagram.com/p/C_sU8iZhvgC/",
+    // "https://www.instagram.com/p/C_sU8iZhvgC/",
     "https://www.instagram.com/p/C_9-goHh3D7/",
     "https://www.instagram.com/p/DA2gHp8h-LP/",
     "https://www.instagram.com/p/DEeuq9ShLPr/",
@@ -21,8 +21,8 @@ export default function AboutStory() {
     "https://www.instagram.com/p/DGDJIm3vPaP/",
     "https://www.instagram.com/p/DG2erazh1-e/",
     "https://www.instagram.com/p/DHqL52yhYlz/",
-    "https://www.instagram.com/p/DJZDgsPBaHM/",
-    "https://www.instagram.com/p/DJZDgsPBaHM/",
+    // "https://www.instagram.com/p/DJZDgsPBaHM/",
+    // "https://www.instagram.com/p/DJZDgsPBaHM/",
     "https://www.instagram.com/p/DMpUESuS1JN/",
   ];
 
