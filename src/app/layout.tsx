@@ -80,18 +80,31 @@ export default function RootLayout({
             `,
           }}
         />
-        
+
+        {/* Google Ads Conversion Tracking */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17212841851"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'AW-17212841851');
+            `,
+          }}
+        />
+
         {/* Viewport meta tag for proper mobile rendering */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        
+
         {/* Critical font preloading for faster LCP */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        
+
         {/* Font preload removed due to invalid URL - Next.js font optimization handles this */}
-        
+
         {/* Critical CSS for above-the-fold content */}
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -176,7 +189,7 @@ export default function RootLayout({
       <body
         className={`${geistSansVariable} ${geistMonoVariable} antialiased min-h-screen bg-gray-50 dark:bg-gray-900`}
       >
-        <SpeedInsights/>
+        <SpeedInsights />
         <ThemeProvider>
           <AuthProvider>
             <ClientLayout>
