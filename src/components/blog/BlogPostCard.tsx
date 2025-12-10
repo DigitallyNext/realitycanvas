@@ -12,8 +12,8 @@ interface BlogPostCardProps {
 }
 
 export default function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
-  const imageUrl = post.mainImage?.asset?.url || urlFor(post.mainImage).url()
-  
+  const imageUrl = post.mainImage?.asset?.url || (post.mainImage ? urlFor(post.mainImage).url() : '')
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -30,7 +30,7 @@ export default function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Featured Badge */}
           {post.featured && (
             <div className="absolute top-4 left-4">
@@ -82,7 +82,7 @@ export default function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
                   })}
                 </span>
               </div>
-              
+
               {post.readTime && (
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
@@ -101,7 +101,7 @@ export default function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
                   {post.author.name}
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-1 text-brand-primary group-hover:gap-2 transition-all duration-300">
                 <span className="text-sm font-medium">Read More</span>
                 <ArrowRight className="w-4 h-4" />

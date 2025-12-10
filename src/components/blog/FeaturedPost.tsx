@@ -11,8 +11,8 @@ interface FeaturedPostProps {
 }
 
 export default function FeaturedPost({ post }: FeaturedPostProps) {
-  const imageUrl = post.mainImage?.asset?.url || urlFor(post.mainImage).url()
-  
+  const imageUrl = post.mainImage?.asset?.url || (post.mainImage ? urlFor(post.mainImage).url() : '')
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -31,7 +31,7 @@ export default function FeaturedPost({ post }: FeaturedPostProps) {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent lg:hidden" />
-            
+
             {/* Featured Badge */}
             <div className="absolute top-6 left-6">
               <div className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-full shadow-lg">
@@ -98,7 +98,7 @@ export default function FeaturedPost({ post }: FeaturedPostProps) {
                     })}
                   </span>
                 </div>
-                
+
                 {post.readTime && (
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
@@ -125,7 +125,7 @@ export default function FeaturedPost({ post }: FeaturedPostProps) {
                   </div>
                 </div>
               )}
-              
+
               <div className="flex items-center gap-2 text-brand-primary group-hover:gap-3 transition-all duration-300">
                 <span className="font-semibold">Read Full Article</span>
                 <ArrowRight className="w-5 h-5" />
