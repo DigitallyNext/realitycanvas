@@ -20,7 +20,7 @@ const portableTextComponents = {
     image: ({ value }: any) => (
       <div className="my-8">
         <img
-          src={urlFor(value).width(800).url()}
+          src={urlFor(value).width(500).url()}
           alt={value.alt || "Blog post image"}
           className="w-full rounded-lg shadow-lg"
         />
@@ -135,9 +135,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const imageUrl = post.mainImage?.asset?.url || urlFor(post.mainImage).url()
 
   return (
-    <div className="min-h-screen mt-20 bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen mt-20  ">
       {/* Hero Section */}
-      <div className="relative bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="relative bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Back Button */}
           <Link
@@ -221,13 +221,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       {/* Featured Image */}
       {post.mainImage && (
-        <div className="relative h-64 md:h-96 lg:h-[800px] overflow-hidden">
+        <div className="relative h-[500px] overflow-hidden">
           <img
             src={imageUrl}
             alt={post.mainImage.alt || post.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          <div className="absolute inset-0 " />
         </div>
       )}
 
