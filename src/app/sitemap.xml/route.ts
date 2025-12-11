@@ -120,7 +120,18 @@ export async function GET() {
       (post) => `
   <url>
     <loc>${BASE_URL}/blog/${post.slug}</loc>
-    <lastmod>${post.publishedAt}</lastmod>
+    <lastmod>${(() => {
+      try {
+        const date = new Date(post.publishedAt);
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+          return new Date().toISOString();
+        }
+        return date.toISOString();
+      } catch (e) {
+        return new Date().toISOString();
+      }
+    })()}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`
