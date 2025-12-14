@@ -402,7 +402,8 @@ export async function GET(request: NextRequest) {
     
   } catch (error) {
     console.error('❌ Projects API error:', error);
-    // Attempt to serve any cached response for this query on error
+    
+    // Attempt 1: Serve any cached response
     try {
       const { searchParams } = new URL(request.url);
       const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
@@ -430,13 +431,29 @@ export async function GET(request: NextRequest) {
         });
       }
     } catch {}
-    
+
+    // Attempt 2: Serve static fallback data
+    console.warn('Serving static fallback due to API error');
+    let fallbackProjects: any[] = [];
+    try {
+      const fallbackModule = await import('@/data/fallback-projects.json');
+      fallbackProjects = fallbackModule.default || fallbackModule;
+    } catch (importError) {
+      console.error('Failed to load fallback projects:', importError);
+      // Minimal fallback if even the file fails
+      fallbackProjects = []; 
+    }
+
     return NextResponse.json({
-      error: 'Failed to fetch projects',
-      projects: [],
-      pagination: { page: 1, limit: 6, totalCount: 0, totalPages: 0, hasMore: false },
-      meta: { queryTime: Date.now() - startTime, cached: false }
-    }, { status: 500 });
+      projects: fallbackProjects,
+      pagination: { page: 1, limit: 6, totalCount: fallbackProjects.length, totalPages: 1, hasMore: false },
+      meta: { queryTime: Date.now() - startTime, cached: false, fallback: true }
+    }, {
+      headers: {
+        'X-Fallback': 'static',
+        'Cache-Control': 'public, max-age=60'
+      }
+    });
   }
 }
 
